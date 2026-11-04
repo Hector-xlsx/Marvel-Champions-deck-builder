@@ -1,0 +1,34 @@
+# Include only the project files intended for the private repository.
+/*
+!/.gitignore
+!/README.md
+!/package.json
+!/Lanzar servidor local.cmd
+!/web/
+!/scripts/
+!/tests/
+!/docs/
+!/dist/
+
+/web/*
+!/web/*.mjs
+!/web/*.css
+!/web/*.html
+/scripts/*
+!/scripts/*.mjs
+!/scripts/lib/
+/scripts/lib/*
+!/scripts/lib/*.mjs
+/tests/*
+!/tests/*.test.mjs
+/docs/*
+!/docs/*.md
+!/docs/REVISION_IDENTIDADES_HEROES.json
+/dist/*
+!/dist/*.mjs
+!/dist/styles.css
+!/dist/index.html
+!/dist/catalog.json
+!/dist/assets/
+/dist/assets/*
+!/dist/assets/*.webp

@@ -1,0 +1,14 @@
+{
+  "name": "marvel-20-player-library",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "gestor:preparar": "node scripts/preparar-gestor.mjs",
+    "gestor:servir": "node scripts/servir-gestor.mjs",
+    "biblioteca:actualizar": "node scripts/importar-biblioteca.mjs",
+    "biblioteca:verificar": "node scripts/verificar-biblioteca.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": { "sharp": "0.35.5", "jszip": "3.10.1" }
+}

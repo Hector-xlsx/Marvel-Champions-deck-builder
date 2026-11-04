@@ -1,0 +1,1979 @@
+{
+  "date": "2026-11-03",
+  "catalogRevision": "2026-11-02T23-41-01-835Z-9644",
+  "source": "data/catalog/2026-11-02T23-41-01-835Z-9644/cards.json",
+  "scope": "Una identidad de héroe principal y una de alter ego por conjunto. No se revisan cartas de su mazo, auxiliares, hojas de reglas ni formas adicionales.",
+  "totalHeroes": 69,
+  "totalFaces": 138,
+  "runtimeImplemented": true,
+  "heroes": [
+    {
+      "hero": "01001a",
+      "name": "Spiderman",
+      "set": "spider_man",
+      "faces": [
+        {
+          "code": "01001a",
+          "type": "hero",
+          "name": "Spiderman",
+          "textEs": "Sentido arácnido — <b>Interrupción</b>: cuando el Villano inicie un ataque contra ti, roba 1 carta.",
+          "textEn": "Spider-Sense — <b>Interrupt</b>: When the villain initiates an attack against you, draw 1 card.",
+          "textSha256": "9bb521bdd3be1b9b762ecdc8fc913d05222195b84d81c550089325553d2ebabd"
+        },
+        {
+          "code": "01001b",
+          "type": "alter_ego",
+          "name": "Peter Parker",
+          "textEs": "Científico — <b>Recurso</b>: Genera un recurso [mental]. (Límite de una vez por ronda.)",
+          "textEn": "Scientist — <b>Resource</b>: Generate a [mental] resource. (Limit once per round.)",
+          "textSha256": "cd8c839a961afa57326e5f46c1dd0369f97aa1c3d7e9b093c4baf169a243f430"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "01010a",
+      "name": "Capitana Marvel",
+      "set": "captain_marvel",
+      "faces": [
+        {
+          "code": "01010a",
+          "type": "hero",
+          "name": "Capitana Marvel",
+          "textEs": "Redirigir energía — <b>Acción</b>: gasta un recurso [energy] y cura 1 de Daño a la Capitana Marvel → roba 1 carta. (Límite de una vez por ronda.)",
+          "textEn": "Rechannel — <b>Action</b>: Spend a [energy] resource and heal 1 damage from Captain Marvel → draw 1 card. (Limit once per round.)",
+          "textSha256": "a3119f8c38a4c6f46af667b86fbf7068494963523269675dfdb5ce341734ae43"
+        },
+        {
+          "code": "01010b",
+          "type": "alter_ego",
+          "name": "Carol Danvers",
+          "textEs": "Comandante — <b>Acción</b>: un jugador de tu elección roba 1 carta. (Límite de una vez por ronda.)",
+          "textEn": "Commander — <b>Action</b>: Choose a player to draw 1 card. (Limit once per round.)",
+          "textSha256": "f790dd2f9f30e7e2d8444654f3c4557494e0cd5de6454b1ff179451e028502f6"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "01019a",
+      "name": "Hulka",
+      "set": "she_hulk",
+      "faces": [
+        {
+          "code": "01019a",
+          "type": "hero",
+          "name": "Hulka",
+          "textEs": "\"¡Deberías hacer pesas!\" — <b>Respuesta</b>: después de que cambies a esta identidad, inflige 2 de Daño a un enemigo.",
+          "textEn": "\"Do You Even Lift?\" — <b>Response</b>: After you change to this form, deal 2 damage to an enemy.",
+          "textSha256": "552a08db9033c316f57d874e464339ed85b405bda297d68d3789159a1a28504b"
+        },
+        {
+          "code": "01019b",
+          "type": "alter_ego",
+          "name": "Jennifer Walters",
+          "textEs": "\"¡Protesto!\" — <b>Interrupción</b>: cuando vaya a colocarse Amenaza sobre un Plan, evita 1 de esa Amenaza. (Límite de una vez por ronda.)",
+          "textEn": "\"I Object!\" — <b>Interrupt</b>: When threat would be placed on a scheme, prevent 1 of that threat. (Limit once per round.)",
+          "textSha256": "1ccc3705049ed45d93e45b63529fd1d10df20b9b67e5338cadba60b2bbfc57ef"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "01029a",
+      "name": "Iron Man",
+      "set": "iron_man",
+      "faces": [
+        {
+          "code": "01029a",
+          "type": "hero",
+          "name": "Iron Man",
+          "textEs": "Recibes +1 al tamaño de tu mano por cada Mejora [[TECNOLOGÍA]] que controles (hasta un tamaño máximo de 7).",
+          "textEn": "You get +1 hand size for each [[Tech]] upgrade you control (to a maximum hand size of 7).",
+          "textSha256": "75fb32beade69808c8a2ed32e641ab672d63b6bd1611465ef05ab358afefc1e2"
+        },
+        {
+          "code": "01029b",
+          "type": "alter_ego",
+          "name": "Tony Stark",
+          "textEs": "Visión de futuro — <b>Acción</b>: mira las 3 primeras cartas de tu mazo. Añade 1 a tu mano y descarta las demás. (Límite de una vez por ronda.)",
+          "textEn": "Futurist — <b>Action</b>: Look at the top 3 cards of your deck. Add 1 to your hand and discard the others. (Limit once per round.)",
+          "textSha256": "15f4857a9481246e168e3461013060c5d3069f6f50cadae38c88ee64fb2d88a0"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "01040a",
+      "name": "Pantera Negra",
+      "set": "black_panther",
+      "faces": [
+        {
+          "code": "01040a",
+          "type": "hero",
+          "name": "Pantera Negra",
+          "textEs": "Represalia 1. <i>(Después de que se ataque a este personaje, se inflige 1 de Daño al personaje atacante.)</i>",
+          "textEn": "Retaliate 1. <i>(After this character is attacked, deal 1 damage to the attacking character.)</i>",
+          "textSha256": "f549cf201d257960a977eff8b1658c102f8e445a06f24350283455af88c792f8"
+        },
+        {
+          "code": "01040b",
+          "type": "alter_ego",
+          "name": "T'Challa",
+          "textEs": "Previsión — <b>Preparación</b>: busca en tu mazo una Mejora [[PANTERA NEGRA]] y añádela a tu mano. Baraja tu mazo.",
+          "textEn": "Foresight — <b>Setup</b>: Search your deck for a [[Black Panther]] upgrade and add it to your hand. Shuffle your deck.",
+          "textSha256": "60e8d6103ed424a33ce3a28068f9c07a648954db533b863bc73d977bb1106e7f"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "03001a",
+      "name": "Capitán América",
+      "set": "captain_america",
+      "faces": [
+        {
+          "code": "03001a",
+          "type": "hero",
+          "name": "Capitán América",
+          "textEs": "\"¡Aguantaría todo el día!\" — <b>Acción</b>: descarta 1 carta de tu mano → prepara al Capitán América. (Límite de una vez por ronda.)",
+          "textEn": "\"I Can Do This All Day!\" — <b>Action</b>: Discard 1 card from your hand → ready Captain America. (Limit once per round.)",
+          "textSha256": "015193ce872d4aaedf4d3733fe2a0a36dfc24638799a5eeac7725cef5ce3ed29"
+        },
+        {
+          "code": "03001b",
+          "type": "alter_ego",
+          "name": "Steve Rogers",
+          "textEs": "Leyenda viviente — Reduce en 1 el coste del primer Aliado que se juegue en cada ronda.\n<b>Preparación</b>: busca en tu mazo y tu pila de descartes la Mejora Escudo del Capitán América y añádela a tu mano. Baraja tu mazo.",
+          "textEn": "Living Legend — Reduce the cost of the first ally played each round by 1.\n<b>Setup</b>: Search your deck and discard pile for the Captain America's Shield upgrade and add it to your hand. Shuffle your deck.",
+          "textSha256": "aba0aa3d57dbb6286a3558c71f0143f8e5ba6e9d54cc1305d8107bd733fe8292"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "04001a",
+      "name": "Ojo de Halcón",
+      "set": "hawkeye",
+      "faces": [
+        {
+          "code": "04001a",
+          "type": "hero",
+          "name": "Ojo de Halcón",
+          "textEs": "Desefundado rápido — <b>Acción</b>: agota a Ojo de Halcón → prepara el Arco de Ojo de Halcón",
+          "textEn": "\"Quick Draw\" — <b>Action</b>: Exhaust Hawkeye → ready Hawkeye's bow.",
+          "textSha256": "caf8ae406a346c2847133821c85882b560f2483d62efa19c1c4576f7c314903a"
+        },
+        {
+          "code": "04001b",
+          "type": "alter_ego",
+          "name": "Clint Barton",
+          "textEs": "Arma predilecta — <b>Acción</b>: gasta 1 recurso de cualquier tipo → busca el Arco de Ojo de Halcón en tu mazo y tu pila de descartes y añádelo a tu mano. Baraja tu mazo. (Límite de una vez por fase.)",
+          "textEn": "Weapon of Choice — <b>Action</b>: Spend 1 resource of any type → search your deck and discard pile for Hawkeye's Bow and add it to your hand. Shuffle your deck. (Limit once per phase).",
+          "textSha256": "1c85b3470a2eb11824bca932e5d4767de78579461295a5265ec2e2622a207db3"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "04031a",
+      "name": "Spiderwoman",
+      "set": "spider_woman",
+      "faces": [
+        {
+          "code": "04031a",
+          "type": "hero",
+          "name": "Spiderwoman",
+          "textEs": "Agilidad sobrehumana — <b>Interrupción</b>: cuando juegues una carta de Aspecto, Spiderwoman recibe +1 INT, +1 ATQ y +1 DEF hasta el final de la ronda. (Límite de una vez por ronda para cada aspecto.)",
+          "textEn": "\"Superhuman Agility\" — <b>Interrupt</b>: When you play an aspect card, Spider-Woman gets +1 THW, +1 ATK, and +1 DEF until the end of the round. (limit once per round for each aspect.)",
+          "textSha256": "858ad97d3e1232c1d2deb10a6aa7d7c1526b0d883887dd35c14ec11745912a36"
+        },
+        {
+          "code": "04031b",
+          "type": "alter_ego",
+          "name": "Jessica Drew",
+          "textEs": "Agente Doble — Elige dos aspectos en vez de uno durante la creación de tu mazo. Debes incluir en tu mazo la misma cantidad de cartas de ambos aspectos.\n<b>Acción:</b> mira la primera carta de cualquier mazo. (Límite de una vez por ronda.)",
+          "textEn": "Double Agent — Choose two aspects instead of one during deck-building. You must include an equal number of cards from those aspects in your deck.\n<b>Action:</b>: Look at the top card of any deck. (Limit once per round.)",
+          "textSha256": "935ab99c5c7a64c1943633f45a1b7a904ab819fe892b28e5b2dfdab210d3fb0f"
+        }
+      ],
+      "review": {
+        "kind": "estructura",
+        "source": "04031b",
+        "summary": "Elegir dos aspectos y mantener igual cantidad de cartas de ambos."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "05001a",
+      "name": "Ms. Marvel",
+      "set": "ms_marvel",
+      "faces": [
+        {
+          "code": "05001a",
+          "type": "hero",
+          "name": "Ms. Marvel",
+          "textEs": "\"Morfogenética\" — <b>Respuesta</b>: después de que juegues un Evento de [[ATAQUE]], [[INTERVENCIÓN]] o [[DEFENSA]], agota a Ms. Marvel → devuelve ese Evento a tu mano.",
+          "textEn": "\"Morphogenetics\" — <b>Response</b>: After you play an [[Attack]], [[Thwart]], or [[Defense]] event, exhaust Ms. Marvel → return that event to your hand.",
+          "textSha256": "a854620f80edd5b51dbc4a929f1739125df406d9d121117282d88c31166c0c73"
+        },
+        {
+          "code": "05001b",
+          "type": "alter_ego",
+          "name": "Kamala Khan",
+          "textEs": "Fervor adolescente — <b>Acción</b>: descarta cartas de la parte superior de tu mazo hasta que descartes una carta de Ms. Marvel, luego añade esa carta a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "Teen Spirit — <b>Action</b>: Discard cards from the top of your deck until you discard a Ms. Marvel card, then add that card to your hand. (Limit once per round.)",
+          "textSha256": "762c9c7e70bd25bff832acebf3ac7d594087619d0db73818e2f5f473e6d26096"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "06001a",
+      "name": "Thor",
+      "set": "thor",
+      "faces": [
+        {
+          "code": "06001a",
+          "type": "hero",
+          "name": "Thor",
+          "textEs": "\"¡Defiéndete!\" — <b>Respuesta</b>: después de que te enfrentes a un Esbirro, roba 2 cartas. (Límite de una vez por fase.)",
+          "textEn": "\"Have at thee!\" — <b>Response</b>: After you engage a minion, draw 2 cards. (Limit once per phase.)",
+          "textSha256": "8ba4cef75473c166ad8599ec97e6b7b4f76c75f94608533563c90396a7a49ef1"
+        },
+        {
+          "code": "06001b",
+          "type": "alter_ego",
+          "name": "Odinson",
+          "textEs": "Digno — <b>Acción</b>: busca en tu mazo y tu pila de descartes la Mejora Mjolnir y añádela a tu mano. Baraja tu mazo. (Límite de una vez por ronda.)",
+          "textEn": "Worthy — <b>Action</b>: Search your deck and discard pile for the Mjolnir upgrade and add it to your hand. Shuffle your deck. (Limit once per round).",
+          "textSha256": "cc0202d3880b07b6c36e5ae3d4a7590e66d5f23a31cda7df5fe13754e22791e4"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "08001a",
+      "name": "Viuda Negra",
+      "set": "black_widow",
+      "faces": [
+        {
+          "code": "08001a",
+          "type": "hero",
+          "name": "Viuda Negra",
+          "textEs": "Hacedora de viudas — <b>Respuesta</b>: después de que apliques la capacidad de una carta de [[PLANIFICACIÓN]] que controles, inflige 1 de Daño a un enemigo.",
+          "textEn": "\"Widowmaker\" — <b>Response</b>: After you trigger the ability of a [[Preparation]] card you control, deal 1 damage to an enemy.",
+          "textSha256": "8967adbe02b86208ca435b5fe013f5d302b27a9c8050d0cf15d733b0839cd40c"
+        },
+        {
+          "code": "08001b",
+          "type": "alter_ego",
+          "name": "Natasha Romanoff",
+          "textEs": "Preparativos para la misión — <b>Respuesta</b>: después de que juegues una carta de [[PLANIFICACIÓN]], roba 1 carta. (Límite de una vez por fase.)",
+          "textEn": "Mission Prep — <b>Response</b>: After you play a [[Preparation]] card, draw 1 card. (Limit once per phase.)",
+          "textSha256": "7ddac0e64f3953e2ca483b9f290a893e5809ad320ec2c6fdfdf9f230092ef860"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "09001a",
+      "name": "Doctor Extraño",
+      "set": "doctor_strange",
+      "faces": [
+        {
+          "code": "09001a",
+          "type": "hero",
+          "name": "Doctor Extraño",
+          "textEs": "Dominio de la magia — <b>Accción</b>: agota al Doctor Extraño y paga el coste de la primera carta del mazo de [[INVOCACIÓN]] → resuelve la capacidad <b>\"Especial\"</b> de esa carta.",
+          "textEn": "<i>Spell Mastery</i> — <b>Action</b>: Exhaust Doctor Strange and pay the cost of the top card of the [[Invocation]] deck → resolve the \"<b>Special</b>\" ability on that card.",
+          "textSha256": "cd7824fcd6300a6588cb93c381a8e0f6f57aae84d337d70642a6ee1bb3905e60"
+        },
+        {
+          "code": "09001b",
+          "type": "alter_ego",
+          "name": "Stephen Extraño",
+          "textEs": "Stephen Extraño empieza la partida con un mazo de [[INVOCACIÓN]] (ver hoja de reglas).\nTalento Innato — <b>Acción</b>: descarta la primera carta del mazo de [[INVOCACIÓN]]. (Límite de una vez por fase.)",
+          "textEn": "Stephen Strange begins the game with an [[Invocation]] deck. (See insert.)\n<i>Natural Talent</i> — <b>Action</b>: Discard the top card of the [[Invocation]] deck. (Limit once per phase.)",
+          "textSha256": "05cccdbf40eda8d8017fd69dbf79d59733603e68edf3304232d1c02daba660b3"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "10001a",
+      "name": "Hulk",
+      "set": "hulk",
+      "faces": [
+        {
+          "code": "10001a",
+          "type": "hero",
+          "name": "Hulk",
+          "textEs": "Enfurecido — <b>Interrupción obligada</b>: cuando termine tu turno, descarta tu mano.",
+          "textEn": "\"Enraged\" — <b>Forced Interrupt</b>: When your turn ends, discard your hand.",
+          "textSha256": "64401a1f9996cd626fca48bd26b0b2575d8f6ad3a6d8c7efdf642948884c6477"
+        },
+        {
+          "code": "10001b",
+          "type": "alter_ego",
+          "name": "Bruce Banner",
+          "textEs": "Investigación experimental — <b>Acción:</b> roba 1 carta. Elige 1 carta de tu mano y descártala. (Límite de una vez por ronda.)",
+          "textEn": "Experimental Research — <b>Action</b>: Draw 1 card. Choose and discard 1 card from your hand. (Limit once per round.)",
+          "textSha256": "cd943700721522822f93e87b8ce9dcc704eb7c55e20a0e2e01b6a2a5ec89fee3"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "12001a",
+      "name": "Hombre Hormiga",
+      "set": "ant",
+      "faces": [
+        {
+          "code": "12001a",
+          "type": "hero",
+          "name": "Hombre Hormiga",
+          "textEs": "<i>Insecto irritante</i> — <b>Respuesta:</b> después de que cambies a esta identidad, quita 1 de Amenaza de un Plan.",
+          "textEn": "<i>Puny Pest</i> — <b>Response:</b> After you change to this form, remove 1 threat from a scheme.",
+          "textSha256": "b22e505aa453f8f7dc7f96c3a145853b09e7dbd08783c75bfbcff4635df33f76"
+        },
+        {
+          "code": "12001b",
+          "type": "alter_ego",
+          "name": "Scott Lang",
+          "textEs": "<i>Tiempo para relajarse</i> — <b>Respuesta:</b> después de que cambies a esta identidad, cura 1 de Daño a Scott Lang.",
+          "textEn": "<i>Time to Unwind</i> — <b>Response:</b> After you change to this form, heal 1 damage from Scott Lang.",
+          "textSha256": "24ac84a708c20d8d18d062d683a3777dd54241844cff46ddcf08eaf797a68d92"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": [
+        "12001c"
+      ]
+    },
+    {
+      "hero": "13001a",
+      "name": "Avispa",
+      "set": "wsp",
+      "faces": [
+        {
+          "code": "13001a",
+          "type": "hero",
+          "name": "Avispa",
+          "textEs": "<i>Pequeña pero poderosa</i> — <b>Respuesta:</b> después de que la Avispa <i>(o un Evento jugado por ti)</i> derrote a un Esbirro o Plan secundario, inflige 1 de Daño al Villano.",
+          "textEn": "<i>Small but Mighty</i> — <b>Response:</b> After Wasp <em>(or an event you play)</em> defeats a minion or side scheme, deal 1 damage to the villain.",
+          "textSha256": "3e10eb4522eddb14a88c6a3ab571d11e7430c1cfc0b994359a4dd322a2ddf122"
+        },
+        {
+          "code": "13001b",
+          "type": "alter_ego",
+          "name": "Nadia Van Dyne",
+          "textEs": "<i>C.H.I.C.A.</i> — <b>Acción:</b> coge hasta 2 cartas de tu pila de descartes que tengan impreso un recurso [mental], añádelas a tu mazo y barájalo. (Límite de una vez por ronda.)",
+          "textEn": "<i>G.I.R.L.</i> — <b>Action:</b> Shuffle up to 2 cards with a printed [mental] resource from your discard pile into your deck. (Limit once per round.)",
+          "textSha256": "d6b78b3ef982469b329128427a54c36306989af433b588c5c58ecc13bbdf273d"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": [
+        "13001c"
+      ]
+    },
+    {
+      "hero": "14001a",
+      "name": "Mercurio",
+      "set": "qsv",
+      "faces": [
+        {
+          "code": "14001a",
+          "type": "hero",
+          "name": "Mercurio",
+          "textEs": "<i>Supervelocidad</i> — <b>Respuesta:</b> después de que uses uno de los atributos básicos de Mercurio (INT, ATQ o DEF), prepáralo. (Límite de una vez por fase.)",
+          "textEn": "<i>Super Speed</i> — <b>Response:</b> After you use one of Quicksilver's basic powers <em>(THW, ATK, or DEF),</em> ready him. (Limit once per phase.)",
+          "textSha256": "5b1c37b1a4896485be6a4570a99007da7286b76b02b8b37a0d87a00de58a7878"
+        },
+        {
+          "code": "14001b",
+          "type": "alter_ego",
+          "name": "Pietro Maximoff",
+          "textEs": "<i>Hermanos con superpoderes</i> — <b>Acción:</b> descarta 2 cartas de tu mano → roba 2 cartas (roba 3 cartas si Wanda Maximoff está en juego). (Límite de una vez por ronda.)",
+          "textEn": "<i>Superpowered Siblings</i> — <b>Action:</b> Discard 2 cards from your hand → draw 2 cards (draw 3 cards instead if Wanda Maximoff is in play). (Limit once per round.)",
+          "textSha256": "6b6d23db0928a59f57d43549f4bc0d9e84498bf8f64b9bc46f3e64cd1a9555e4"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "15001a",
+      "name": "Bruja Escarlata",
+      "set": "scw",
+      "faces": [
+        {
+          "code": "15001a",
+          "type": "hero",
+          "name": "Bruja Escarlata",
+          "textEs": "<i>Control del caos</i> — <b>Interrupción:</b> cuando vayan a contarse los iconos de Aumento de una carta de Encuentro, en vez de eso descarta la primera carta del mazo de Encuentros y cuenta el número de iconos de Aumento de esa carta. (Límite de una vez por fase.)",
+          "textEn": "<i>Chaos Control</i> — <b>Interrupt:</b> When boost icons on an encounter card would be counted, discard the top card of the encounter deck and count the number of boost icons on that card instead. (Limit once per phase.)",
+          "textSha256": "b9fde9177f1a6a2faf2bc96074d6435a2d875e352dd844426b3d6811dd7e2441"
+        },
+        {
+          "code": "15001b",
+          "type": "alter_ego",
+          "name": "Wanda Maximoff",
+          "textEs": "<i>Hermanos con superpoderes</i> — <b>Acción:</b> descarta 2 cartas de tu mano → roba 2 cartas (roba 3 cartas si Pietro Maximoff está en juego). (Límite de una vez por ronda.)",
+          "textEn": "<i>Superpowered Siblings</i> — <b>Action:</b> Discard 2 cards from your hand → draw 2 cards (draw 3 cards instead if Pietro Maximoff is in play). (Limit once per round.)",
+          "textSha256": "f495014a54bcc0feda7d4e4bf7525fe76e6882c6756b999c2e8cd21c394592d2"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "16001a",
+      "name": "Groot",
+      "set": "groot",
+      "faces": [
+        {
+          "code": "16001a",
+          "type": "hero",
+          "name": "Groot",
+          "textEs": "<i>Flora Colossus</i> — <b>Interrupción obligada:</b> cuando Groot vaya a sufrir cualquier cantidad de Daño, quítale ese mismo número de contadores de Crecimiento. Por cada contador de Crecimiento que se quite de este modo, se evita 1 de ese Daño.",
+          "textEn": "<i>Flora Colossus</i> — <b>Forced Interrupt</b>: When Groot would take any amount of damage, remove that many growth counters from him. For each growth counter removed this way, prevent 1 of that damage.",
+          "textSha256": "70891935f3cb41934502fcf704df121add297f0cb08807a89bf17895d7263085"
+        },
+        {
+          "code": "16001b",
+          "type": "alter_ego",
+          "name": "Groot",
+          "textEs": "<i>Crecimeinto súbito</i> — <b>Acción:</b> coloca 2 contadores de Crecimiento sobre Groot (hasta un máximo de 10). (Límite de una vez por ronda.)",
+          "textEn": "<i>Growth Spurt</i> — <b>Action</b>: Place 2 growth counters on Groot (to a maximum of 10). (Limit once per round.)",
+          "textSha256": "f4b2cc3a4680f3cf1f8aa4d216e777d6349c167022ab565dcc49da948d2037af"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "16029a",
+      "name": "Mapache Cohete",
+      "set": "rocket",
+      "faces": [
+        {
+          "code": "16029a",
+          "type": "hero",
+          "name": "Mapache Cohete",
+          "textEs": "<i>\"Estás muerto!\"</i> — <b>Respuesta:</b> después de que inflijas Daño sobrante a un enemigo, roba 1 carta.",
+          "textEn": "<i>\"Murdered You!\"</i> — <b>Response</b>: After you deal excess damage to an enemy, draw 1 card.",
+          "textSha256": "c8d5a0e556dd69157bf86c22d7c4d9308f5c32cf587e8b37ebe948e7f9de50a6"
+        },
+        {
+          "code": "16029b",
+          "type": "alter_ego",
+          "name": "Mapache Cohete",
+          "textEs": "<i>Mañoso</i> — <b>Acción:</b> descarta una Mejora [[Tecnología]] de tu elección que controles → roba 2 cartas. (Límite de una vez por ronda.)",
+          "textEn": "<i>Tinkering</i> — <b>Action</b>: Choose and discard a [[tech]] upgrade you control → draw 2 cards. (Limit once per round.)",
+          "textSha256": "0ab372b0c7444da00c089deb37302f985bde2f9a7496f760ef44290860c1dde8"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "17001a",
+      "name": "Starlord",
+      "set": "stld",
+      "faces": [
+        {
+          "code": "17001a",
+          "type": "hero",
+          "name": "Starlord",
+          "textEs": "Todos los aliados que controles ganan el rasgo [[Guardián]].\n<i>\"¿Qué podría salir mal?\"</i> — <b>Interrupción:</b> cuando juegues una carta desde tu mano, coge 1 carta de Encuentro boca abajo → reduce en 3 el coste en recursos para jugar esa carta. (Límite de una vez por ronda.)",
+          "textEn": "Each ally you control gains the [[guardian]] trait.\n\"What could go wrong?\" — <b>Interrupt:</b> When you play a card from your hand, deal yourself 1 facedown encounter card → reduce the cost to play that card by 3. (Limit once per round.)",
+          "textSha256": "08b428468c2ba92149fa9d83d9a0d72ec57fa19ec0d128fed07c074ee1ff99a6"
+        },
+        {
+          "code": "17001b",
+          "type": "alter_ego",
+          "name": "Peter Quill",
+          "textEs": "<b>Preparación:</b> busca una copia de la Mejora Pistola elemental en tu mazo y en tu pila de descartes y añádela a tu mano. Baraja tu mazo.\n<i>Labia</i> — <b>Acción:</b> elige una carta de tu mano. Intercambia esa carta por la primera carta de tu mazo. (Límite de una vez por ronda.)",
+          "textEn": "<b>Setup:</b> Search your deck and discard pile for a copy of the Element Gun upgrade and add it to your hand.\nSmooth Talker — <b>Action:</b> Choose a card in your hand. Swap that card with the top card of your deck. (Limit once per round.)",
+          "textSha256": "9e6a762bc35e4dc66fea6b5807e619ba6d6e4b95b8759821d1d16c51cc6d2dcd"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "18001a",
+      "name": "Gamora",
+      "set": "gam",
+      "faces": [
+        {
+          "code": "18001a",
+          "type": "hero",
+          "name": "Gamora",
+          "textEs": "<i>Sutileza</i> — <b>Respuesta:</b> después de que juegues un Evento [[Ataque]], quita 1 de Amenaza de un Plan. (Límite de una vez por fase).\n<i>Precisión</i> — <b>Respuesta:</b> después de que juegues un Evento [[Intervención]], inflige 1 de Daño a un enemigo. (Límite de una vez por fase.)",
+          "textEn": "<i>Finesse</i> — <b>Response</b>: After you play an [[attack]] event, remove 1 threat from a scheme. (Limit once per phase.)\n<i>Precision</i> — <b>Response</b>: After you play a [[thwart]] event, deal 1 damage to an enemy. (Limit once per phase.)",
+          "textSha256": "09b21c9f05bcc71cb3cc9a3d0c879425e6d205f8dd97cd0ab37c23676d5b9682"
+        },
+        {
+          "code": "18001b",
+          "type": "alter_ego",
+          "name": "Gamora",
+          "textEs": "<i>Experta en tácticas</i> — Puedes incluir en tu mazo hasta 6 Eventos de [[Ataque]] e [[Intervención]] de otros aspectos que no sean el que has elegido.\n<b>Acción:</b> mira la primera carta de tu mazo. Si esa carta es un Evento [[Ataque]] o [[Intervención]], róbala. (Límite de una vez por ronda.)",
+          "textEn": "<i>Skilled Tactician</i> — You may include up to 6 [[attack]] and/or [[thwart]] events in your deck from aspects other than your chosen aspect.\n<b>Action</b>: Look at the top card of your deck. If that card is an [[attack]] or [[thwart]] event, draw it. (Limit once per round.)",
+          "textSha256": "82001eac59cb2afcdc79809f3105153a2f39428b968d4dcc977a51a91eb38c4a"
+        }
+      ],
+      "review": {
+        "kind": "otros_aspectos",
+        "source": "18001b",
+        "summary": "Hasta 6 copias de Eventos con Ataque o Intervención de aspectos distintos del elegido.",
+        "type": "event",
+        "traitsAny": [
+          "attack",
+          "thwart"
+        ],
+        "copyLimit": 6
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "19001a",
+      "name": "Drax",
+      "set": "drax",
+      "faces": [
+        {
+          "code": "19001a",
+          "type": "hero",
+          "name": "Drax",
+          "textEs": "Drax recibe +1 ATQ por cada contador de Venganza que tenga.\n<b>Respuesta:</b> después de que el Villano ataque a Drax, coloca 1 contador de Venganza sobre esta carta (hasta un máximo de 3). Si no es posible, roba 1 carta.",
+          "textEn": "Drax gets +1 ATK for each vengeance counter on him.\n<b>Response:</b> After the villain attacks Drax, place 1 vengeance counter here (to a maximum of 3). If you cannot, draw 1 card.",
+          "textSha256": "dfa2db9082ab213d0951c7cce51a48e67612dc1bc6d162dc12aa8ae879e4f2bf"
+        },
+        {
+          "code": "19001b",
+          "type": "alter_ego",
+          "name": "Drax",
+          "textEs": "<b>Respuesta obligada:</b> después de que cambies a esta identidad, quita todos los contadores de Venganza de Drax. Cúrale 2 de Daño por cada contador de Venganza que se haya quitado de este modo.",
+          "textEn": "<b>Forced Response:</b> After you change to this form, remove all vengeance counters from Drax. Heal 2 damage from him for each vengeance counter removed this way.",
+          "textSha256": "13acc0facaeb03c75dddcae17aed895faf0a27be7d1711a3ddce3c420b88f2ce"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "20001a",
+      "name": "Veneno",
+      "set": "vnm",
+      "faces": [
+        {
+          "code": "20001a",
+          "type": "hero",
+          "name": "Veneno",
+          "textEs": "Puedes controlar 1 Mejora adicional que tenga la palabra clave Restringida.\n <i>Unión simbiótica</i> — <b>Recurso</b>: sufre 1 de Daño → genera un recurso [wild]. (Límite de una vez por fase.)",
+          "textEn": "You can control 1 additional upgrade that has the restricted keyword.\n<i>Symbiotic Bond</i> - <b>Resource</b>: Take 1 damage → generate a [wild] resource. (Limit once per phase)",
+          "textSha256": "84b07078413bde49361373d1ad425e89e36fa09bf6f65fd2b4ab435f56cad1eb"
+        },
+        {
+          "code": "20001b",
+          "type": "alter_ego",
+          "name": "Flash Thompson",
+          "textEs": "Puedes controlar 1 Mejora adicional que tenga la palabra clave Restringida.\n <i>Bien pertrechado</i> — <b>Preparación</b>: descarta cartas de la parte superior de tu mazo hasta que descartes una Mejora [[Arma]], luego añade esa carta a tu mano.",
+          "textEn": "You can control 1 additional upgrade that has the restricted keyword.\n<i>Armed and Ready</i> - <b>Setup</b>: Discard cards from the top of your deck until you discard a [[weapon]] upgrade, then add that card to your hand.",
+          "textSha256": "4e9b09bdc764cea9911426d79c2f99a8531299a65c2d7733da2fa71a7487e40e"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "21001a",
+      "name": "Spectrum",
+      "set": "spectrum",
+      "faces": [
+        {
+          "code": "21001a",
+          "type": "hero",
+          "name": "Spectrum",
+          "textEs": "<i>Transformación de energía</i> — <b>Respuesta obligada:</b> después de que cambies a esta identidad, elige una Mejora de Identidad de energía que esté boca abajo → pon esa carta boca arriba para cambiar a esa identidad de energía.",
+          "textEn": "<i>Energy Transformation</i> - <b>Forced Response:</b> After you change to this form, choose a facedown energy form upgrade → flip that card faceup to change to that energy form.",
+          "textSha256": "4b87056bea6ddef51d113d20dd23bceaebc8858930a85392594657a6bfe52d33"
+        },
+        {
+          "code": "21001b",
+          "type": "alter_ego",
+          "name": "Monica Rambeau",
+          "textEs": "<b>Preparación:</b> pon en juego las 3 Mejoras de Identidad de energía, boca abajo.\n<i>Ahorro de energía</i> — <b>Respuesta obligada:</b> después de que cambies a esta identidad, pon boca abajo todas tus Mejoras de Identidad de energía.",
+          "textEn": "<b>Setup:</b> Put all 3 energy form upgrades into play, facedown.\n<i>Power Down</i> - <b>Forced Response:</b> After you change to this form, turn all your energy form upgrades facedown.",
+          "textSha256": "da1da4e3faddd590efa4f7555a575cb382bc9871e23abfd635f2e53fa97d3956"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "21031a",
+      "name": "Adam Warlock",
+      "set": "warlock",
+      "faces": [
+        {
+          "code": "21031a",
+          "type": "hero",
+          "name": "Adam Warlock",
+          "textEs": "<i>Magia de combate</i> — <b>Acción:</b> descarta 1 carta de tu mano. Límite de una vez por fase. Si esa carta es de:\n- Agresividad — Inflige 2 de Daño a un enemigo.\n- Justicia — Quita 2 de Amenaza de un Plan.\n- Protección — Cura 1 de Daño a un Aliado.\n- Liderazgo — Dale a un Héroe +1 INT, +1 ATQ y +1 DEF en esta ronda.",
+          "textEn": "<i>Battle Mage</i> - <b>Action</b>: Discard 1 card from your hand. Limit once per phase. If that card is:\n- Aggression - Deal 2 damage to an enemy.\n- Justice - Remove 2 threat from a scheme.\n- Protection - Heal 1 damage from an ally.\n- Leadership - Give a hero +1 THW, +1 ATK and +1 DEF this round.",
+          "textSha256": "62f25011c14f6399fbcad8498b9dc202de6c0cca3c48affd54f884553a7f4cc0"
+        },
+        {
+          "code": "21031b",
+          "type": "alter_ego",
+          "name": "Adam Warlock",
+          "textEs": "<i>Avatar de la vida</i> — Durante la creación de tu mazo, debes incluir la misma cantidad de cartas de cada uno de los 4 aspectos. No puedes incluir más de 1 copia de ninguna carta que no sea de Adam Warlock.\n<b>Acción:</b> descarta una carta de tu mano → quita una carta de Estado a Adam Warlock.",
+          "textEn": "<i>Avatar of Life</i> - During deck-building, your deck must include an equal number of cards from all 4 aspects. You cannot include more than 1 copy of any non-Adam Warlock card.\n<b>Action</b>: Discard a card from your hand → remove a status card from Adam Warlock.",
+          "textSha256": "cae7219c8d01d1cc77c4b80d9b45b39e2624e202a576c3bd9fb8b0c97cffdadb"
+        }
+      ],
+      "review": {
+        "kind": "estructura",
+        "source": "21031b",
+        "summary": "Igual cantidad de cartas de los cuatro aspectos indicados y máximo una copia por carta ajena al conjunto de Adam Warlock."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "22001a",
+      "name": "Nébula",
+      "set": "nebu",
+      "faces": [
+        {
+          "code": "22001a",
+          "type": "hero",
+          "name": "Nébula",
+          "textEs": "<i>Protocolos de combate</i> — <b>Respuesta obligada:</b> después de que empiece tu turno, resuelve la capacidad <b>\"Especial\"</b> de todas las Mejoras [[Técnica]] que controles, luego descarta todas las Mejoras [[Técnica]] que se hayan resuelto de este modo.",
+          "textEn": "<i>Combat Protocols</i> - <b>Forced Response</b>: After your turn begins, resolve the \"Special\" ability on each [[technique]] upgrade you control, then discard each [[technique]] upgrade resolved this way.",
+          "textSha256": "b2c00e57c510de2cf72b60f152c94b7ea2e473cc00388eb9dadd24528a1b8dde"
+        },
+        {
+          "code": "22001b",
+          "type": "alter_ego",
+          "name": "Nébula",
+          "textEs": "<i>Mejoras cibernéticas</i> — <b>Respuesta:</b> después de que juegues una Mejora [[Técnica]], roba 2 cartas. (Límite de una vez por ronda.)",
+          "textEn": "<i>Cybernetic Upgrades</i> - <b>Response</b>: After you play a [[technique]] upgrade, draw 2 cards. (Limit once per round.)",
+          "textSha256": "c17a10be340c43f597f09a435e6ab2f592147fa9ea023d2224aa1b369bad7b53"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "23001a",
+      "name": "Máquina de Guerra",
+      "set": "warm",
+      "faces": [
+        {
+          "code": "23001a",
+          "type": "hero",
+          "name": "Máquina de Guerra",
+          "textEs": "<i>Armas a punto</i> — <b>Respuesta</b>: después de que cambies a esta identidad, coloca 5 contadores de Munición sobre Máquina de Guerra.",
+          "textEn": "<i>Locked and Loaded</i> - <b>Response</b>: After you change to this form, place 5 ammo counters on War Machine.",
+          "textSha256": "8552b3604cd1370add8da7affe1e1c46c85fb8b6585700ebde498be1989c4154"
+        },
+        {
+          "code": "23001b",
+          "type": "alter_ego",
+          "name": "James Rhodes",
+          "textEs": "<b>Acción</b>: elige una carta de Máquina de Guerra que esté en tu pila de descartes, añádela a tu mazo y barájalo.\n<b>Respuesta obligada</b>: después de que cambies a esta identidad, descarta todos los contadores de Munición de tu Superhéroe.",
+          "textEn": "<b>Action</b>: Choose a War Machine card in your discard pile and shuffle it into your deck. (Limit once per phase.)\n<b>Forced Response</b>: After you change to this form, discard each ammo counter from your identity.",
+          "textSha256": "9076cb57d1813a26ba204bbfe227a93f57ae0b130b0bdf4dec2ebb52c4c83882"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "25001a",
+      "name": "Valquiria",
+      "set": "valk",
+      "faces": [
+        {
+          "code": "25001a",
+          "type": "hero",
+          "name": "Valquiria",
+          "textEs": "<i>Presentir la muerte</i> — <b>Acción de Héroe</b>: juega la Mejora apartada Halo de muerte como si estuviera en tu mano.",
+          "textEn": "Death Perception — <b>Hero Action</b>: Play the set-aside Death-Glow upgrade as if it were in your hand.",
+          "textSha256": "325eb7a95a3b1bf6abd5f4c8ac30adfce15eaa7909af34797c725b31c6ef4160"
+        },
+        {
+          "code": "25001b",
+          "type": "alter_ego",
+          "name": "Brunilda",
+          "textEs": "<b>Preparación</b>: aparta la Mejora Halo de muerte a un lado, fuera del juego.\n<i>\"Hoy no.\"</i> — <b>Acción</b>: desvincula el Halo de muerte y apártalo a un lado, fuera del juego.",
+          "textEn": "<b>Setup:</b> Set the Death Glow upgrade aside, out of play.\n\"Not this Day.\" — <b>Action</b>: Detach Death-Glow and set it aside, out of play.",
+          "textSha256": "7e883830140efcfb7fbdb1ac27f8779042a498abf2b3f6fc4bf221af77dd144f"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "26001a",
+      "name": "La Visión",
+      "set": "vision",
+      "faces": [
+        {
+          "code": "26001a",
+          "type": "hero",
+          "name": "La Visión",
+          "textEs": "<i>Manipulación de la densidad</i> — <b>Acción</b>: cambia tu identidad de masa dándole la vuelta a tu Mejora de Identidad de masa. (Límite de una vez por ronda.)",
+          "textEn": "<i>Density Manipulation</i> - <b>Action:</b> Change mass form by flipping your mass form upgrade over. (Limit once per round.)",
+          "textSha256": "339a5da4d2936b265add301c3a54e46b7f5af1f38dfca2bba87898a194c1f948"
+        },
+        {
+          "code": "26001b",
+          "type": "alter_ego",
+          "name": "La Visión",
+          "textEs": "Mientras tu identidad de masa sea Denso, recibes +2 REC.\nMientras tu identidad de masa sea Intangible, recibes +1 al tamaño de tu mano.\n<b>Preparación</b>: pon en juego tu Mejora de Identidad de masa con la cara de Intangible boca arriba.",
+          "textEn": "While you are in Dense mass form, you get +2 REC.\nWhile you are in Intangible mass form, you get +1 hand size.\n<b>Setup:</b> Put your mass form upgrade into play, Intangible side faceup.",
+          "textSha256": "6b409d5d370cd7e80d5212075102ea94d260db5b5787d8b9705ac6d084294b49"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "27001a",
+      "name": "Ghost-Spider",
+      "set": "ghost_spider",
+      "faces": [
+        {
+          "code": "27001a",
+          "type": "hero",
+          "name": "Ghost-Spider",
+          "textEs": "<i>Reflejos vertiginosos</i> — <b>Respuesta:</b> después de que resuelvas una capacidad de \"<b>Interrupción</b>\" o \"<b>Respuesta</b>\" de un Evento, prepara a Ghost-Spider. (Límite de una vez por fase.)",
+          "textEn": "<i>Dizzying Reflexes</i> - <b>Response:</b> After you resolve an \"<b>Interrupt</b>\" or \"<b>Response</b>\" ability on an event, ready Ghost-Spider. (Limit once per phase.)",
+          "textSha256": "9b860b3d5484dc21c1aa50018655ffe23ddaa98d6ff7ca10f798ff95f1db9c97"
+        },
+        {
+          "code": "27001b",
+          "type": "alter_ego",
+          "name": "Gwen Stacy",
+          "textEs": "<b>Acción:</b> elige entre coger el Billete al multiverso de tu pila de descartes y añadirlo a tu mazo (barajándolo después), o bien preparar a George Stacy. (Límite de una vez por ronda.)",
+          "textEn": "<b>Action:</b> Choose to either shuffle Ticket to the Multiverse from your discard pile into your deck or ready George Stacy. (Limit once per round.)",
+          "textSha256": "4e5f07464a13f45533a8105d705da47c41accc9908625184b3e38638d058c42f"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "27030a",
+      "name": "Spiderman",
+      "set": "spider_man_morales",
+      "faces": [
+        {
+          "code": "27030a",
+          "type": "hero",
+          "name": "Spiderman",
+          "textEs": "<i>Rayo de veneno</i> — <b>Especial:</b> inflige 2 de Daño a un enemigo. Aturde a ese enemigo.\n<i>Camuflaje arácnido</i> — <b>Especial:</b> dale a Spiderman una carta de estado \"Duro\". Confunde a un enemigo.",
+          "textEn": "<i>Venom Blast</i> - <b>Special</b>: Deal 2 damage to an enemy. Stun that enemy.\n<i>Spider Camouflage</i> - <b>Special</b>: Give Spider-Man a tough status card. Confuse an enemy.",
+          "textSha256": "293b9d1f167f6d2bf31d8a2aa60f0f66f13f1b4f4862dafbc836a08871765024"
+        },
+        {
+          "code": "27030b",
+          "type": "alter_ego",
+          "name": "Miles Morales",
+          "textEs": "<b>Respuesta:</b> después de que cambies a esta identidad, coge 1 carta específica de Spiderman que esté en tu pila de descartes, añádela a tu mazo y barájalo.",
+          "textEn": "<b>Response</b>: After you change to this form, shuffle 1 Spider-Man card from your discard pile into your deck.",
+          "textSha256": "59232171919f384a018e24210aa3b0198474381fc25e60fdb2de0308cd484d29"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "28001a",
+      "name": "Nova",
+      "set": "nova",
+      "faces": [
+        {
+          "code": "28001a",
+          "type": "hero",
+          "name": "Nova",
+          "textEs": "<b>Respuesta:</b> después de que uses uno de los atributos básicos de Nova (INT, ATQ o DEF), prepara el Casco de Supernova.",
+          "textEn": "<b>Response</b>: After you use one of Nova's basic powers (THW, ATK, or DEF), ready Supernova Helmet.",
+          "textSha256": "230978f45a1d4a45550a41a77fdab218c4cd791e7961f0e4ba8e659c9a56d9cc"
+        },
+        {
+          "code": "28001b",
+          "type": "alter_ego",
+          "name": "Sam Alexander",
+          "textEs": "<b>Acción de Alter ego:</b> gasta 1 recurso de cualquier tipo → busca el Casco de Supernova en tu mazo y pila de descartes. Añádelo a tu mano (o ponlo en juego si has pagado el coste de esta capacidad usando un recurso [wild]).",
+          "textEn": "<b>Alter-Ego Action</b>: Spend 1 resource of any type → search your deck and discard pile for Supernova Helmet. Add it to your hand (put it into play instead if you paid for this ability using a [wild] resource).",
+          "textSha256": "7598a296489a215df6afc0d514b8983c3135d91a0b6def3bac68f0e346605c1b"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "29001a",
+      "name": "Ironheart",
+      "set": "ironheart",
+      "faces": [
+        {
+          "code": "29001a",
+          "type": "hero",
+          "name": "Ironheart",
+          "textEs": "<i>¡Subida de nivel!</i> — <b>Acción:</b> quita 6 contadores de Progreso de Ironheart → prepárala e intercámbiala por la [[Versión 2]] de Ironheart.",
+          "textEn": "<i>Level Up!</i> — <b>Action</b>: Remove 6 progress counters from Ironheart → ready her and swap her with [[Version 2]] Ironheart.",
+          "textSha256": "022e5ea2fec8487ce05aa33a3f07a8c8b066b9ba966fcbd2fc79748dadd1f8ac"
+        },
+        {
+          "code": "29001b",
+          "type": "alter_ego",
+          "name": "Riri Williams",
+          "textEs": "Empiezas la partida con esta carta. Aparta a un lado tus demás cartas de Superhéroe <i>(ver hoja de reglas)</i>.\n<i>Joven prodigio</i> — <b>Acción:</b> gasta un recurso [mental] → coloca 1 contador de Progreso sobre Riri Williams. (Límite de una vez por ronda.)",
+          "textEn": "Begin the game with this card. Set your other identities aside. <i>(See insert.)</i>\n<i>Child Prodigy</i> — <b>Action</b>: Spend a [mental] resource → place 1 progress counter on Riri Williams. (Limit once per round.)",
+          "textSha256": "987038caed6ebb39e18cfa8fb0db839e2a2f3dd483323157028f7cf1e089a0da"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": [
+        "29002a",
+        "29003a"
+      ]
+    },
+    {
+      "hero": "30001a",
+      "name": "Spiderham",
+      "set": "spiderham",
+      "faces": [
+        {
+          "code": "30001a",
+          "type": "hero",
+          "name": "Spiderham",
+          "textEs": "Cada contador de Dibujo animado que haya sobre Spiderham puede gastarse como si fuera un recurso [wild].\n<i>Sinsentido arácnido</i> — <b>Respuesta:</b> después de que Spiderham sufra cualquier cantidad de Daño, colócale encima 1 contador de Dibujo animado.",
+          "textEn": "Each toon counter on Spider-Ham can be spent as if it were a [wild] resource.\n<i>Spider-Nonsense</i> — <b>Response</b>: After Spider-Ham takes any amount of damage, place 1 toon counter on him.",
+          "textSha256": "b048df7e3bd653f1c7dcea017cff3f726319b73cd9e690c780b0fcf2940ccccd"
+        },
+        {
+          "code": "30001b",
+          "type": "alter_ego",
+          "name": "Peter Porker",
+          "textEs": "<i>Poder de dibujo animado</i> — <b>Respuesta:</b> después de que realices una recuperación básica, coloca 1 contador de Dibujo animado sobre Peter Porker.",
+          "textEn": "<i>Cartoon Power</i> — <b>Response</b>: After you make a basic recovery, place 1 toon counter on Peter Porker.",
+          "textSha256": "e633d3c5ab1b788f943fd7f3839be474ac09b8414e8ae5ccf1597a296f487ed7"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "31001a",
+      "name": "Robot SP//dr",
+      "set": "spdr",
+      "faces": [
+        {
+          "code": "31001a",
+          "type": "hero",
+          "name": "Robot SP//dr",
+          "textEs": "<i>Tasa de sincronización</i> — <b>Recurso:</b> agota una Mejora [[Interfaz]] que controles → genera los recursos de esa Mejora.",
+          "textEn": "<i>Sync Ratio</i> — <b>Resource</b>: Exhaust an [[Interface]] upgrade you control → generate that upgrade's resources.",
+          "textSha256": "b4ae47bc72c9ddc2e344d4b681dca848f41b21298d96324c8b6af8d05052783c"
+        },
+        {
+          "code": "31002a",
+          "type": "alter_ego",
+          "name": "Peni Parker",
+          "textEs": "<i>Compatibilidad psicogenética</i> — <b>Inicio:</b> pon en juego el Robot SP//dr, con su cara de [[Inactivo]] boca arriba.\n<i>Mantenimiento</i> — <b>Acción de Alter ego:</b> agota el Robot SP//dr → roba 2 cartas.",
+          "textEn": "<i>Psychogenetic Compatibility</i> — <b>Setup</b>: Put SP//dr Suit into play, [[Inactive]] side faceup.\n<i>Maintenance</i> — <b>Alter-Ego Action</b>: Exhaust SP//dr Suit → draw 2 cards.",
+          "textSha256": "741fd93649e2da4b9c9a2f8eee707722f1c1e80d335a9cc9261b178e0826c79f"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "32001a",
+      "name": "Coloso",
+      "set": "colossus",
+      "faces": [
+        {
+          "code": "32001a",
+          "type": "hero",
+          "name": "Coloso",
+          "textEs": "Coloso puede tener 1 carta de Estado \"Duro\" adicional.\n<i>Piel de acero</i> - <b>Respuesta</b>: después de que cambies a esta identidad, dale a Coloso una carta de Estado \"Duro\".",
+          "textEn": "Colossus can have 1 additional tough status card.\n<i>Steel Skin</i> - <b>Response</b>: After you change to this form, give Colossus a tough status card.",
+          "textSha256": "cb336a3b9084cdd25a6ff930792b89b4dd6b46032836f3b24cc51f6810d9788e"
+        },
+        {
+          "code": "32001b",
+          "type": "alter_ego",
+          "name": "Piotr Rasputin",
+          "textEs": "<b>Preparación</b>: busca en tu mazo una copia de Acero orgánico y añádela a tu mano.\n<i>Artista en ciernes</i> - <b>Respuesta</b>: después de que cambies a esta identidad, coge 1 carta de Coloso que esté en tu pila de descartes, añádela a tu mazo y barájalo.",
+          "textEn": "<b>Setup</b>: Search your deck for a copy of Organic Steel and add it to your hand.\n<i>Aspiring Artist</i> - <b>Response</b>: After you change to this form, shuffle a Colossus card from your discard pile into your deck.",
+          "textSha256": "269bba66636df7f245a50e8cef2db122d4e182811f3d88cca14f1988eb0c5e80"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "32030a",
+      "name": "Gatasombra",
+      "set": "shadowcat",
+      "faces": [
+        {
+          "code": "32030a",
+          "type": "hero",
+          "name": "Gatasombra",
+          "textEs": "<i>Intangibilidad selectiva</i> - Mientras tengas adoptada la identidad de masa En fase, Gatasombra ignora las palabras clave Guardia y Patrulla, así como los iconos de Crisis ([crisis]) que haya en juego.",
+          "textEn": "<i>Selective Intangibility</i> - While you are in Phased mass form, Shadowcat ignores the guard and patrol keywords, and any crisis icons ([crisis]) in play.",
+          "textSha256": "e6dc4dc116a039a653a09192e75e97471557978246337b1cbbb04b3a9e76e132"
+        },
+        {
+          "code": "32030b",
+          "type": "alter_ego",
+          "name": "Kitty Pryde",
+          "textEs": "<b>Preparación</b>: pon en juego tu Mejora de identidad de masa con la cara de Sólida boca arriba.\n<i>Control de fase</i> - <b>Acción</b>: dale la vuelta a tu Mejora de identidad de masa. (Límite de una vez por ronda.)",
+          "textEn": "<b>Setup</b>: Put your mass form upgrade into play, Solid side faceup.\n<i>Phase Control</i> - <b>Action</b>: Flip your mass form upgrade. (Limit once per round.)",
+          "textSha256": "da484a584277e6f9c39ad086004afab74e736612e845803cf844715eefe30c60"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "33001a",
+      "name": "Cíclope",
+      "set": "cyclops",
+      "faces": [
+        {
+          "code": "33001a",
+          "type": "hero",
+          "name": "Cíclope",
+          "textEs": "<i>Rayo óptico</i> - <b>Acción</b> <i>(ataque)</i>: gasta 1 recurso de cualquier tipo → infige 3 de Daño a un enemigo que tenga vinculada una Mejora. (Límite de una vez por ronda.)",
+          "textEn": "<i>Optic Blast</i> - <b>Action</b> <i>(attack)</i>: Spend one resource of any type → deal 3 damage to an enemy with an upgrade attached. (Limit once per round).",
+          "textSha256": "49dc63e4279e1bbbf7b7379d6f9d346582c635bde20b212c63e94f0bf054793d"
+        },
+        {
+          "code": "33001b",
+          "type": "alter_ego",
+          "name": "Scott Summers",
+          "textEs": "Puedes incluir en tu mazo Aliados [[PATRULLA-X]] de cualquier aspecto.\n<i>Entrenamiento constante</i> - <b>Acción</b>: busca en tu mazo una Mejora [[TÁCTICA]] y añádela a tu mano. (Límite de una vez por ronda.).",
+          "textEn": "You may include [[X-MEN]] allies from any aspect in your deck.\n<i>Constant Training</i> - <b>Action</b>: Search your deck for a [[TACTIC]] upgrade and add it to your hand. (Limit once per round).",
+          "textSha256": "c5d2ff1571e42bf4f4f1661566146f342724de691b1c663154b3e4b11af7dc88"
+        }
+      ],
+      "review": {
+        "kind": "otros_aspectos",
+        "source": "33001b",
+        "summary": "Aliados Patrulla-X de cualquier aspecto.",
+        "type": "ally",
+        "traitsAny": [
+          "x-men"
+        ]
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "34001a",
+      "name": "Fénix",
+      "set": "phoenix",
+      "faces": [
+        {
+          "code": "34001a",
+          "type": "hero",
+          "name": "Fénix",
+          "textEs": "<i>Vínculo psiónico</i> - <b>Recurso de Héroe</b>: quita 1 contador de Poder de la Fuerza Fénix → genera un recurso [wild]. (Límite de una vez por fase).",
+          "textEn": "<i>Psionic Bond</i> — <b>Hero Resource</b>: Remove 1 power counter from Phoenix Force → generate a [wild] resource. (Limit once per phase.)",
+          "textSha256": "8deb775023cfda7dbfa4e2fb72050c43e30363299537da4adb775edf50f6f708"
+        },
+        {
+          "code": "34001b",
+          "type": "alter_ego",
+          "name": "Jean Grey",
+          "textEs": "<b>Preparación</b>: pon en juego tu Mejora Fuerza Fénix, con la cara de [[CONTENIDA]] boca arriba. Colócale encima 4 contadores de Poder.\n[star] <b>Respuesta</b>: después de que realices una recuperación básica, coloca 1 contador de Poder sobre la Fuerza Fénix.",
+          "textEn": "<b>Setup</b>: Put your Phoenix Force upgrade into play, [[RESTRAINED]] side faceup. Place 4 power counters on it.\n[star] <b>Response</b>: After you make a basic recovery, place 1 power counter on Phoenix Force.",
+          "textSha256": "8c9a0584cac8a16810b8cd4f2bdab3ffd26faa8bc0038d4bcae1e7226289e32c"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "35001a",
+      "name": "Lobezno",
+      "set": "wolverine",
+      "faces": [
+        {
+          "code": "35001a",
+          "type": "hero",
+          "name": "Lobezno",
+          "textEs": "<i>Factor curativo</i> - <b>Respuesta</b>: después de que empiece la fase de los Jugadores, cúrate 2 de Daño.",
+          "textEn": "<i>Healing Factor</i> - <b>Response</b>: After the player phase begins, heal 2 damage.",
+          "textSha256": "a59a5fc3dd941690f2428021ddb720754cc65749fef8a9a6ef0ef24728c3b636"
+        },
+        {
+          "code": "35001b",
+          "type": "alter_ego",
+          "name": "Logan",
+          "textEs": "<i>Snikt!</i> - <b>Preparación</b>: busca en tu mazo y tu pila de descartes la Mejora Garras de Lobezno y ponla en juego.",
+          "textEn": "<i>Snikt!</i> - <b>Setup</b>: Put Wolverine's Claws into play.",
+          "textSha256": "ffae22f13c8b5a34ae67a84f7b094f76eb43a952e27f4647e598c14dde91db9d"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "36001a",
+      "name": "Tormenta",
+      "set": "storm",
+      "faces": [
+        {
+          "code": "36001a",
+          "type": "hero",
+          "name": "Tormenta",
+          "textEs": "<i>Control del clima</i> - <b>Acción</b>: intercambia el Apoyo [[CLIMA]] que tienes en juego por un Apoyo de tu elección del mazo de [[CLIMA]]. Resuelve la capacidad \"<b>Especial</b>\" del Apoyo [[CLIMA]] que tienes en juego. (Límite de una vez por ronda).",
+          "textEn": "<i>Weather Control</i> — <b>Action</b>: Swap your [[WEATHER]] support in play with a support of your choice from the [[WEATHER]] deck. Resolve the \"<b>Special</b>\" ability on your [[WEATHER]] support in play. (Limit once per round).",
+          "textSha256": "0b3e89e3aa405fa8fa872f4ba139bcbdff0a87a4e85656c46d20924376bcbe71"
+        },
+        {
+          "code": "36001b",
+          "type": "alter_ego",
+          "name": "Ororo Munroe",
+          "textEs": "Ororo Munroe empieza la partida con un mazo de [[CLIMA]] (ver hoja de reglas.)\n<i>\"Se avecina una tormenta...\"</i> - <b>Preparación</b>: elige un Apoyo del mazo de [[CLIMA]] y ponlo en juego.",
+          "textEn": "Ororo Munroe begins the game with a [[WEATHER]] deck. (See insert.)\n<i>\"I feel a storm coming...\"</i> — <b>Setup</b>: Choose a support from the [[WEATHER]] deck and put it into play.",
+          "textSha256": "e718b98d837a79efb6f443b2cc3e6df6bdff8e9ae88e0bcbe776712ca0f933a3"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "37001a",
+      "name": "Gambito",
+      "set": "gambit",
+      "faces": [
+        {
+          "code": "37001a",
+          "type": "hero",
+          "name": "Gambito",
+          "textEs": "<i>Cargar el naipe</i> − <b>Acción</b>: coloca 1 contador de Carga sobre esta carta. (Límite de una vez por ronda.)\n<i>Arrojar el naipe</i> − <b>Interrupción</b>: cuando jueges un evento de [[ATAQUE]], quita hasta 3 contadores de Carga de esta carta → ese evento inflige +1 de Daño por cada contador que hayas quitado.",
+          "textEn": "<i>Charge de Card</i> − <b>Action</b>: Place 1 charge counter here. (Limit once per round).\n<i>Throw de Card</i> − <b>Interrupt</b>: When you play an [[ATTACK]] event, remove up to 3 charge counters from here → that event deal +1 damage for each counter removed.",
+          "textSha256": "b7ed61bcf7cdd223828296a6c8e326e35c1d570a89ff454fd9d87ba10be70480"
+        },
+        {
+          "code": "37001b",
+          "type": "alter_ego",
+          "name": "Remy LeBeau",
+          "textEs": "<i>Ladrón Extraordinario</i> − <b>Acción</b> <i>(intervención)</i>: agota Remy LeBeau y mira las 2 primeras cartas del mazo de Encuentros. Descarta 1 de esas cartas → quita tanta Amenaza de un Plan como el número de iconos de Aumento ([boost]) de esa carta.",
+          "textEn": "<i>Thief Extraordinaire</i> − <b>Action</b> <i>(thwart)</i>: Exhaust Remy LeBeau and look at the top 2 cards of the encounter deck. Discard 1 of those cards → remove threat from a scheme equal to the number of boost icons ([boost]) on that card.",
+          "textSha256": "834d3b09cb0fe5508d9735e016df9677b082616ccfe70961e5ffe9ab57e0e49e"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "38001a",
+      "name": "Pícara",
+      "set": "rogue",
+      "faces": [
+        {
+          "code": "38001a",
+          "type": "hero",
+          "name": "Pícara",
+          "textEs": "<i>Tocar la piel</i> − <b>Acción</b>: vincula Contacto físico a otro personaje. Ganas todos los [[RASGOS]] del personaje vinculado hasta el final de la ronda. (Límite de una vez por ronda.)\n<b>Respuesta obligada</b>: después de que empiece la fase de los Jugadores, localiza la carta Contacto físico y apártala a un lado.",
+          "textEn": "<i>Skin Contact</i> − <b>Action</b>: Attach Touched to another character. You gain each of the attached character's [[TRAITS]] until the end of the round. (Limit once per round.)\n<b>Forced Response</b>: After the player phase begins, find Touched and set it aside.",
+          "textSha256": "324adcd713e87314f65c0df4c22fdba5b4f8a4f3412a14a26ff3a4b93bdaaed6"
+        },
+        {
+          "code": "38001b",
+          "type": "alter_ego",
+          "name": "Anna Marie",
+          "textEs": "<b>Preparación</b>: aparta a un lado tu Mejora Contacto físico.\n<i>Retraída</i> − <b>Respuesta obligada</b>: después de que cambies a esta identidad, aparta a un lado Contacto físico.",
+          "textEn": "<b>Setup</b>: Set your Touched upgrade aside.\n<i>Withdrawn</i> − <b>Forced Response</b>: After you change to this form, set Touched aside.",
+          "textSha256": "593c8d9e3967140007fba4e678769b58ee5f17fe42c325ce02b3dce3842f5a91"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "40001a",
+      "name": "Cable",
+      "set": "cable",
+      "faces": [
+        {
+          "code": "40001a",
+          "type": "hero",
+          "name": "Cable",
+          "textEs": "<b>Respuesta</b>: después de que Cable derrote un Plan secundario, prepáralo. (Límite de una vez por fase.)",
+          "textEn": "<b>Response</b>: After Cable defeats a side scheme, ready him. (Limit once per phase.)",
+          "textSha256": "baa7ba6575d7aff91f3454d2845430cc904b0018c46cc3f4bb9c3eeee6fb46d6"
+        },
+        {
+          "code": "40001b",
+          "type": "alter_ego",
+          "name": "Nathan Summers",
+          "textEs": "Puedes incluir en tu mazo Planes secundarios de jugador de cualquier aspecto.\nSoldado X — <b>Preparación</b>: busca un Plan secundario de jugador en tu mazo y tu pila de descartes y ponlo en juego. <i>(Baraja el mazo.)</i>",
+          "textEn": "You may include player side schemes from any aspect in your deck.\nSoldier X — <b>Setup</b>: Search your deck and discard pile for a player side scheme and put it into play. <i>(Shuffle.)</i>",
+          "textSha256": "3aac8b379138d461bdb017a530b8d954ef1262e0e5d99c7bb03460bda463ba57"
+        }
+      ],
+      "review": {
+        "kind": "otros_aspectos",
+        "source": "40001b",
+        "summary": "Planes secundarios de jugador de cualquier aspecto.",
+        "type": "player_side_scheme"
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "40037a",
+      "name": "Dominó",
+      "set": "domino",
+      "faces": [
+        {
+          "code": "40037a",
+          "type": "hero",
+          "name": "Dominó",
+          "textEs": "Cuando cuentes los recursos de las cartas descartadas de la parte superior de tu mazo, cada icono [wild] impreso vale por dos.\n<b>Acción</b>: elige una carta de tu mano. Intercambia esa carta por la primera carta de tu mazo. (Límite de una vez por ronda.)",
+          "textEn": "When counting resources on cards discarded from the top of the deck, count each printed [wild] icon twice.\n<b>Action</b>: Choose a card in your hand. Swap that card with the top card of your deck. (Limit once per round.)",
+          "textSha256": "6ec171298296aeec9c2d8f10f55da9efaf9975fa544816c55cf9d409619f8431"
+        },
+        {
+          "code": "40037b",
+          "type": "alter_ego",
+          "name": "Neena Thurman",
+          "textEs": "<b>Acción</b>: elige una carta de tu mano. Intercambia esa carta por la primera que haya en la parte superior de tu pila de descartes. (Límite de una vez por ronda.)",
+          "textEn": "<b>Action</b>: Choose a card in your hand. Swap that card with the top card of your discard pile. (Limit once per round.)",
+          "textSha256": "5a5f3d1846ffb1421351433b3c5ec3fdc8d0c2c5bf9d9140088e6d3787b77c32"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "41001a",
+      "name": "Mariposa Mental",
+      "set": "psylocke",
+      "faces": [
+        {
+          "code": "41001a",
+          "type": "hero",
+          "name": "Mariposa Mental",
+          "textEs": "[star] <i>Control de energía psiónica</i> — <b>Interrupción</b>: cuando uses uno de los atributos básicos de Mariposa Mental <i>(INT, ATQ o DEF)</i>, dale la vuelta a 1 Mejora [[ENERGÍA PSIÓNICA]].",
+          "textEn": "[star] <i>Psi-Energy Control</i> — <b>Interrupt</b>: When you use one of Psylocke's basic powers <i>(THW, ATK, or DEF)</i>, flip 1 [[PSI-ENERGY]] upgrade.",
+          "textSha256": "b62f1efce7d10e357368b698254f3b8d92b50a3fc283370820cca6c9aa73bf17"
+        },
+        {
+          "code": "41001b",
+          "type": "alter_ego",
+          "name": "Betsy Braddock",
+          "textEs": "<i>Manifestación psiónica</i> — <b>Preparación de la partida</b>: pon en juego tus 2 Mejoras [[ENERGÍA PSIÓNICA]] con la cara de Cuchillo psiónico boca arriba.\n<b>Acción</b>: agota 1 Mejora [[ENERGÍA PSIÓNICA]] → coge 1 carta con el rasgo [[PSIÓNICO]] de tu pila de descartes, añádela a tu mazo y barájalo.",
+          "textEn": "<i>Psionic Manifestation</i> — <b>Setup</b>: Put your 2 [[PSI-ENERGY]] upgrades into play, Psi-Knife side faceup.\n<b>Action</b>: Exhaust 1 [[PSI-ENERGY]] upgrade → shuffle 1 [[PSIONIC]] card from your discard pile into your deck.",
+          "textSha256": "e5acd572645df773402c90315dc023ef312146f2f2fa5127d8ce0307d272dce7"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "42001a",
+      "name": "Ángel",
+      "set": "angel",
+      "faces": [
+        {
+          "code": "42001a",
+          "type": "hero",
+          "name": "Ángel",
+          "textEs": "<i>Ángel de la vida</i> — <b>Respuesta</b>: después de que juegues un Evento [[AÉREO]], roba 1 carta. (Límite de una vez por fase.)",
+          "textEn": "<i>Angel of Life</i> — <b>Response</b>: After you play an [[AERIAL]] event, draw 1 card. (Limit once per phase.)",
+          "textSha256": "a188f83370deead70d0acd00b302288cfd37bb889adb263b15a814db8a3955d3"
+        },
+        {
+          "code": "42001b",
+          "type": "alter_ego",
+          "name": "Warren Worthington III",
+          "textEs": "<i>Regenerar las alas</i> — <b>Acción</b>: cura 1 de Daño a Warren Worthington III. (Límite de una vez por ronda.)",
+          "textEn": "<i>Regrowth</i> — <b>Action</b>: Heal 1 damage from Warren Worthington III. (Limit once per round.)",
+          "textSha256": "1772246909ca3f7c163d064897fc3abcac18cafe7bae305d807b830e02884bfa"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": [
+        "42001c"
+      ]
+    },
+    {
+      "hero": "43001a",
+      "name": "X-23",
+      "set": "x23",
+      "faces": [
+        {
+          "code": "43001a",
+          "type": "hero",
+          "name": "X-23",
+          "textEs": "<i>Arma viviente</i> — <b>Respuesta</b>: después de que X-23 sufra cualquier cantidad de Daño, prepara a X-23. (Límite de una vez por fase.)",
+          "textEn": "<i>Living Weapon</i> — <b>Response</b>: After X-23 takes any amount of damage, ready X-23. (Limit once per phase.)",
+          "textSha256": "02f004d224eccaf202f1a05325481580868ad57e8845012c44c45f74940b824f"
+        },
+        {
+          "code": "43001b",
+          "type": "alter_ego",
+          "name": "Laura Kinney",
+          "textEs": "<i>Shhnk!</i> — <b>Preparación de la partida</b>: pon en juego Garras de X-23.\n<b>Acción</b>: coge de tu pila de descartes la carta de Aliado de Honey Tejón o bien la carta de Evento Vinculo entre Hermanas, añádela a tu mazo y barájalo → roba 1 carta. (Límite de 1 vez por ronda.)",
+          "textEn": "<i>Shhnk!</i> — <b>Setup</b>: Put X-23's Claws into play.\n<b>Action</b>: Shuffle either the Honey Badger ally or the Sisterly Bond event from your discard pile into your deck → draw 1 card. (Limit once per round.)",
+          "textSha256": "266ddaabd5c499a78c586bf8861293a90f21a02cf7ee956bf6ff97f2efe6b1f5"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "44001a",
+      "name": "Masacre",
+      "set": "deadpool",
+      "faces": [
+        {
+          "code": "44001a",
+          "type": "hero",
+          "name": "Masacre",
+          "textEs": "<i>El degenerado regenerante</i> — <b>Interrupción obligada</b>: cuando vayas a ser derrotado, en vez de eso fija tu medidor de vida en 1, cambia a la identidad de Alter ego, y añade 1 ficha de Aceleración al Plan principal.",
+          "textEn": "<i>The Regeneratin' Degenerate</i> — <b>Forced Interrupt</b>: When you would be defeated, instead set your hit point dial to 1, change to alter-ego form, and add 1 acceleration token to the main scheme.",
+          "textSha256": "512c22c94b60fa5877d0c17264ed7314f9e5dc0b7d5ca36209d27ab5f2e1f918"
+        },
+        {
+          "code": "44001b",
+          "type": "alter_ego",
+          "name": "Wade Wilson",
+          "textEs": "<i>Romper la cuarta pared</i> — <b>Acción</b>: descarta una carta de tu mano → busca un Evento de Masacre en tu mazo y añádelo a tu mano. (Límite de 1 vez por ronda.)",
+          "textEn": "<i>Break the Fourth Wall</i> — <b>Action</b>: Discard a card from your hand → search your deck for a Deadpool event and add it to your hand. (Limit once per round.)",
+          "textSha256": "2ea41b0d2010b2fe9d01f48aaa65e89c7733dc6fd2a26d651144180633a37d0f"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "45001a",
+      "name": "Bishop",
+      "set": "bishop",
+      "faces": [
+        {
+          "code": "45001a",
+          "type": "hero",
+          "name": "Bishop",
+          "textEs": "<i>Absorción de energía</i> — <b>Respuesta</b>: después de que de que Bishop sufra cualquier cantidad de Daño a consecuencia de un ataque, descarta esa misma cantidad de cartas de la parte superior de tu mazo. Añade a tu mano todas las cartas de Recurso que se hayan descartado de este modo.",
+          "textEn": "<i>Energy Absorption</i> — <b>Response</b>: After Bishop takes any amount of damage from an attack, discard an equal number of cards from the top of your deck. Add each resource card discarded this way to your hand.",
+          "textSha256": "e590c7dae543691c1faa3135a7c6f15f1e7fdf873c13ef0b44b5ecf19eb0de26"
+        },
+        {
+          "code": "45001b",
+          "type": "alter_ego",
+          "name": "Lucas Bishop",
+          "textEs": "<i>Desplazado en el tiempo</i> — <b>Respuesta</b>: después de que de que cambies a esta identidad, coge una carta [[TEMPORAL]] de tu pila de descartes y añádela a tu mano.",
+          "textEn": "<i>Temporally Displaced</i> — <b>Response</b>: After you change to this form, add a [[TEMPORAL]] card in your discard pile to your hand.",
+          "textSha256": "c1ddab84345bd53edd6339da3fabed12c4d22742cc22ed924cf125ef957b8a39"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "45030a",
+      "name": "Magik",
+      "set": "magik",
+      "faces": [
+        {
+          "code": "45030a",
+          "type": "hero",
+          "name": "Magik",
+          "textEs": "Juega con la primera carta de la parte superior de tu mazo boca arriba.\nUna vez por fase, puedes jugar la primera carta de la parte superior de tu mazo como si estuviese en tu mano, reduciendo en 1 su coste en recursos.",
+          "textEn": "Play with the top card of your deck faceup.\nOnce per phase, you may play the top card of your deck as if it was in your hand, reducing its resource cost by 1.",
+          "textSha256": "26d1239af1f265ff59847a5902d9de602093adddd4a2952ba71771c666e1e054"
+        },
+        {
+          "code": "45030b",
+          "type": "alter_ego",
+          "name": "Illyana Rasputin",
+          "textEs": "<b>Interrupción</b>: cuando cambies a tu identidad de Héroe, elige un [[HECHIZO]] que esté en tu pila de descartes y colócalo en la parte superior de tu mazo. (Límite una vez por fase.)",
+          "textEn": "<b>Interrupt</b>: When you change to hero form, choose a [[SPELL]] in your discard pile and put it on top of your deck. (Limit once per phase.)",
+          "textSha256": "879fc346d961f63468ab3f83fb284e9f1aee9b80fcfa7e590d4cec61b81cc220"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "46001a",
+      "name": "Hombre de Hielo",
+      "set": "iceman",
+      "faces": [
+        {
+          "code": "46001a",
+          "type": "hero",
+          "name": "Hombre de Hielo",
+          "textEs": "<i>\"¡Congélate!\"</i> — <b>Interrupción</b>: cuando el Hombre de Hielo realice un ataque básico o una defensa básica contra un enemigo, vincula una copia apartada de Congelación a ese enemigo.",
+          "textEn": "<i>\"Freeze!\"</i> — <b>Interrupt</b>: When Iceman makes a basic attack or defense against an enemy, attach a set-aside copy of Frostbite to that enemy.",
+          "textSha256": "af95b9d97525f5fa567f8a7f771c65c88206703c62c9d70f6968706c27710e94"
+        },
+        {
+          "code": "46001b",
+          "type": "alter_ego",
+          "name": "Bobby Drake",
+          "textEs": "Bobby Drake empieza la partida con 6 cartas de Mejora Congelación apartadas.\n<i>Refrescado</i> — <b>Respuesta</b>: después de que cambies a esta identidad, por cada copia de Congelación que haya en juego, coge 1 carta de [[Hielo]] de tu pila de descartes, añádela a tu mazo y barájalo.",
+          "textEn": "Bobby Drake begins the game with 6 Frostbite upgrades set aside.\n<i>Cool Off</i> — <b>Response</b>: After you change to this form, shuffle 1 [[Ice]] card from your discard pile into your deck for each copy of Frostbite in play.",
+          "textSha256": "9a28c57a541373920b3ead35c689e95db351a122b01e406e57d692c3a41b2f19"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "47001a",
+      "name": "Júbilo",
+      "set": "jubilee",
+      "faces": [
+        {
+          "code": "47001a",
+          "type": "hero",
+          "name": "Júbilo",
+          "textEs": "<i>\"¡Buah,tronco!\"</i> — <b>Recurso</b>: agota a Júbilo → genera un recurso [wild].",
+          "textEn": "<i>\"Like, totally!\"</i> — <b>Resource</b>: Exhaust Jubilee → generate a [wild] resource.",
+          "textSha256": "f110521136c64e32fdca260324f604e821473a54dc83349fad04cbf3980cd6df"
+        },
+        {
+          "code": "47001b",
+          "type": "alter_ego",
+          "name": "Jubilation Lee",
+          "textEs": "<i>Asidua del centro comercial</i> — <b>Acción</b>: busca en tu mazo el Plan secundario de jugador De compras y ponlo en juego. (Límite de una vez por fase.)",
+          "textEn": "<i>Mall Rat</i> — <b>Action</b>: Search your deck for the Shopping Spree player side scheme and put it into play. (Limit once per phase.)",
+          "textSha256": "a53929cd9546d744ff852499139d779dc40fbc8a9c4e820ddc4bb012e58c5e58"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "48001a",
+      "name": "Rondador Nocturno",
+      "set": "nightcrawler",
+      "faces": [
+        {
+          "code": "48001a",
+          "type": "hero",
+          "name": "Rondador Nocturno",
+          "textEs": "<i>Teleportación rápida</i> — <b>Acción</b>: gasta 1 recurso de cualquier tipo → devuelve a tu mano una copia de ¡Bamf! que este en tu pila de descartes. (Límite de una vez por fase.)",
+          "textEn": "<i>Rapid Teleportation</i> — <b>Action</b>: Spend 1 resource of any type → return a copy of Bamf! from your discard pile to your hand. (Limit once per phase.)",
+          "textSha256": "e73e2505df70102deeda59a78d23a5727bf12300397c66661c1e684c3ce3d4e6"
+        },
+        {
+          "code": "48001b",
+          "type": "alter_ego",
+          "name": "Kurt Wagner",
+          "textEs": "<b>Acción</b>: busca en tu mazo una copia de ¡Bamf! y añádela a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "<b>Action</b>: Search your deck for a copy of Bamf! and add it to your hand. (Limit once per round.)",
+          "textSha256": "9b60e352f790c942c0b53ed51631887e0b3579061da0dcc601b026d25d1d9353"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "49001a",
+      "name": "Magneto",
+      "set": "magneto",
+      "faces": [
+        {
+          "code": "49001a",
+          "type": "hero",
+          "name": "Magneto",
+          "textEs": "<i>Atracción magnética</i> — <b>Acción</b>: descarta cartas de la parte superior de tu mazo hasta que se descarte una carta [[Magnético]] → añade esa carta a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "<i>Magnetic Pull</i> — <b>Action</b>: Discard cards from the top of your deck until a [[Magnetic]] card is discarded → add that card to your hand. (Limit once per round.)",
+          "textSha256": "11ac5177b3b968e95a26021c6374c01a624601beb6b2bd9d10dabd61a6c8a825"
+        },
+        {
+          "code": "49001b",
+          "type": "alter_ego",
+          "name": "Erik Lehnsherr",
+          "textEs": "<i>Superviviente</i> — <b>Respuesta</b>: después de que cambies a esta identidad, coge las 3 primeras cartas de la parte superior de tu pila de descartes, añádelas a tu mazo y barájalo.",
+          "textEn": "<i>Survivor</i> — <b>Response</b>: After you change to this form, shuffle the top 3 cards of your discard pile into your deck.",
+          "textSha256": "86c1b526400f3fab855c7e878fb2caa9e5298f729e385ed564c0cf47a127687d"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "50001a",
+      "name": "Maria Hill",
+      "set": "maria_hill",
+      "faces": [
+        {
+          "code": "50001a",
+          "type": "hero",
+          "name": "Maria Hill",
+          "textEs": "Todos los Aliados que controles ganan el rasgo [[S.H.I.E.L.D.]].\n<i>Reasignación</i> — <b>Acción</b>: traslada 1 contador genérico desde un Apoyo [[S.H.I.E.L.D.]] hasta otro Apoyo [[S.H.I.E.L.D.]]. (Límite de una vez por ronda.)",
+          "textEn": "Each ally you control gains the [[S.H.I.E.L.D.]] trait.\n<i>Reassignment</i> — <b>Action</b>: Move 1 all-purpose counter from a [[S.H.I.E.L.D.]] support to another [[S.H.I.E.L.D.]] support. (Limit once per round.)",
+          "textSha256": "d0a9486f0b66de8836094fc4cf9c84b8cd2c47ed07742bd8a3441dc346a09f93"
+        },
+        {
+          "code": "50001b",
+          "type": "alter_ego",
+          "name": "Maria Hill",
+          "textEs": "Puedes incluir en tu mazo la cantidad máxima de copias de 3 Apoyos [[S.H.I.E.L.D.]] de otros aspectos que no sean el que has elegido.\n<b>Acción</b>: agota a Maria Hill → busca en tu mazo un Apoyo [[S.H.I.E.L.D.]] y añádelo a tu mano.",
+          "textEn": "You may include the maximum number of copies of 3 [[S.H.I.E.L.D.]] supports in your deck from aspects other than your chosen aspect.\n<b>Action</b>: Exhaust Maria Hill → search your deck for a [[S.H.I.E.L.D.]] support and add it to your hand.",
+          "textSha256": "18716097fe6b6422e3d18fac4e526aca11019c96036dacf2fc0979341170e369"
+        }
+      ],
+      "review": {
+        "kind": "otros_aspectos",
+        "source": "50001b",
+        "summary": "Hasta tres Apoyos S.H.I.E.L.D. distintos de otros aspectos, con el máximo de copias permitido para cada uno.",
+        "type": "support",
+        "traitsAny": [
+          "S.H.I.E.L.D."
+        ],
+        "nameLimit": 3,
+        "usePrintedDeckLimit": true
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "50034a",
+      "name": "Nick Furia",
+      "set": "nick_fury",
+      "faces": [
+        {
+          "code": "50034a",
+          "type": "hero",
+          "name": "Nick Furia",
+          "textEs": "[star] <i>Recabar información</i> — <b>Respuesta</b>: después de que Nick Furia realice una intervención básica, coloca 1 de Amenaza sobre tu Mejora de identidad operativa.\n<i>Salir al descubierto</i> — <b>Interrupción obligada</b>: cuando ataques, cambia a tu identidad operativa de Asalto.",
+          "textEn": "[star] <i>Gather Intel</i> — <b>Response</b>: After Nick Fury makes a basic thwart, place 1 threat on your suit form upgrade.\n<i>Break Cover</i> — <b>Forced Interrupt</b>: When you attack, change to Assault suit form.",
+          "textSha256": "c9b6c3d5c3c23a592b93db798bbfe2303b9cf6509d8e4dcaa54156d19cfd127f"
+        },
+        {
+          "code": "50034b",
+          "type": "alter_ego",
+          "name": "Nick Furia",
+          "textEs": "<i>Ponerse el traje</i> — <b>Preparación</b>: pon en juego tu Mejora de identidad operativa con la cara de Asalto boca arriba.\n<i>Infiltrarse</i> — <b>Acción</b>: cambia a tu identidad operativa de Sigilo.",
+          "textEn": "<i>Suit Up</i> — <b>Setup</b>: Put your suit form upgrade into play, Assault side faceup.\n<i>Infiltrate</i> — <b>Action</b>: Change to Stealth suit form.",
+          "textSha256": "b3a981965ea63ba950365225081e6c412544b6303d748ff509c5343a233490b7"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "51001a",
+      "name": "Pantera Negra",
+      "set": "black_panther_shuri",
+      "faces": [
+        {
+          "code": "51001a",
+          "type": "hero",
+          "name": "Pantera Negra",
+          "textEs": "[star] <b>Respuesta</b>: después de que Pantera Negra use un atributo básico, resuelve la capacidad \"<b>Especial</b>\" de 1 Mejora [[Pantera Negra]] que controles.",
+          "textEn": "[star] <b>Response</b>: After Black Panther uses a basic power, resolve the \"<b>Special</b>\" ability on 1 [[Black Panther]] upgrade you control.",
+          "textSha256": "57c33a7a852cec0a57db5f526805d3e5fa68c36d257886cf5df4df68755d74c5"
+        },
+        {
+          "code": "51001b",
+          "type": "alter_ego",
+          "name": "Shuri",
+          "textEs": "<i>Inventora</i> — <b>Acción</b>: agota a Shuri → busca en tu mazo una Mejora [[Pantera Negra]] o [[Tecnología]] y juégala, reduciendo en 2 su coste en recursos. (Límite de una vez por ronda.)",
+          "textEn": "<i>Inventor</i> — <b>Action</b>: Exhaust Shuri → search your deck for a [[Black Panther]] or [[Tech]] upgrade and play it, reducing its resource cost by 2. (Limit once per round.)",
+          "textSha256": "322340075d8564c6124794ef81d37a5e94921d22b695b9d73a4c15145ba2ccc5"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "52001a",
+      "name": "Seda",
+      "set": "silk",
+      "faces": [
+        {
+          "code": "52001a",
+          "type": "hero",
+          "name": "Seda",
+          "textEs": "Si hay más de 4 cartas metidas debajo de ésta, descártalas todas menos 4.\n<i>Sentido sedoso</i> — <b>Respuesta</b>: después de que derrotes a un Esbirro o Plan secundario, o resuelvas una carta de Perfidia, mete esa carta debajo de ésta desde la pila de descartes del mazo de Encuentros.",
+          "textEn": "If there are more than 4 tucked cards here, discard all but 4 of those cards.\n<i>Silk Sense</i> — <b>Response</b>: After you defeat a minion or side scheme, or resolve a treachery card, tuck that card under here from the encounter discard pile.",
+          "textSha256": "1faec0baa9b630726d88917a339d8e4a707727b0cc9936d0fb45b6204a506f51"
+        },
+        {
+          "code": "52001b",
+          "type": "alter_ego",
+          "name": "Cindy Moon",
+          "textEs": "Si hay más de 4 cartas metidas debajo de ésta, descártalas todas menos 4.\n<b>Acción</b>: descarta una carta que esté metida debajo de ésta → roba 2 cartas. (Límite de una vez por ronda.)",
+          "textEn": "If there are more than 4 tucked cards here, discard all but 4 of those cards.\n<b>Action</b>: Discard a card tucked here → draw 2 cards. (Limit once per round.)",
+          "textSha256": "161dfd552f6aefda7a2dbd9451ed98078e658724c7dccc7506653f8268a7ddf2"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "53001a",
+      "name": "Halcón",
+      "set": "falcon",
+      "faces": [
+        {
+          "code": "53001a",
+          "type": "hero",
+          "name": "Halcón",
+          "textEs": "Durante la fase de los Jugadores, juega con la primera carta del mazo de Encuentros boca arriba.\n<i>Vista de águila</i> — <b>Respuesta</b>: después de que juegues una carta [[Aéreo]], descarta la primera carta del mazo de Encuentros.",
+          "textEn": "During the player phase, play with the top card of the encounter deck faceup.\n<i>Eagle-Eyed</i> — <b>Response</b>: After you play an [[Aerial]] card, discard the top card of the encounter deck.",
+          "textSha256": "18e304d7dc36995516700ac7bda40987c766476bbb6c0876290511c92a99e4a5"
+        },
+        {
+          "code": "53001b",
+          "type": "alter_ego",
+          "name": "Sam Wilson",
+          "textEs": "<i>Mismo plumaje</i> — <b>Acción</b>: descarta 1 carta de tu mano → busca una carta [[Pájaro]] en tu mazo y en tu pila de descartes, y añádela a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "<i>Birds of a Feather</i> — <b>Action</b>: Discard 1 card from your hand → search your deck and discard pile for a [[Bird]] card and add it to your hand. (Limit once per round.)",
+          "textSha256": "fa30dd30e786e691090dca0f3b517382cbc0f878e0146eb8bf2bb0ba59a12990"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "54001a",
+      "name": "Soldado de Invierno",
+      "set": "winter_soldier",
+      "faces": [
+        {
+          "code": "54001a",
+          "type": "hero",
+          "name": "Soldado de Invierno",
+          "textEs": "<i>Protector letal</i> — <b>Respuesta</b>: después de que ataques y derrotes a un enemigo, quita 2 de Amenaza de un Plan.",
+          "textEn": "<i>Lethal Protector</i> — <b>Response</b>: After you attack and defeat an enemy, remove 2 threat from a scheme.",
+          "textSha256": "84cb097b2c6c188644a97cccbccbd73f9737236b8343f19d9d9db6abb38d30df"
+        },
+        {
+          "code": "54001b",
+          "type": "alter_ego",
+          "name": "Bucky Barnes",
+          "textEs": "<i>Ciberimplante</i> — <b>Acción</b>: gasta 1 recurso de cualquier tipo → busca el Brazo cibernético en tu mazo y en tu pila de descartes y ponlo en juego. <i>(Baraja el mazo.)</i>",
+          "textEn": "<i>Cybernetically Enhanced</i> — <b>Action</b>: Spend 1 resource of any type → search your deck and discard pile for Cybernetic Arm and put it into play. <i>(Shuffle.)</i>",
+          "textSha256": "52d3de3344634b04d89ba9e21b246fe2ee1ae559137d97a6c5aca7450c73655d"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "56001a",
+      "name": "Tigra",
+      "set": "tigra",
+      "faces": [
+        {
+          "code": "56001a",
+          "type": "hero",
+          "name": "Tigra",
+          "textEs": "Todo Esbirro que tenga vinculada una copia de Presa pierde Guardia.\n<i>De cacería</i> — <b>Respuesta</b>: después de que empiece la fase de los Jugadores, roba 1 carta por cada Esbirro que esté enfrentado a ti (hasta un máximo de 3).",
+          "textEn": "Each minion with a copy of Hunted attached loses guard.\n<i>On the Hunt</i> — <b>Response</b>: After the player phase begins, draw 1 card for each minion engaged with you (to a maximum of 3).",
+          "textSha256": "bc3d0b6b99662f291526e5d71f3895f26b7ad3973298ff60ea60f2841f0d2d25"
+        },
+        {
+          "code": "56001b",
+          "type": "alter_ego",
+          "name": "Greer Nelson",
+          "textEs": "<i>Infiltrada en el cuerpo</i> — <b>Acción</b>: busca una copia de Presa en tu mazo y en tu pila de descartes y añadela a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "<i>Undercover Work</i> — <b>Action</b>: Search your deck and discard pile for a copy of Hunted and add it to your hand. (Limit once per round.)",
+          "textSha256": "e4d07b4fbc6de87939cf4355f62f8424469d8f36e10ccaffb50ddd4e33eebd18"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "56029a",
+      "name": "Hulkling",
+      "set": "hulkling",
+      "faces": [
+        {
+          "code": "56029a",
+          "type": "hero",
+          "name": "Hulkling",
+          "textEs": "<i>Forma predilecta</i> — <b>Respuesta obligada</b>: después de que una Mejora [[Cambio de forma]] entre en juego controlada por ti, descarta todas las demás Mejoras [[Cambio de forma]] que controles y prepara a Hulkling.",
+          "textEn": "<i>Chosen Shape</i> — <b>Forced Response</b>: After a [[Shapeshift]] upgrade enters play under your control, discard each other [[Shapeshift]] upgrade you control and ready Hulkling.",
+          "textSha256": "35d7365c6bf169644faf60617e501d01012216a82de7b5e4714ea32874df6df7"
+        },
+        {
+          "code": "56029b",
+          "type": "alter_ego",
+          "name": "Teddy Altman",
+          "textEs": "No puedes tener en juego más de 1 Mejora [[Cambio de forma]].\n<i>Cambiar de forma</i> — <b>Acción</b>: busca una Mejora [[Cambio de forma]] en tu mazo y tu pila de descartes, y añádela a tu mano. (Límite de una vez por ronda.)",
+          "textEn": "You cannot have more than 1 [[Shapeshift]] upgrade in play.\n<i>Shape-Changer</i> — <b>Action</b>: Search your deck and discard pile for a [[Shapeshift]] upgrade and add it to your hand. (Limit once per round.)",
+          "textSha256": "902ab45cc29abb6e3c8424c175e6dd2df8534fab96eb9665d2f7d1233ab11299"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "58001a",
+      "name": "Hombre Maravilla",
+      "set": "wonder_man",
+      "faces": [
+        {
+          "code": "58001a",
+          "type": "hero",
+          "name": "Hombre Maravilla",
+          "textEs": "<i>Reciclaje de poderes</i> — Hombre Maravilla recibe +1 ATQ por cada carta que haya metida debajo de Fisiología iónica.\n[star] <b>Respuesta obligada</b>: después de que el Hombre Maravilla realice un ataque básico, descarta todas las cartas que haya metida debajo de Fisiología iónica.",
+          "textEn": "<i>Power Recycling</i> — Wonder Man gets +1 ATK for each card tucked under Ionic Physiology.\n[star] <b>Forced Response</b>: After Wonder Man makes a basic attack, discard each card tucked under Ionic Physiology.",
+          "textSha256": "bcfe4e649e40d2689e50fe3bd770b0f62e57330e41d2369bd5101aeb259d4f58"
+        },
+        {
+          "code": "58001b",
+          "type": "alter_ego",
+          "name": "Simon Williams",
+          "textEs": "<i>Ser de energía iónica</i> — Puedes incluir en tu mazo Eventos de cualquier aspecto que tengan impreso un icono de recurso [energy].\n<b>Preparación</b>: pon en juego Fisiología iónica.",
+          "textEn": "<i>Ionic Energy Being</i> — You may include events with a printed [energy] resource icon from any aspect in your deck.\n<b>Setup</b>: Put Ionic Physiology into play.",
+          "textSha256": "c06eda641169760bafd91f41a5fc9bed52f7190060fed567df253d4dba4203b5"
+        }
+      ],
+      "review": {
+        "kind": "otros_aspectos",
+        "source": "58001b",
+        "summary": "Eventos de cualquier aspecto con recurso Energía impreso.",
+        "type": "event",
+        "printedResource": "energy"
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "59001a",
+      "name": "Hércules",
+      "set": "hercules",
+      "faces": [
+        {
+          "code": "59001a",
+          "type": "hero",
+          "name": "Hércules",
+          "textEs": "<i>Expiación</i> — <b>Respuesta</b>: después de que se añada una carta de [[Trabajo]] a la zona de victoria, pon en juego la primera carta del mazo de [[Dones]]. Prepara a Hércules. Puedes adoptar la identidad de tu Alter ego. (Límite de una vez por fase.)",
+          "textEn": "<i>Atonement</i> — <b>Response</b>: After a [[labor]] card is added to the victory display, put the top card of the [[gift]] deck into play. Ready Hercules. You may flip to alter-ego form. (Limit once per phase.)",
+          "textSha256": "9c59466557d26a1cfe2e86a2b7391e1bf705b29962e5c932cbfcaabee0435024"
+        },
+        {
+          "code": "59001b",
+          "type": "alter_ego",
+          "name": "Hércules",
+          "textEs": "Hércules empieza la partida con un mazo de [[Trabajos]] y un mazo de [[Dones]]. <i>(ver hoja de reglas.)</i>\n<i>Los nuevos trabajos de Hércules</i> — <b>Acción</b>: si no hay en juego ninguna carta de [[Trabajo]], muestra la primera carta del mazo de [[Trabajos]].",
+          "textEn": "Hercules begins the game with a [[labor]] deck and a [[gift]] deck. <i>(See insert.)</i>\n<i>New Labors of Hercules</i> — <b>Action</b>: If there is no [[labor]] card in play, reveal the top card of the [[labor]] deck.",
+          "textSha256": "f5d7d6832056677f74ec9a189fcdecd1ac21e48ffe5fcf04d55bce19a8370983"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "60001a",
+      "name": "Daredevil",
+      "set": "daredevil",
+      "faces": [
+        {
+          "code": "60001a",
+          "type": "hero",
+          "name": "Daredevil",
+          "textEs": "<i>Sentidos sobrehumanos</i> — <b>Acción</b>: juega la primera carta de tu mazo de [[Sentido]] como si estuviese en tu mano <i>(pagando su coste)</i>.\n<b>Interrupción obligada</b>: cuando una Mejora [[Sentido]] vaya a abandonar el juego, en vez de eso colócala en la parte inferior del mazo de [[Sentido]].",
+          "textEn": "<i>Superhuman Senses</i> — <b>Action</b>: Play the top card of the [[Sense]] deck as if it were in your hand <i>(paying its cost)</i>.",
+          "textSha256": "a1dc232fef23b3a00dba54ce071919e6305c6d9bbc3543eec9a3aaf7533aaf70"
+        },
+        {
+          "code": "60001b",
+          "type": "alter_ego",
+          "name": "Matt Murdock",
+          "textEs": "Matt Murdock begins the game with a [[Sentido]] deck. <i>(See rulebook p. 26.)</i>\n<b>Interrupción obligada</b>: cuando una Mejora [[Sentido]] vaya a abandonar el juego, en vez de eso colócala en la parte inferior del mazo de [[Sentido]].",
+          "textEn": "Matt Murdock begins the game with a [[Sense]] deck. <i>(See rulebook p. 26.)</i>\n<b>Forced Interrupt</b>: When a [[Sense]] upgrade would leave play, place it on the bottom of the [[Sense]] deck instead.",
+          "textSha256": "b2477d6fbc6fbed383d699982ae02072aa0632adc9d6af3f32b9f6e8cca6eaa2"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "60037a",
+      "name": "Eco",
+      "set": "echo",
+      "faces": [
+        {
+          "code": "60037a",
+          "type": "hero",
+          "name": "Eco",
+          "textEs": "<i>Mira y aprende</i> — <b>Respuesta</b>: después de que un jugador juegue una carta de Evento Básica o de Aspecto, mete ese Evento debajo de esta carta desde la pila de descartes de ese jugador. Luego, si hay más de tres cartas metidas debajo de ésta, descártalas todas menos 3.",
+          "textEn": "<i>Watch and Learn</i> — <b>Response</b>: After a player plays an aspect or basic event, tuck that event under here from that player's discard pile. Then, if there are more than 3 tucked cards here, discard all but 3 of those cards.",
+          "textSha256": "9af3fa4def1de35ac741c28c28b3288b0c8b57387065893d7dd5b5af21df373a"
+        },
+        {
+          "code": "60037b",
+          "type": "alter_ego",
+          "name": "Maya Lopez",
+          "textEs": "<i>La práctica hace a la maestra</i> — <b>Interrupción</b>: cuando adoptes tu identidad de Héroe, busca en tu mazo una carta de Evento Básica o de Aspecto y añádela a tu mano. <i>(Baraja el mazo.)</i>",
+          "textEn": "<i>Practice Makes Perfect</i> — <b>Interrupt</b>: When you change to hero form, search your deck for an aspect or basic event and add it to your hand. <i>(Shuffle.)</i>",
+          "textSha256": "d375bbb68e99ad3392116d9838767890ac7292686f4b8ff7d781d5e29617e096"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "61001a",
+      "name": "Jessica Jones",
+      "set": "jessica_jones",
+      "faces": [
+        {
+          "code": "61001a",
+          "type": "hero",
+          "name": "Jessica Jones",
+          "textEs": "[star] <i>Reunir pruebas</i> — <b>Respuesta</b>: después de que uses un atributo básico, coloca 1 contador de Pruebas sobre Investigaciones Alias.",
+          "textEn": "[star] <i>Gather Evidence</i> — <b>Response</b>: After you use a basic power, place 1 evidence counter on Alias Investigations.",
+          "textSha256": "e5bdd7da9eb7ab44b6a511251efeb188e8b6bc616d3b93381cf2844b4cd44175"
+        },
+        {
+          "code": "61001b",
+          "type": "alter_ego",
+          "name": "Jessica Jones",
+          "textEs": "<i>De incógnito</i> — <b>Acción</b>: cambia a tu identidad de Héroe. No puedes adoptar la identidad de tu Alter ego en esta fase.\n<b>Preparación</b>: pon en juego el Apoyo Investigaciones Alias.",
+          "textEn": "<i>Incognito Mode</i> — <b>Action</b>: Change to hero form. You cannot change back to alter-ego form this phase.\n<b>Setup</b>: Put the Alias Investigations support into play.",
+          "textSha256": "e10f39a1ccbaac64329c4324a595f8ec19bf0d505cca9055f357a4fef7549921"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    },
+    {
+      "hero": "62001a",
+      "name": "Luke Cage",
+      "set": "luke_cage",
+      "faces": [
+        {
+          "code": "62001a",
+          "type": "hero",
+          "name": "Luke Cage",
+          "textEs": "<i>Piel impenetrable</i> — Luke Cage puede tener cualquier número de cartas de Estado \"Duro\". Los ataques contra Luke Cage pierden Penetrante.\n<b>Respuesta obligada</b>: después de que se descarte una carta de Estado \"Duro\" de Luke Cage, éste sufre 1 de Daño inevitable <i>(ignorando \"Duro\")</i>.",
+          "textEn": "<i>Unbreakable Skin</i> — Luke Cage can have any number of tough status cards. Attacks against Luke Cage lose piercing.\n<b>Forced Response</b>: After a tough status card is discarded from Luke Cage, he takes 1 unpreventable damage <i>(ignoring tough)</i>.",
+          "textSha256": "7598490f0d95b774b4ab48bec6f6d9a0811db4bb87f6a1a13ac5ea7aaea94a6d"
+        },
+        {
+          "code": "62001b",
+          "type": "alter_ego",
+          "name": "Luke Cage",
+          "textEs": "<i>Piel impenetrable</i> — Luke Cage puede tener cualquier número de cartas de Estado \"Duro\". Los ataques contra Luke Cage pierden Penetrante.\n<b>Acción</b>: busca la Mejora Proceso Burstein y añádela a tu mano. (Límite de una vez por fase.)",
+          "textEn": "<i>Unbreakable Skin</i> — Luke Cage can have any number of tough status cards. Attacks against Luke Cage lose piercing.\n<b>Action</b>: Search your deck and discard pile for the Burstein Process upgrade and add it to your hand. (Limit once per phase.)",
+          "textSha256": "a29ee63e611df06a4baafe46e4741df22795c1ec970757200f336506ad3fc898"
+        }
+      ],
+      "review": {
+        "kind": "sin_excepcion_expresa",
+        "summary": "No se encontró permiso de otros aspectos ni regla especial de construcción en estas dos identidades."
+      },
+      "omittedForms": []
+    }
+  ],
+  "implementationRecord": "evidencia/gestor/REGLAS_AUXILIARES_ESTADISTICAS.md"
+}
