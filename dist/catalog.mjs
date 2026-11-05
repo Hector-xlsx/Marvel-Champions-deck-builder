@@ -153,7 +153,7 @@ export function filterCards(cards, filter, deck, collection) {
   return cards.filter(c=> {
     const e=c.en;
     const specialSelected=filter.factions?.includes('special')&&specialRuleAllows(c,filter.specialRule);
-    if(e.faction_code==='hero'&&filter.hideHero)return false;
+    if(filter.hideHero&&(e.faction_code==='hero'||c.heroSetCard||c.role==='hero_auxiliary'||c.links?.parent_hero_set))return false;
     const normalAllowed=allowed.includes(e.faction_code)||(!filter.hideHero&&!filter.sameAspect);
     const normalSelected=!filter.factions||filter.factions.includes(e.faction_code);
     if(!(specialSelected||(normalAllowed&&normalSelected)))return false;

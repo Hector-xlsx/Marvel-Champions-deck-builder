@@ -280,7 +280,9 @@ function attachHover(node,code,source='deck'){
   const show=()=>source==='identity'?hoverIdentity(code,node):hoverCard(code,node,source);
   node.onpointerenter=e=>{if(e.pointerType==='mouse'||e.pointerType==='pen')show();};node.onpointerleave=hideHover;node.onfocus=show;node.onblur=hideHover;
 }
-function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,costs:[...selection.cost],hideHero:$('hide-hero').checked,sameAspect:$('same-aspect').checked,resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:$('owned-only').checked,sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
+function otherPressed(id){return $(id).getAttribute('aria-pressed')==='true';}
+function setOtherPressed(id,pressed){$(id).setAttribute('aria-pressed',String(Boolean(pressed)));}
+function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,costs:[...selection.cost],hideHero:!otherPressed('hide-hero'),sameAspect:otherPressed('same-aspect'),resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:otherPressed('owned-only'),sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
 function currentPreset(){return presets.find(p=>p.id===activePresetId);}
 function refreshSearchFields(){for(const [id,other]of [['search-name','search-text'],['search-text','search-name']])$(id).disabled=$(id).checked&&!$(other).checked;}
 function refreshTraitSources(){
@@ -300,7 +302,7 @@ function applyPreset(preset){
   if(!preset)return;applyingPreset=true;activePresetId=preset.id;
   const f=preset.criteria;allyFilter=normalizeAllyFilter(f.allyStats,allyOptions);$('search').value=f.search||'';$('search-language').value=f.language||'es';$('search-name').checked=f.searchFields?.name!==false;$('search-text').checked=f.searchFields?.text!==false;refreshSearchFields();
   $('trait-in-attribute').checked=f.traitSources?.attribute!==false;$('trait-in-text').checked=f.traitSources?.text===true;refreshTraitSources();
-  for(const [id,key]of [['owned-only','owned'],['hide-hero','hideHero'],['same-aspect','sameAspect']])$(id).checked=Boolean(f[key]);
+  setOtherPressed('hide-hero',!f.hideHero);setOtherPressed('same-aspect',f.sameAspect);
   for(const [key,field]of [['faction','factions'],['type','types'],['cost','costs'],['resource','resources']]){selection[key]=new Set(f[field]||[]);single[key]=preset.ui?.single?.[key]===true;lastChoice[key]=preset.ui?.lastChoice?.[key];}
   selectedTraits=[...(f.traits||[])];$('trait-filter').value='';toggleTraitSuggestions(false);toggleTraitList(false);closePinPopover();
   checklist('type',Object.entries(types));checklist('cost',costOptions);checklist('resource',Object.entries(resources));renderFactionFilter();
@@ -314,8 +316,13 @@ function reloadPresets(){
 function setupPresets(){
   filterStore=new FilterPresetStore(localStorage,cards);presets=filterStore.list();
   if(!presets.length){const first=createPreset(getFilter());filterStore.save(first);presets=[first];}
-  advancedFilters=localStorage.getItem('marvel.filters.enabled')==='true';$('advanced-filters').checked=advancedFilters;presetsReady=true;
-  let active='';try{active=sessionStorage.getItem('marvel.active-filter');}catch{}applyPreset(presets.find(p=>p.id===active)||presets[0]);
+  advancedFilters=localStorage.getItem('marvel.filters.enabled')==='true';setOtherPressed('advanced-filters',advancedFilters);presetsReady=true;
+  let active='';try{active=sessionStorage.getItem('marvel.active-filter');}catch{}
+  const preset=presets.find(p=>p.id===active)||presets[0];
+  const owned=localStorage.getItem('marvel.filters.owned');
+  setOtherPressed('owned-only',owned===null?preset.criteria.owned:owned==='true');
+  if(owned===null)try{localStorage.setItem('marvel.filters.owned',String(otherPressed('owned-only')));}catch{}
+  applyPreset(preset);
 }
 function renderFilterTabs(){
   const enabled=presetsReady&&advancedFilters;$('config-bar').classList.toggle('advanced-filters',enabled);$('filter-presets').hidden=!enabled||$('filter-panel').hidden;$('preset-tools').hidden=!enabled;
@@ -325,7 +332,7 @@ function renderFilterTabs(){
     const eye=button('',()=>{savePresetPatch(p.id,record=>{record.enabled=!record.enabled;});renderFilterTabs();page=1;renderGallery();},'preset-eye');eye.append(iconSvg(p.enabled?'eye':'eyeOff'));eye.setAttribute('aria-label',(p.enabled?'Ocultar resultados de ':'Mostrar resultados de ')+p.name);eye.setAttribute('aria-pressed',String(p.enabled));
     const remove=button('×',()=>{const body=el('div');body.append(el('p','Eliminar «'+p.name+'» y sus fijados. Las cartas del mazo se conservan.'));body.append(button('Eliminar filtro',()=>{filterStore.remove(p.id).then(()=>{presets=filterStore.list();$('modal').close();reloadPresets();}).catch(report);},'primary'));popup('Eliminar filtro',body);},'preset-remove');remove.setAttribute('aria-label','Eliminar filtro '+p.name);remove.disabled=presets.length===1;remove.title=remove.disabled?'Debe quedar al menos un filtro':'Eliminar filtro';pill.append(tab,eye,remove);$('filter-presets').append(pill);
   }
-  const add=button('＋',()=>{captureActivePreset();let n=1;while(presets.some(p=>p.name==='Filtro '+n))n++;const created=createPreset(getFilter(),'Filtro '+n,currentPreset());filterStore.save(created);presets.push(created);applyPreset(created);});add.setAttribute('aria-label','Añadir filtro como copia del actual');add.disabled=presets.length>=100;$('filter-presets').append(add);
+  const add=button('＋',()=>{captureActivePreset();let n=1;while(presets.some(p=>p.name==='Filtro '+n))n++;const created=createPreset({...getFilter(),allyStats:{...allyFilter,enabled:false},hideHero:true,sameAspect:true,language:'es'},'Filtro '+n,currentPreset());filterStore.save(created);presets.push(created);applyPreset(created);});add.setAttribute('aria-label','Añadir filtro como copia del actual');add.disabled=presets.length>=100;$('filter-presets').append(add);
   const active=currentPreset();if(active){if(document.activeElement!==$('preset-name'))$('preset-name').value=active.name;$('only-pinned').checked=active.onlyPinned;$('preset-pin-count').textContent=active.pins.length+' fijadas';$('clear-preset-pins').disabled=!active.pins.length;}
 }
 function closePinPopover(){$('pin-popover').hidden=true;}
@@ -343,12 +350,12 @@ function pinControls(card){
     savePresetPatch(direct.id,p=>{p.pins=p.pins.filter(code=>code!==root);if(!pinned)p.pins.push(root);});
     closePinPopover();renderFilterTabs();renderGallery();
   },'pin-button');pin.append(iconSvg('pin'));pin.setAttribute('aria-label','Fijar '+title(card)+(direct?' en '+direct.name:' en filtros'));pin.setAttribute('aria-pressed',String(pinned));
-  if(direct){pin.disabled=!pinned&&!presetMatches(cards[root],direct,deck,collection,specialRuleFor(cards[deck.hero]));pin.title=pin.disabled?'La carta no cumple los criterios de '+direct.name:(pinned?'Desfijar de ':'Fijar en ')+direct.name;}
+  if(direct){pin.disabled=!pinned&&!presetMatches(cards[root],direct,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'));pin.title=pin.disabled?'La carta no cumple los criterios de '+direct.name:(pinned?'Desfijar de ':'Fijar en ')+direct.name;}
   const clear=button('×',()=>confirmPinClear('card:'+root,clear,()=>{for(const p of presets.filter(p=>p.pins.includes(root)))savePresetPatch(p.id,record=>{record.pins=record.pins.filter(code=>code!==root);});closePinPopover();renderFilterTabs();renderGallery();}),'clear-card-pins');clear.setAttribute('aria-label','Desfijar '+title(card)+' de todos los filtros');clear.title='Desfijar de todos los filtros con dos pulsaciones';clear.disabled=!presets.some(p=>p.pins.includes(root));box.append(pin,clear);return box;
 }
 function openPinPopover(root,anchor){
   hideHover();const panel=$('pin-popover');($('modal').open?$('modal'):document.body).append(panel);panel.replaceChildren(el('strong',title(cards[root])));let count=0;
-  for(const p of presets){const pinned=p.pins.includes(root),compatible=presetMatches(cards[root],p,deck,collection,specialRuleFor(cards[deck.hero]));if(!compatible&&!pinned)continue;count++;
+  for(const p of presets){const pinned=p.pins.includes(root),compatible=presetMatches(cards[root],p,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'));if(!compatible&&!pinned)continue;count++;
     const label=el('label',undefined,'check-row'),input=el('input');input.type='checkbox';input.checked=pinned;input.setAttribute('aria-label','Fijar en '+p.name);input.onchange=()=>{const checked=input.checked;savePresetPatch(p.id,record=>{record.pins=record.pins.filter(c=>c!==root);if(checked)record.pins.push(root);});renderFilterTabs();renderGallery();closePinPopover();};
     label.append(input,document.createTextNode(p.name+(!compatible?' · fijada fuera del criterio actual':'')));panel.append(label);
   }
@@ -428,7 +435,7 @@ function renderTraits(){
   for(const [id,mode]of [['trait-sort',traitSort],['deck-traits-sort',deckTraitSort]]){$(id).textContent=mode==='name'?'A–Z':'# ↓';$(id).title=mode==='name'?'Ordenar por cantidad de cartas':'Ordenar de A a Z';}
 }
 function renderAllyFilters(){
-  $('advanced-allies').checked=allyFilter.enabled;$('ally-options').hidden=!allyFilter.enabled||$('filter-panel').hidden;
+  setOtherPressed('advanced-allies',allyFilter.enabled);$('ally-options').hidden=!allyFilter.enabled||$('filter-panel').hidden;
   const box=$('ally-stat-controls');box.replaceChildren();
   for(const [field,name]of ALLY_STATS){const row=el('div',undefined,'ally-stat-row'),heading=el('div',undefined,'ally-stat-heading'),options=el('div',undefined,'ally-values'),available=allyOptions[field]||[],selected=new Set(allyFilter.values[field]||available),state=selectionState(available,selected);
     const toggle=button('',()=>{setAllyStatValues(allyFilter,field,state==='all'?[]:available,available);page=1;renderGallery();},'ally-toggle');toggle.append(selectionIcon(state));toggle.dataset.state=state;toggle.setAttribute('aria-pressed',state==='partial'?'mixed':String(state==='all'));toggle.setAttribute('aria-label',(state==='all'?'Desmarcar todos los valores de ':'Marcar todos los valores de ')+name);toggle.title=(state==='partial'?'Selección parcial. ':'')+(state==='all'?'Desmarcar todos':'Marcar todos');toggle.disabled=!available.length;heading.append(el('strong',name),toggle);
@@ -473,7 +480,7 @@ function renderGallery(){
   hideHover();
   captureActivePreset();
   renderAllyFilters();
-  const filter=getFilter(),logical=advancedFilters&&presetsReady?presetResults(choices,presets,deck,collection,filter):filterCards(choices,filter,deck,collection),found=galleryArtworks(logical,deck,cards,$('show-variants').checked);
+  const filter=getFilter(),logical=advancedFilters&&presetsReady?presetResults(choices,presets,deck,collection,filter):filterCards(choices,filter,deck,collection),found=galleryArtworks(logical,deck,cards,otherPressed('show-variants'));
   availableRecords=logical;renderTraits();
   if($('gallery').clientWidth>0){const tracks=getComputedStyle($('gallery')).gridTemplateColumns;if(tracks&&tracks!=='none')galleryColumns=Math.max(1,tracks.split(/\s+/).length);}
   const selectedRoots=new Set(Object.entries(deck.cards).filter(([,n])=>n>0).map(([code])=>canonical(cards[code],cards)));
@@ -771,6 +778,8 @@ async function importFile(file){
 async function init(){
   const response=await fetch('./catalog.json');if(!response.ok)throw Error('No se pudo cargar el catálogo. Ejecuta primero npm run gestor:preparar.');
   catalog=await response.json();cards=catalog.cards;store=new DeckStore(localStorage);
+  const heroSets=new Set(Object.values(cards).filter(c=>c.role==='identity'&&c.links.set).map(c=>c.links.set));
+  for(const card of Object.values(cards))if(heroSets.has(card.links.set))card.heroSetCard=true;
   playerTraits=uniqueTraits(Object.values(cards).filter(c=>['deck_card','identity','hero_auxiliary'].includes(c.role)).flatMap(c=>scopedTraits(c,undefined,true)));
   choices=Object.values(cards).filter(c=>c.role==='deck_card'&&!c.en.hidden&&canonical(c,cards)===c.code);allyOptions=allyStatOptions(choices);
   for(const p of catalog.packs){const raw=localStorage.getItem('marvel.product.'+p.code);if(raw!==null)collection[p.code]=Number(raw)>0?1:0;}
@@ -791,18 +800,20 @@ async function init(){
     clearTimeout(searchTimer);searchTimer=null;if(event.isComposing)return;
     searchTimer=setTimeout(()=>{searchTimer=null;page=1;renderGallery();},SEARCH_DELAY_MS);
   });
-  for(const id of ['search-language','owned-only',...sortControls])$(id).addEventListener('change',()=>{page=1;renderGallery();});
-  $('show-variants').checked=localStorage.getItem('marvel.show-variants')==='true';
-  $('show-variants').onchange=()=>{page=1;try{localStorage.setItem('marvel.show-variants',String($('show-variants').checked));}catch{}renderGallery();};
-  for(const id of ['hide-hero','same-aspect'])$(id).onchange=()=>{page=1;renderFactionFilter();renderGallery();};
-  $('advanced-allies').onchange=()=>{allyFilter.enabled=$('advanced-allies').checked;page=1;renderGallery();};
+  for(const id of ['search-language',...sortControls])$(id).addEventListener('change',()=>{page=1;renderGallery();});
+  setOtherPressed('show-variants',localStorage.getItem('marvel.show-variants')==='true');
+  for(const [id,key]of [['show-variants','marvel.show-variants'],['owned-only','marvel.filters.owned']]){
+    $(id).onclick=()=>{setOtherPressed(id,!otherPressed(id));page=1;try{localStorage.setItem(key,String(otherPressed(id)));}catch{}renderGallery();};
+  }
+  for(const id of ['hide-hero','same-aspect'])$(id).onclick=()=>{setOtherPressed(id,!otherPressed(id));page=1;renderFactionFilter();renderGallery();};
+  $('advanced-allies').onclick=()=>{allyFilter.enabled=!allyFilter.enabled;page=1;renderGallery();};
   $('trait-filter').oninput=()=>{traitSuggestionsOpen=true;renderTraits();};
   $('trait-filter').onfocus=()=>{if($('trait-filter').value.trim()){traitSuggestionsOpen=true;renderTraits();}};
   for(const id of ['trait-in-attribute','trait-in-text'])$(id).onchange=()=>{refreshTraitSources();page=1;renderGallery();};refreshTraitSources();
   $('search-options-toggle').onclick=()=>toggleSearchOptions();
   document.addEventListener('click',e=>{if(!$('search-options').contains(e.target)&&!$('search-options-toggle').contains(e.target))toggleSearchOptions(false);});
   for(const id of ['search-name','search-text'])$(id).onchange=()=>{if(!$('search-name').checked&&!$('search-text').checked)$(id).checked=true;refreshSearchFields();page=1;renderGallery();};refreshSearchFields();
-  $('advanced-filters').onchange=()=>{captureActivePreset();advancedFilters=$('advanced-filters').checked;try{localStorage.setItem('marvel.filters.enabled',String(advancedFilters));}catch(e){report(e);}closePinPopover();renderFilterTabs();page=1;renderGallery();};
+  $('advanced-filters').onclick=()=>{captureActivePreset();advancedFilters=!advancedFilters;setOtherPressed('advanced-filters',advancedFilters);try{localStorage.setItem('marvel.filters.enabled',String(advancedFilters));}catch(e){report(e);}closePinPopover();renderFilterTabs();page=1;renderGallery();};
   $('preset-name').oninput=()=>{const name=$('preset-name').value;savePresetPatch(activePresetId,p=>{p.name=name;});renderFilterTabs();};
   $('only-pinned').onchange=()=>{const value=$('only-pinned').checked;savePresetPatch(activePresetId,p=>{p.onlyPinned=value;});renderFilterTabs();page=1;renderGallery();};
   $('clear-preset-pins').onclick=()=>{const id=activePresetId;confirmPinClear('filter:'+id,$('clear-preset-pins'),()=>{savePresetPatch(id,p=>{p.pins=[];});closePinPopover();renderFilterTabs();renderGallery();});};
@@ -835,7 +846,7 @@ async function init(){
   $('page-prev').onclick=()=>{page--;renderGallery();};$('page-next').onclick=()=>{page++;renderGallery();};
   $('group-selection').onclick=()=>{selectedFirst=!selectedFirst;page=1;try{localStorage.setItem('marvel.group-selection',String(selectedFirst));}catch{}renderGallery();};
   $('reset-filters').replaceChildren(iconSvg('reset'));
-  $('reset-filters').onclick=()=>{for(const id of ['search','trait-filter'])$(id).value='';$('owned-only').checked=false;$('hide-hero').checked=true;$('same-aspect').checked=true;
+  $('reset-filters').onclick=()=>{for(const id of ['search','trait-filter'])$(id).value='';setOtherPressed('hide-hero',false);setOtherPressed('same-aspect',true);allyFilter.enabled=false;
     $('search-language').value='es';
     $('search-name').checked=true;$('search-text').checked=true;refreshSearchFields();
     $('trait-in-attribute').checked=true;$('trait-in-text').checked=true;refreshTraitSources();
@@ -952,7 +963,10 @@ async function init(){
   new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(width>0&&Math.abs(width-observedWidth)>.5){observedWidth=width;renderGallery();}}).observe($('gallery'));
   addEventListener('storage',event=>{
     if(isPresetStorageKey(event.key)){reloadPresets();}
-    if(event.key==='marvel.filters.enabled'){advancedFilters=event.newValue==='true';$('advanced-filters').checked=advancedFilters;renderFilterTabs();renderGallery();}
+    if(event.key==='marvel.filters.enabled'){advancedFilters=event.newValue==='true';setOtherPressed('advanced-filters',advancedFilters);renderFilterTabs();renderGallery();}
+    if(event.key==='marvel.filters.owned'||event.key==='marvel.show-variants'){
+      setOtherPressed(event.key==='marvel.filters.owned'?'owned-only':'show-variants',event.newValue==='true');page=1;renderGallery();
+    }
     if(event.key==='marvel.deck.'+deck.id)status(dirty?'Este mazo cambió en otra pestaña. Tu borrador se conserva y al guardar se comprobará la revisión.':'Este mazo cambió en otra pestaña. Recarga para abrir la última revisión guardada.');
     if(event.key?.startsWith('marvel.product.')){const key=event.key.slice('marvel.product.'.length);collection[key]=event.newValue===null?1:Number(event.newValue)>0?1:0;renderGallery();}
     if(!$('library-view').hidden)renderLibrary();

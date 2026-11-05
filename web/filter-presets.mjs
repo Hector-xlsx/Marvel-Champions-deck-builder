@@ -15,12 +15,15 @@ export function presetCriteria(filter){
 }
 export function createPreset(filter,name='Filtro 1',source){return {id:uid(),name,created:new Date().toISOString(),enabled:true,onlyPinned:source?.onlyPinned??false,criteria:presetCriteria(filter),pins:[...(source?.pins||[])],ui:clone(source?.ui||{})};}
 export function singleVisiblePreset(presets,advanced,activeId){const visible=advanced?presets.filter(p=>p.enabled):presets.filter(p=>p.id===activeId);return visible.length===1?visible[0]:null;}
-export function presetMatches(card,preset,deck,collection,specialRule){return filterCards([card],{...preset.criteria,specialRule},deck,collection).length>0;}
-export function presetResults(choices,presets,deck,collection,{specialRule,sorts,selected=false}={}){
+export function presetMatches(card,preset,deck,collection,specialRule,owned=preset.criteria.owned){return filterCards([card],{...preset.criteria,specialRule,owned},deck,collection).length>0;}
+export function presetResults(choices,presets,deck,collection,{specialRule,sorts,selected=false,owned}={}){
   const included=new Set();
   for(const preset of presets.filter(p=>p.enabled)){
-    if(preset.onlyPinned){const pins=new Set(preset.pins);for(const card of choices)if(pins.has(card.code))included.add(card.code);}
-    else for(const card of filterCards(choices,{...preset.criteria,specialRule},deck,collection))included.add(card.code);
+    const collectionOnly=owned??preset.criteria.owned;
+    if(preset.onlyPinned){
+      const pins=new Set(preset.pins);
+      for(const card of filterCards(choices.filter(c=>pins.has(c.code)),{hideHero:preset.criteria.hideHero,owned:collectionOnly},deck,collection))included.add(card.code);
+    }else for(const card of filterCards(choices,{...preset.criteria,specialRule,owned:collectionOnly},deck,collection))included.add(card.code);
   }
   return choices.filter(c=>included.has(c.code)&&(!selected||deck.cards[c.code]>0)).sort((a,b)=>compareCards(a,b,sorts));
 }

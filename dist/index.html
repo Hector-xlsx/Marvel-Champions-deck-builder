@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#101725">
   <meta name="description" content="Construye y organiza tus mazos de Marvel Champions con tu biblioteca local de cartas.">
   <title>Marvel / Lab — Constructor de mazos</title>
@@ -47,7 +48,7 @@
         <button id="reset-filters" type="button" class="reset-filter-icon" aria-label="Limpiar filtros" title="Limpiar filtros">⟲</button>
       </div>
           <section id="ally-options" class="panel ally-panel" aria-label="Filtro avanzado de aliados" hidden><div class="ally-filter-title"><strong>Aliados</strong><span class="hint">Solo afecta a cartas de tipo Aliado.</span></div><div id="ally-stat-controls" class="ally-stat-controls"></div></section>
-          <section id="other-options" class="panel other-panel" hidden><div class="other-controls"><label class="check"><input id="advanced-filters" type="checkbox"><span>Filtro avanzado</span></label><label class="check"><input id="advanced-allies" type="checkbox"><span>Filtro avanzado aliados</span></label><label class="check"><input id="owned-only" type="checkbox"><span>Solo mi colección</span></label><label class="hero-visibility" title="Ocultar cartas de héroe"><input id="hide-hero" type="checkbox" checked><span>Cartas Superhéroe</span><span class="hero-visibility-description"> · Ocultar cartas de héroe</span></label><label class="check"><input id="same-aspect" type="checkbox" checked><span>Mismo aspecto del héroe</span></label><label class="check"><input id="show-variants" type="checkbox"><span>Mostrar variantes de cartas</span></label><div class="language-control"><label for="search-language">Idioma de búsqueda</label><select id="search-language"><option value="es" selected>Español</option><option value="en">Inglés</option><option value="both">Ambos idiomas</option></select></div></div></section>
+          <section id="other-options" class="panel other-panel" hidden><div class="other-controls"><button id="advanced-filters" type="button" class="filter-choice" aria-pressed="false">Filtro avanzado</button><button id="advanced-allies" type="button" class="filter-choice" aria-pressed="false">Filtro avanzado aliados</button><button id="owned-only" type="button" class="filter-choice" aria-pressed="false">Solo mi colección</button><button id="hide-hero" type="button" class="filter-choice" aria-pressed="false">Cartas de héroes</button><button id="same-aspect" type="button" class="filter-choice" aria-pressed="true">Mismo aspecto del héroe</button><button id="show-variants" type="button" class="filter-choice" aria-pressed="false">Mostrar variantes de cartas</button><div class="language-control"><label for="search-language">Idioma de búsqueda</label><select id="search-language"><option value="es" selected>Español</option><option value="en">Inglés</option><option value="both">Ambos idiomas</option></select></div></div></section>
     </section>
     <div id="deck-column" class="deck-column">
     <section id="deck-cards-panel" class="panel deck-cards-panel" aria-labelledby="deck-view-name">

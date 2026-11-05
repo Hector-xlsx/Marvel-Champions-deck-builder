@@ -31,6 +31,18 @@ test('orden y Solo cartas del mazo se aplican globalmente después de unir filtr
   const p=createPreset({});assert.deepEqual(codes(presetResults([cards.c,cards.b,cards.a],[p],deck,{}, {sorts:['name']})),['a','b','c']);
   assert.deepEqual(codes(presetResults([cards.c,cards.b,cards.a],[p],deck,{}, {selected:true})),['a']);
 });
+test('cartas de héroes y colección también limitan los resultados fijados',()=>{
+  const signature={...card('hero-aspect','event','justice'),heroSetCard:true,printings:[{pack:'hero-pack'}]};
+  const basic={...card('regular'),printings:[{pack:'basic-pack'}]};
+  const p=createPreset({hideHero:true,owned:false});p.pins=[signature.code,basic.code];
+  for(const onlyPinned of [false,true]){
+    p.onlyPinned=onlyPinned;
+    assert.deepEqual(codes(presetResults([signature,basic],[p],deck,{})),[basic.code]);
+    p.criteria.hideHero=false;
+    assert.deepEqual(codes(presetResults([signature,basic],[p],deck,{'basic-pack':0},{owned:true})),[signature.code]);
+    p.criteria.hideHero=true;
+  }
+});
 test('criterios guardados no capturan héroe, orden ni restricciones globales de la galería',()=>{
   const c=presetCriteria({search:'abc',specialRule:{id:'cable'},sorts:['cost'],selected:true,searchFields:{name:false,text:false}});
   assert.equal(c.specialRule,undefined);assert.equal(c.sorts,undefined);assert.equal(c.selected,undefined);assert.equal(c.searchFields.name,true);
