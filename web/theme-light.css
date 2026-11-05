@@ -1,0 +1,89 @@
+:root[data-theme=light] {
+  color-scheme: light;
+  --bg: #f3f5fa;
+  --panel: #fff;
+  --line: #c9d2e0;
+  --muted: #506078;
+  --text: #19263b;
+  --red: #b63340;
+  --surface-soft: #eaf0f8;
+  --surface-hover: #dce6f5;
+  --accent-soft: #fbe5e7;
+  --accent-text: #882331;
+}
+[data-theme=light] :is(.app-header,.statusbar,.card,.library-table,.sort-menu-fields,.trait-popover,
+  .card-hover,#modal,.pin-popover,.collection-cycle,.group,.preset-pill,.hero-box) {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line);
+}
+[data-theme=light] :is(.dialog-heading,.detail-copy-bar,.collection-toolbar,.library-table th,
+  #sort-menu summary,.badge,#mobile-deck-count,.gallery-options) {
+  background: var(--surface-soft);
+  color: var(--text);
+  border-color: var(--line);
+}
+[data-theme=light] :is(label,.eyebrow,.statusbar,.status-caption,.hint,.muted,#result-count,.card-meta,.badge,
+  .library-mobile-meta,.collection-cycle-count,.card-hover .hover-meta,
+  .card-hover .hover-pack,.card-hover .hover-resources,.filter-heading,.ally-stat-heading,.collection-count) {
+  color: var(--muted);
+}
+[data-theme=light] :is(#sort-summary,.card-hover .hover-name,#deck-list .group-heading h3,
+  #deck-list .deck-type > h3,.deck-type h3,.text-button,.hero-name) { color: var(--text); }
+[data-theme=light] :is(a,.eyebrow) { color: #244b8f; }
+[data-theme=light] :is(.check-row:has(input:checked),.delta-removed) { color: var(--accent-text); }
+[data-theme=light] :is(.delta-added,.status-dot) { color: #176047; }
+[data-theme=light] .status-dot { background: #248067; }
+[data-theme=light] :is(.warning,.warnings) { color: #7b3b10; }
+[data-theme=light] .warning { background: #fff3de; border-color: #dec6a1; }
+[data-theme=light] :is(.library-table tbody tr:hover,.deck-row:hover) { background: var(--surface-soft); }
+[data-theme=light] :is(button,.file-button):not(.card-image,.deck-thumb,.primary) {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+[data-theme=light] :is(button,.file-button):not(.card-image,.deck-thumb,.primary):hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+[data-theme=light] :is(button.primary,.qty button.active) { color: white; background: var(--red); }
+[data-theme=light] button.primary:hover { background: #962633; }
+[data-theme=light] :is(button[aria-pressed=true],button.filter-choice[aria-pressed=true],
+  .mobile-workspace-nav button[aria-pressed=true],.deck-cards-heading .aspect-prompt,.qty button.active) {
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  border-color: #b85361;
+}
+[data-theme=light] :is(button.text-button,.hero-name,#library-list .library-deck-name) { background: transparent; }
+[data-theme=light] :is(input:not([type=checkbox]):not([type=range]):not([type=file]),select,textarea) {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line);
+}
+[data-theme=light] :is(input,textarea)::placeholder { color: #5c6d83; }
+[data-theme=light] :focus-visible { outline-color: #325fbd; }
+[data-theme=light] #config-bar { --preset-accent: #4465a6; --preset-surface: #e5edff; }
+[data-theme=light] .preset-pill .preset-tab[aria-selected=true] { background: var(--preset-surface); color: #26457e; }
+[data-theme=light] .preset-pill .preset-eye[aria-pressed=true] { color: #18553f; background: #def4e9; }
+[data-theme=light] .preset-pill .preset-eye[aria-pressed=false] { color: #842737; background: #f9e1e5; }
+[data-theme=light] :is(.resource[data-resource=energy],.resource[data-resource=wild]) { color: #556315; }
+[data-theme=light] .resource[data-resource=physical] { color: #9d3541; }
+[data-theme=light] .resource[data-resource=mental] { color: #245b9a; }
+[data-theme=light] dialog::backdrop { background: #18284266; }
+[data-theme=light] .trait-search-area .trait-source-controls label:has(input:checked),
+[data-theme=light] .trait-chip {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  border-color: #b85361;
+}
+[data-theme=light] #catalog-filters[aria-expanded=true] {
+  color: #26457e;
+  background: #e5edff;
+  border-color: #6c84b4;
+}
+[data-theme=light] #reset-filters.reset-filter-icon,
+[data-theme=light] #filter-panel :is(.filter-heading button,.ally-toggle),
+[data-theme=light] .collection-cycle summary::before,
+[data-theme=light] #page-indicator {
+  color: #435976;
+}
+[data-theme=light] .trait-chip button { color: var(--accent-text); }

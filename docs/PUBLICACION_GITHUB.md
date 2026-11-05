@@ -1,6 +1,6 @@
 # Publicación privada en GitHub
 
-El destino previsto es [Hector-xlsx/mc-db](https://github.com/Hector-xlsx/mc-db). El repositorio debe crearse vacío, con visibilidad **Private**. Mantener GitHub Pages desactivado y conceder acceso solo a las personas autorizadas desde la configuración del repositorio.
+El destino previsto es [Hector-xlsx/Marvel-Champions-deck-builder](https://github.com/Hector-xlsx/Marvel-Champions-deck-builder). El repositorio oficial tiene visibilidad **Private**. Mantener GitHub Pages desactivado y conceder acceso solo a las personas autorizadas desde la configuración del repositorio.
 
 ## Qué se sube
 
@@ -9,7 +9,7 @@ El repositorio incluye código, pruebas, documentación y la versión ejecutable
 ## Primera subida
 
 1. En el espacio de trabajo original, ejecutar `npm run gestor:preparar` y `npm test`.
-2. Confirmar en GitHub que el repositorio pertenece a **Hector-xlsx**, se llama **mc-db**, figura como **Private** y tiene Pages desactivado.
+2. Confirmar en GitHub que el repositorio pertenece a **Hector-xlsx**, se llama **Marvel-Champions-deck-builder**, figura como **Private** y tiene Pages desactivado.
 3. En la raíz del proyecto, ejecutar los siguientes comandos. Si ya hay un repositorio local o remoto con historial, inspeccionar sus ramas y su remoto antes de aplicar estos comandos de primera subida.
 
    ```powershell
@@ -23,7 +23,7 @@ El repositorio incluye código, pruebas, documentación y la versión ejecutable
 
    ```powershell
    git commit -m "Publicar primera versión privada de Marvel 2.0"
-   git remote add origin https://github.com/Hector-xlsx/mc-db.git
+   git remote add origin https://github.com/Hector-xlsx/Marvel-Champions-deck-builder.git
    git push -u origin main
    ```
 

@@ -15,11 +15,11 @@ powershell.exe -NoLogo -NoProfile -Command ^
   "  }" ^
   "  if (-not (Test-Path -LiteralPath $node)) { throw 'Se requiere Node.js 22 o posterior. Instala Node.js y vuelve a abrir el lanzador.' }" ^
   "  $index = Get-Content -LiteralPath 'dist\index.html' -Raw -Encoding UTF8;" ^
-  "  $env:PORT = '4187';" ^
-  "  $url = 'http://127.0.0.1:4187/';" ^
+  "  $env:PORT = '4191';" ^
+  "  $url = 'http://127.0.0.1:4191/';" ^
   "  $ready = {" ^
   "    try { $response = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 1 } catch { return $false }" ^
-  "    if ($response.Content -cne $index) { throw 'El puerto 4187 esta ocupado por otra aplicacion.' }" ^
+  "    if ($response.Content -cne $index) { throw 'El puerto 4191 esta ocupado por otra aplicacion.' }" ^
   "    return $true;" ^
   "  };" ^
   "  if (-not (& $ready)) {" ^

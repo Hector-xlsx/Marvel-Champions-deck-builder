@@ -27,18 +27,10 @@
 /dist/*
 !/dist/*.mjs
 !/dist/styles.css
+!/dist/layout.css
+!/dist/theme-light.css
 !/dist/index.html
 !/dist/catalog.json
 !/dist/assets/
 /dist/assets/*
 !/dist/assets/*.webp
-!/Prototipo UX/
-/Prototipo UX/*
-!/Prototipo UX/Abrir prototipo.cmd
-!/Prototipo UX/servir.mjs
-!/Prototipo UX/dist/
-/Prototipo UX/dist/*
-!/Prototipo UX/dist/*.mjs
-!/Prototipo UX/dist/*.css
-!/Prototipo UX/dist/index.html
-!/Prototipo UX/dist/catalog.json

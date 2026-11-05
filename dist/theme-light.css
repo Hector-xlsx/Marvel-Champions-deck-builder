@@ -31,7 +31,7 @@
 [data-theme=light] :is(#sort-summary,.card-hover .hover-name,#deck-list .group-heading h3,
   #deck-list .deck-type > h3,.deck-type h3,.text-button,.hero-name) { color: var(--text); }
 [data-theme=light] :is(a,.eyebrow) { color: #244b8f; }
-[data-theme=light] :is(.prototype-tag,.check-row:has(input:checked),.delta-removed) { color: var(--accent-text); }
+[data-theme=light] :is(.check-row:has(input:checked),.delta-removed) { color: var(--accent-text); }
 [data-theme=light] :is(.delta-added,.status-dot) { color: #176047; }
 [data-theme=light] .status-dot { background: #248067; }
 [data-theme=light] :is(.warning,.warnings) { color: #7b3b10; }

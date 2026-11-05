@@ -11,7 +11,7 @@ npm run gestor:preparar
 npm run gestor:servir
 ```
 
-Abrir http://127.0.0.1:4187. La preparación es local, genera `dist/` con catálogo reducido, aplicación e imágenes WebP de hasta 800 × 1100. Reutiliza derivados ya existentes. Requiere las dependencias ya documentadas de la biblioteca; no descarga datos ni instala nada.
+Abrir http://127.0.0.1:4191. La preparación es local, genera `dist/` con catálogo reducido, aplicación e imágenes WebP de hasta 800 × 1100. Reutiliza derivados ya existentes. Requiere las dependencias ya documentadas de la biblioteca; no descarga datos ni instala nada.
 
 `dist/index.html` es el punto de entrada. Debe abrirse mediante un servidor HTTP; el doble clic en el archivo no permite cargar módulos y catálogo en todos los navegadores. `dist/` es la carpeta para un futuro despliegue estático, también bajo una subruta de GitHub Pages: las referencias son relativas. No se ha publicado ni configurado un repositorio remoto. No subir la carpeta completa de fuentes/datos originales como sitio.
 

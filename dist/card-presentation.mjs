@@ -13,6 +13,10 @@ export function ruleTextParts(value){
 
 export function identityPreviewCards(hero,cards){
   if(!hero)return [];
-  const linked=cards[hero.links?.other_face],alter=linked?.en.type_code==='alter_ego'?linked:Object.values(cards).find(c=>hero.links?.set&&c.role==='identity'&&c.en.type_code==='alter_ego'&&c.links?.set===hero.links?.set);
-  return [hero,...(alter&&alter.code!==hero.code?[alter]:[])];
+  const linked=cards[hero.links?.other_face];
+  const family=Object.values(cards).filter(card=>hero.links?.set&&card.role==='identity'&&card.links?.set===hero.links.set);
+  const base=hero.en.type_code==='hero'&&linked?.en.type_code==='alter_ego'
+    ? hero : family.find(card=>card.en.type_code==='hero'&&cards[card.links.other_face]?.en.type_code==='alter_ego')||hero;
+  const alter=cards[base.links?.other_face]||family.find(card=>card.en.type_code==='alter_ego');
+  return [...new Set([base,alter,...family.filter(card=>card.en.type_code==='hero'&&!card.en.hidden)].filter(Boolean))];
 }

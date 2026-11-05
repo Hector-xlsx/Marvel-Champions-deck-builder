@@ -10,11 +10,12 @@ test('reglas muestran rasgos en mayúscula y conservan el resto del texto',()=>{
   assert.deepEqual(ruleTextParts(null),[]);
   assert.equal(ruleTextParts('<b>[[Mutante]]</b>').find(p=>p.bold).text,'MUTANTE');
 });
-test('previsualización incluye héroe y alter ego, incluso cuando el enlace lleva a otro héroe',()=>{
+test('previsualización incluye héroe, alter ego y forma alternativa desde cualquiera de las caras',()=>{
   const hero={code:'h',role:'identity',en:{type_code:'hero'},links:{set:'set',other_face:'a'}},alter={code:'a',role:'identity',en:{type_code:'alter_ego'},links:{set:'set'}};
   assert.deepEqual(identityPreviewCards(hero,{h:hero,a:alter}),[hero,alter]);
-  const alternate={...hero,code:'h2'},multi={...hero,links:{set:'set',other_face:'h2'}};
-  assert.deepEqual(identityPreviewCards(multi,{h:multi,h2:alternate,a:alter}),[multi,alter]);
+  const alternate={...hero,code:'h2',links:{set:'set',other_face:null}};
+  const cards={h:hero,h2:alternate,a:alter};
+  for(const face of [hero,alternate,alter])assert.deepEqual(identityPreviewCards(face,cards),[hero,alter,alternate]);
   assert.deepEqual(identityPreviewCards(undefined,{}),[]);
   assert.deepEqual(identityPreviewCards({...hero,links:{}},{a:{...alter,links:{}}}),[{...hero,links:{}}]);
 });
