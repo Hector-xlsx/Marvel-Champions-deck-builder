@@ -57,17 +57,20 @@ function showView(name,reading=false){
   $('constructor-button').setAttribute('aria-pressed',String(name==='constructor'));$('library-button').setAttribute('aria-pressed',String(name==='library'));
   if(name==='library')renderLibrary();
 }
-function editCurrent(){const record={deck,revision};showView('constructor');openDeck(record);}
+function editCurrent(){const record=store.load(deck.id)||{deck,revision};showView('constructor');openDeck(record);}
 function openSaved(record,reading=false){showView('constructor',reading);openDeck(record,!reading);}
 function openDeck(record,preferDraft=true) {
   pendingGroupDelete=null;page=1;
   let draft;
   if(preferDraft)try{draft=JSON.parse(sessionStorage.getItem('marvel.draft.'+record.deck.id));}catch{}
+  // A clean tab snapshot must never take precedence over the shared saved record.
+  if(!draft?.dirty&&record.revision!==null)draft=null;
+  const outdatedDraft=draft?.dirty&&record.revision!==null&&draft.revision!==record.revision;
   deck=clone(draft?.deck||record.deck);revision=draft?draft.revision:record.revision;dirty=draft?.dirty||false;
   deck.artwork??={};deck.auxiliaries??={};cleanupUndo=null;
   const grouped=initializeGroups(deck);if(grouped&&!readOnly)dirty=true;
   const restored=readOnly?0:ensureHeroCards(deck,cards);if(restored)dirty=true;
-  if(!readOnly)saveDraft();render();status(readOnly?'Consulta del mazo · Sin edición.':restored?`Se restituyeron ${restored} copias obligatorias en el borrador. El original guardado se conserva.`:dirty?'Borrador recuperado en esta pestaña.':'Mazo abierto · '+(deck.versions.at(-1)?.label||'Sin versiones guardadas'));
+  if(!readOnly)saveDraft();render();status(readOnly?'Consulta del mazo · Sin edición.':outdatedDraft?'Hay una revisión más reciente guardada. Se conservó tu borrador en esta pestaña.':restored?`Se restituyeron ${restored} copias obligatorias en el borrador. El original guardado se conserva.`:dirty?'Borrador recuperado en esta pestaña.':'Mazo abierto · '+(deck.versions.at(-1)?.label||'Sin versiones guardadas'));
 }
 function newDeck(){showView('constructor');const d=createDeck();openDeck({deck:d,revision:null},false);dirty=true;saveDraft();render();}
 function duplicate(source=deck) {const d=clone(source);d.id=crypto.randomUUID();d.name+=' · copia';d.autoName=false;d.armed=false;showView('constructor');openDeck({deck:d,revision:null},false);changed();}
@@ -129,7 +132,7 @@ function auxiliaryQuantityControl(code){
   if(automatic){box.append(el('p',`${automatic} copias auxiliares propias del héroe.`,'hint'));return box;}
   const label=el('label','Copias auxiliares'),input=el('input');input.type='number';input.min='0';input.max='99';input.value=String(deck.auxiliaries[code]||0);input.disabled=readOnly;input.setAttribute('aria-label','Copias auxiliares de '+title(cards[code]));input.onchange=()=>setAuxiliaryQuantity(code,Number(input.value));label.append(input);box.append(label);return box;
 }
-function quantityControl(c) {
+function quantityControl(c,onQuantityChange) {
   const box=el('div',undefined,'qty');if(readOnly||!$('library-view').hidden)return box;
   const root=canonical(c,cards),n=familyQuantity(root),min=requiredHeroCards(deck,cards)[root]||0,max=Math.max(min,deckLimit(c,deck,cards));
   if(deck.auxiliaries?.[root])return auxiliaryQuantityControl(root);
@@ -138,6 +141,7 @@ function quantityControl(c) {
     setQuantity(c.code,i);
     const quantity=familyQuantity(root);
     for(const control of box.children){const active=Number(control.textContent)===quantity;control.classList.toggle('active',active);control.setAttribute('aria-pressed',String(active));}
+    onQuantityChange?.();
   },i===n?'active':'');b.setAttribute('aria-label',`${i} copias de ${title(c)}`);b.setAttribute('aria-pressed',String(i===n));b.disabled=i<min;if(i<min)b.title='Carta obligatoria del héroe';box.append(b);}
   return box;
 }
@@ -147,12 +151,23 @@ function rulesNode(value,className='rules'){
 function cardDetail(code,back=false,origin=null) {
   hideHover();closePinPopover();
   if(origin instanceof DetailNavigation)detailNavigation=origin;
-  else {const codes=origin==='gallery'?galleryDetailCodes:origin==='deck'?[...$('deck-list').querySelectorAll('.deck-row')].map(row=>row.dataset.detailCode):origin==='deck-detail'?[...$('deck-detail-gallery').children].map(card=>card.dataset.code):[code];detailNavigation=new DetailNavigation(origin,codes,code);}
+  else {const codes=origin==='gallery'?galleryDetailCodes:origin==='deck'?[...$('deck-list').querySelectorAll('.deck-row')].map(row=>row.dataset.detailCode):origin==='deck-detail'?[...$('deck-detail-gallery').querySelectorAll('.card')].map(card=>card.dataset.code):[code];detailNavigation=new DetailNavigation(origin,codes,code);}
   detailNavigation.select(code);detailCode=code;detailBack=back;
   const original=cards[code];const c=back&&original.links.other_face?cards[original.links.other_face]:original;
   const body=el('div',undefined,'detail');
   const src=back&&!original.links.other_face?original.backImage:c.image;
-  if(src)body.append(previewImage(c,src,'detail-image'));
+  if(src){
+    const image=previewImage(c,src,'detail-image');
+    if(c.en.type_code==='player_side_scheme'){
+      const frame=el('div',undefined,'side-scheme-detail');
+      image.addEventListener('load',()=>{
+        frame.style.aspectRatio=String(image.naturalHeight/image.naturalWidth);
+        image.style.width=(100*image.naturalWidth/image.naturalHeight)+'%';
+      });
+      frame.append(image);
+      body.append(frame);
+    }else body.append(image);
+  }
   const info=el('div');info.append(el('h3',title(c)),el('p',[c.es.type_name,c.es.traits].filter(Boolean).join(' · '),'muted'));
   if(original.links.other_face||original.backImage){
     const target=back?original:cards[original.links.other_face];
@@ -164,7 +179,16 @@ function cardDetail(code,back=false,origin=null) {
   info.append(el('p','Las imágenes pueden estar en inglés. El texto se muestra en español cuando está disponible.','muted'));
   if(Object.values(c.coverage||{}).some(x=>x.status==='fallback_en')) info.append(el('p','Hay campos sin traducción: se conserva el texto inglés.','badge'));
   const english=el('details');english.append(el('summary','Texto auxiliar en inglés'),rulesNode(c.en.text));info.append(english);
-  if(c.role==='deck_card'){const root=canonical(c,cards);info.append(quantityControl(original),artworkPicker(root,original),groupPreferences(root));}
+  if(c.role==='deck_card'){
+    const root=canonical(c,cards);
+    let groups=groupPreferences(root);
+    const quantities=quantityControl(original,()=>{
+      const updated=groupPreferences(root);
+      groups.replaceWith(updated);
+      groups=updated;
+    });
+    info.append(quantities,artworkPicker(root,original),groups);
+  }
   if(c.role==='hero_auxiliary')info.append(auxiliaryQuantityControl(c.code));
   if(c.role==='identity'){
     const related=Object.values(cards).filter(x=>x.links.set===original.links.set && x.role==='hero_auxiliary');
@@ -198,22 +222,32 @@ function detailShortcut(event){
   }
 }
 function artworkPicker(root,shown){
-  const box=el('div',undefined,'artwork-picker'),options=artworkOptions(root,cards);
+  const box=el('fieldset',undefined,'artwork-picker'),options=artworkOptions(root,cards);
+  box.hidden=options.length<2;
   if(options.length<2)return box;
-  const label=el('label','Versión de la carta'),select=el('select');select.setAttribute('aria-label','Versión de la carta');
-  for(const c of options)select.append(option(c.code,(c.es.pack_name||c.en.pack_name||'Producto')+' · '+c.code));
-  select.value=options.find(c=>c.image===shown.image&&c.backImage===shown.backImage)?.code||selectedArtwork(root,deck,cards).code;
-  select.disabled=readOnly||!$('library-view').hidden;
-  select.onchange=()=>{deck.artwork[root]=select.value;changed();cardDetail(select.value,false,detailNavigation);};
-  label.append(select);box.append(label,el('p','Las variantes comparten las mismas cantidades y el límite de copias.','hint'));return box;
+  const active=options.find(c=>c.image===shown.image&&c.backImage===shown.backImage)?.code||selectedArtwork(root,deck,cards).code;
+  box.append(el('legend','Versión de la carta'));
+  for(const c of options){
+    const name=(c.es.pack_name||c.en.pack_name||'Producto')+' · '+c.code;
+    const label=el('label',undefined,'artwork-option'),radio=el('input');
+    label.title=name;radio.type='radio';radio.name='card-artwork';radio.value=c.code;
+    radio.checked=c.code===active;radio.disabled=readOnly||!$('library-view').hidden;
+    radio.setAttribute('aria-label',name);
+    radio.onchange=()=>{
+      deck.artwork[root]=c.code;changed();cardDetail(c.code,false,detailNavigation);
+      $('modal-body').querySelector('.artwork-picker input:checked')?.focus({preventScroll:true});
+    };
+    const src=c.image||c.backImage;
+    label.append(radio,src?previewImage(c,src,'artwork-thumb'):el('span',c.code,'artwork-thumb'));
+    box.append(label);
+  }
+  box.append(el('p','Las variantes comparten las mismas cantidades y el límite de copias.','hint'));
+  return box;
 }
 function hideHover(){const hover=$('card-hover');if(hover)hover.hidden=true;}
 function previewImage(card,src,className){
   const img=el('img');img.src=src;img.alt=title(card);img.className=className;
-  if(card.en.type_code!=='player_side_scheme')return img;
-  const frame=el('div',undefined,'landscape-preview '+className+'-frame');
-  img.onload=()=>{if(img.naturalWidth&&img.naturalHeight){frame.style.aspectRatio=String(img.naturalHeight/img.naturalWidth);img.style.width=(100*img.naturalWidth/img.naturalHeight)+'%';}};
-  frame.append(img);return frame;
+  return img;
 }
 function hoverCard(code,anchor,source='deck'){
   if($('modal').open)return;
@@ -223,7 +257,7 @@ function hoverCard(code,anchor,source='deck'){
   const printed=Object.keys(resources).filter(key=>key!=='none'&&c.en['resource_'+key]>0).map(key=>`${resources[key]} ×${c.en['resource_'+key]}`);
   content.append(el('p','Recursos: '+(printed.join(' · ')||'Sin recurso'),'hover-resources'),rulesNode(c.es.text||c.en.text,'hover-rules'),el('p',(c.es.pack_name||c.en.pack_name||'')+' · '+c.code,'hover-pack'));
   const showImage=Boolean(c.image&&(source!=='gallery'||c.en.type_code==='player_side_scheme'));
-  hover.classList.toggle('text-only',!showImage);hover.classList.toggle('landscape-hover',showImage&&c.en.type_code==='player_side_scheme');
+  hover.classList.toggle('text-only',!showImage);
   hover.replaceChildren();if(showImage)hover.append(previewImage(c,c.image,'hover-image'));hover.append(content);hover.hidden=false;
   const rect=anchor.getBoundingClientRect(),box=hover.getBoundingClientRect();
   const left=rect.right+12+box.width<=innerWidth-8?rect.right+12:Math.max(8,rect.left-box.width-12);
@@ -232,7 +266,7 @@ function hoverCard(code,anchor,source='deck'){
 function hoverIdentity(code,anchor){
   if($('modal').open)return;
   const identities=identityPreviewCards(cards[code],cards),hover=$('card-hover');if(!identities.length)return;
-  hover.classList.remove('text-only','landscape-hover');hover.classList.add('identity-hover');hover.replaceChildren();
+  hover.classList.remove('text-only');hover.classList.add('identity-hover');hover.replaceChildren();
   for(const identity of identities){
     const section=el('section',undefined,'identity-preview'),content=el('div',undefined,'hover-content');
     content.append(el('h3',(identity.en.type_code==='alter_ego'?'Alter ego':'Héroe')+' · '+title(identity),'hover-name'),el('p',identity.es.traits||identity.en.traits||'','hover-meta'),rulesNode(identity.es.text||identity.en.text,'hover-rules'));
@@ -246,7 +280,7 @@ function attachHover(node,code,source='deck'){
   const show=()=>source==='identity'?hoverIdentity(code,node):hoverCard(code,node,source);
   node.onpointerenter=e=>{if(e.pointerType==='mouse'||e.pointerType==='pen')show();};node.onpointerleave=hideHover;node.onfocus=show;node.onblur=hideHover;
 }
-function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,costs:[...selection.cost],hideHero:$('hide-hero').checked,sameAspect:$('same-aspect').checked,resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:$('owned-only').checked,selected:$('selected-only').checked,sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
+function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,costs:[...selection.cost],hideHero:$('hide-hero').checked,sameAspect:$('same-aspect').checked,resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:$('owned-only').checked,sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
 function currentPreset(){return presets.find(p=>p.id===activePresetId);}
 function refreshSearchFields(){for(const [id,other]of [['search-name','search-text'],['search-text','search-name']])$(id).disabled=$(id).checked&&!$(other).checked;}
 function refreshTraitSources(){
@@ -417,16 +451,22 @@ function galleryCard(c,origin,footer){
 function renderDeckDetail(){
   if($('deck-detail').hidden)return;
   const gallery=$('deck-detail-gallery'),hideHero=$('deck-hide-hero').checked;
-  const entries=Object.keys(deck.cards).map(code=>selectedArtwork(code,deck,cards))
-    .filter(c=>c&&(!hideHero||c.en.faction_code!=='hero'))
-    .sort((a,b)=>title(a).localeCompare(title(b),'es'));
+  const splitRows=$('detail-group-rows').getAttribute('aria-pressed')==='true';
   gallery.replaceChildren();
-  for(const c of entries){
-    const footer=el('div',undefined,'card-footer');
-    footer.append(el('span',familyQuantity(canonical(c,cards))+'×','badge'));
-    gallery.append(galleryCard(c,'deck-detail',footer));
+  for(const group of listDeckGroups(deck,cards)){
+    if(group.kind==='auxiliary')continue;
+    const entries=group.codes.map(code=>selectedArtwork(code,deck,cards))
+      .filter(c=>c&&(!hideHero||c.en.faction_code!=='hero'))
+      .sort((a,b)=>title(a).localeCompare(title(b),'es'));
+    if(!entries.length)continue;
+    if(splitRows&&gallery.childElementCount)gallery.append(el('hr',undefined,'deck-group-separator'));
+    for(const c of entries){
+      const footer=el('div',undefined,'card-footer');
+      footer.append(el('span',familyQuantity(canonical(c,cards))+'×','badge'));
+      gallery.append(galleryCard(c,'deck-detail',footer));
+    }
   }
-  if(!entries.length)gallery.append(el('p','No hay cartas del mazo para mostrar.','empty'));
+  if(!gallery.childElementCount)gallery.append(el('p','No hay cartas del mazo para mostrar.','empty'));
 }
 function renderGallery(){
   clearTimeout(searchTimer);searchTimer=null;
@@ -456,9 +496,24 @@ function groupPreferences(code){
   const field=el('fieldset',undefined,'group-preferences');field.append(el('legend','Agrupadores'));
   const current=deck.auxiliaries?.[code]?AUXILIARY_GROUP:deck.grouping.preferred[code]||'default';
   const natural=defaultGroup(cards[code],deck.grouping.mode);
-  const entries=[{id:'default',name:'Default · '+natural.label},...deck.groups.filter(g=>g.codes.includes(code)),{id:AUXILIARY_GROUP,name:'Auxiliares'}];
-  for(const entry of entries){const label=el('label',undefined,'check-row'),radio=el('input');radio.type='radio';radio.name='preferred-group';radio.value=entry.id;radio.checked=current===entry.id;radio.disabled=readOnly||!$('library-view').hidden||Boolean(entry.hidden);
-    radio.onchange=()=>{if(entry.id===AUXILIARY_GROUP||deck.auxiliaries?.[code])moveCard(code,entry.id==='default'?natural.id:entry.id);else{deck.grouping.preferred[code]=entry.id;changed();}if(detailCode&&$('modal').open)cardDetail(detailCode,detailBack,detailNavigation);};if(entry.id===AUXILIARY_GROUP&&(requiredHeroCards(deck,cards)[code]||(!deck.cards[code]&&!deck.auxiliaries?.[code])))radio.disabled=true;label.append(radio,document.createTextNode(entry.name+(entry.hidden?' (oculto)':'')));field.append(label);}
+  const inDeck=familyQuantity(code)>0;
+  const entries=[{id:'default',name:'Default · '+natural.label},...deck.groups.filter(g=>g.codes.includes(code)||(inDeck&&!g.hidden)),{id:AUXILIARY_GROUP,name:'Auxiliares'}];
+  for(const entry of entries){
+    const label=el('label',undefined,'check-row'),radio=el('input');
+    radio.type='radio';radio.name='preferred-group';radio.value=entry.id;radio.checked=current===entry.id;
+    radio.disabled=readOnly||!$('library-view').hidden||Boolean(entry.hidden);
+    if(entry.id===AUXILIARY_GROUP&&(requiredHeroCards(deck,cards)[code]||(!deck.cards[code]&&!deck.auxiliaries?.[code])))radio.disabled=true;
+    radio.onchange=()=>{
+      if(entry.id===AUXILIARY_GROUP||deck.auxiliaries?.[code]||(entry.codes&&!entry.codes.includes(code))){
+        moveCard(code,entry.id==='default'?natural.id:entry.id);
+      }else{
+        deck.grouping.preferred[code]=entry.id;
+        changed();
+      }
+      if(detailCode&&$('modal').open)cardDetail(detailCode,detailBack,detailNavigation);
+    };
+    label.append(radio,document.createTextNode(entry.name+(entry.hidden?' (oculto)':'')));field.append(label);
+  }
   field.append(el('p','El grupo preferido determina dónde aparece la carta. Cambiarlo conserva sus otras asociaciones.','hint'));
   return field;
 }
@@ -519,7 +574,7 @@ function renderDeck(){
   $('deck-summary').textContent=Object.entries(summary).map(([k,n])=>`${n} ${k.toLowerCase()}`).join(' · ')||'Elige un héroe o añade tu primera carta.';
   $('deck-list').replaceChildren();
   const minimum=requiredHeroCards(deck,cards);
-  $('grouping-mode').value=deck.grouping.mode;
+  $('grouping-mode').value=$('detail-grouping-mode').value=deck.grouping.mode;
   for(const descriptor of listDeckGroups(deck,cards)){
     const isAux=descriptor.kind==='auxiliary';
     const entries=descriptor.codes.filter(code=>isAux||!$('deck-hide-hero').checked||cards[code].en.faction_code!=='hero').map(code=>[code,isAux?aux[code]:deck.cards[code]]).sort(([a],[b])=>title(cards[a]).localeCompare(title(cards[b]),'es'));
@@ -736,7 +791,7 @@ async function init(){
     clearTimeout(searchTimer);searchTimer=null;if(event.isComposing)return;
     searchTimer=setTimeout(()=>{searchTimer=null;page=1;renderGallery();},SEARCH_DELAY_MS);
   });
-  for(const id of ['search-language','owned-only','selected-only',...sortControls])$(id).addEventListener('change',()=>{page=1;renderGallery();});
+  for(const id of ['search-language','owned-only',...sortControls])$(id).addEventListener('change',()=>{page=1;renderGallery();});
   $('show-variants').checked=localStorage.getItem('marvel.show-variants')==='true';
   $('show-variants').onchange=()=>{page=1;try{localStorage.setItem('marvel.show-variants',String($('show-variants').checked));}catch{}renderGallery();};
   for(const id of ['hide-hero','same-aspect'])$(id).onchange=()=>{page=1;renderFactionFilter();renderGallery();};
@@ -789,7 +844,7 @@ async function init(){
     for(const key of Object.keys(single))single[key]=false;
     if(presetsReady&&currentPreset()){savePresetPatch(activePresetId,p=>{p.onlyPinned=false;p.enabled=true;});renderFilterTabs();}
     checklist('type',Object.entries(types));checklist('cost',costOptions);checklist('resource',Object.entries(resources));renderFactionFilter();page=1;renderGallery();};
-  $('quick-reset-filters').onclick=()=>{$('selected-only').checked=false;selectedFirst=false;try{localStorage.setItem('marvel.group-selection','false');}catch{}for(const [index,id]of sortControls.entries())$(id).value=CARD_SORT_DEFAULTS[index];$('reset-filters').click();};
+  $('quick-reset-filters').onclick=()=>{selectedFirst=false;try{localStorage.setItem('marvel.group-selection','false');}catch{}for(const [index,id]of sortControls.entries())$(id).value=CARD_SORT_DEFAULTS[index];$('reset-filters').click();};
   $('clean-deck').onclick=cleanDeck;
   $('undo-clean-deck').onclick=()=>{if(cleanupUndo?.id===deck.id&&cleanupUndo.after===JSON.stringify(deck)){deck=clone(cleanupUndo.before);cleanupUndo=null;changed();}};
   $('deck-statistics').open=localStorage.getItem('marvel.ui.statistics')==='true';$('deck-statistics').ontoggle=()=>{try{localStorage.setItem('marvel.ui.statistics',String($('deck-statistics').open));}catch{}};
@@ -805,7 +860,17 @@ async function init(){
   $('import-file').onchange=e=>{importFile(e.target.files[0]);e.target.value='';};
   $('add-group').onclick=()=>{if(readOnly)return;try{addCustomGroup(deck,$('group-name').value);$('group-name').value='';changed();}catch(e){report(e);}};
   $('group-name').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('add-group').click();}};
-  $('grouping-mode').onchange=()=>{deck.grouping.mode=$('grouping-mode').value;pendingGroupDelete=null;if(readOnly)renderDeck();else changed();};
+  for(const id of ['grouping-mode','detail-grouping-mode']){
+    $(id).onchange=()=>{deck.grouping.mode=$(id).value;pendingGroupDelete=null;if(readOnly)renderDeck();else changed();};
+  }
+  const groupRows=$('detail-group-rows');
+  groupRows.setAttribute('aria-pressed',String(localStorage.getItem('marvel.ui.detail-group-rows')==='true'));
+  groupRows.onclick=()=>{
+    const pressed=String(groupRows.getAttribute('aria-pressed')!=='true');
+    groupRows.setAttribute('aria-pressed',pressed);
+    try{localStorage.setItem('marvel.ui.detail-group-rows',pressed);}catch{}
+    renderDeckDetail();
+  };
   $('versions-button').onclick=versions;$('library-button').onclick=library;$('collection-button').onclick=collectionDialog;
   $('constructor-button').onclick=editCurrent;$('edit-current').onclick=editCurrent;
   $('library-new').onclick=newDeck;
@@ -845,6 +910,15 @@ async function init(){
     renderFilterTabs();renderAllyFilters();closePinPopover();toggleSearchOptions(false);toggleTraitList(false);toggleTraitSuggestions(false);
   }
   setActivePanel(localStorage.getItem('marvel.active-panel')==='none'?'none':activePanel);
+  $('deck-column-toggle').onclick=()=>{
+    const control=$('deck-column-toggle');
+    control.setAttribute('aria-expanded',String(control.getAttribute('aria-expanded')==='false'));
+    hideHover();
+  };
+  function setAvailableCards(open){
+    $('available-cards').hidden=!open;
+    $('available-tab').setAttribute('aria-expanded',String(open));
+  }
   let restoreFilters=false,restoreOther=false;
   function setDeckDetail(open){
     if(open){
@@ -854,12 +928,16 @@ async function init(){
       setActivePanel('filter-panel',false);
       if(restoreOther)$('other-tab').click();
     }
-    $('deck-detail').hidden=!open;$('available-cards').hidden=open;$('available-tab').hidden=!open;
+    $('deck-detail').hidden=!open;setAvailableCards(!open);
     $('deck-detail-toggle').setAttribute('aria-expanded',String(open));
     hideHover();renderDeckDetail();
   }
   $('deck-detail-toggle').onclick=()=>setDeckDetail($('deck-detail').hidden);
-  $('available-tab').onclick=()=>{setDeckDetail(false);$('deck-detail-toggle').focus();};
+  $('available-tab').onclick=()=>{
+    if(!$('deck-detail').hidden)setDeckDetail(false);
+    else setAvailableCards($('available-cards').hidden);
+    hideHover();
+  };
   $('deck-tab').onclick=()=>{restoreFilters=false;setActivePanel($('deck-panel').hidden?'deck-panel':'none');};
   $('filter-tab').onclick=()=>{
     if(!$('deck-detail').hidden){restoreFilters=false;setDeckDetail(false);setActivePanel('filter-panel');}
@@ -875,7 +953,7 @@ async function init(){
   addEventListener('storage',event=>{
     if(isPresetStorageKey(event.key)){reloadPresets();}
     if(event.key==='marvel.filters.enabled'){advancedFilters=event.newValue==='true';$('advanced-filters').checked=advancedFilters;renderFilterTabs();renderGallery();}
-    if(event.key==='marvel.deck.'+deck.id)status('Este mazo cambió en otra pestaña. Tu borrador se conserva; al guardar se comprobará la revisión.');
+    if(event.key==='marvel.deck.'+deck.id)status(dirty?'Este mazo cambió en otra pestaña. Tu borrador se conserva y al guardar se comprobará la revisión.':'Este mazo cambió en otra pestaña. Recarga para abrir la última revisión guardada.');
     if(event.key?.startsWith('marvel.product.')){const key=event.key.slice('marvel.product.'.length);collection[key]=event.newValue===null?1:Number(event.newValue)>0?1:0;renderGallery();}
     if(!$('library-view').hidden)renderLibrary();
   });

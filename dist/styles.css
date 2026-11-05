@@ -33,6 +33,13 @@ button.pin-confirming,.pin-actions button.pin-confirming{background:#ad4141;colo
 @media(max-width:550px){.preset-pill .preset-tab{max-width:95px;font-size:10px}.preset-pill button{min-height:30px}.preset-tools{padding:8px 12px 0;gap:7px}.preset-tools input#preset-name{width:160px}.preset-tools>label:first-child{display:none}.sim-hand .sim-card{width:calc((100% - 21px)/4)}.card-footer{padding:6px 4px}.pin-actions button{width:22px;min-width:22px}.card-footer .qty{gap:2px}.card-footer .qty button{min-width:25px;padding:3px 5px}}
 .deck-column{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:16px;min-width:0}
 .workspace>.results{grid-column:2;grid-row:2}
+#deck-detail{grid-column:2;grid-row:2;min-width:0}
+.deck-detail-heading{flex-wrap:wrap}
+.deck-group-separator{grid-column:1 / -1;width:100%;margin:0;border:0;border-top:1px solid var(--line)}
+body.readonly #deck-detail{display:none}
+body:not(.readonly) .workspace:has(#deck-column-toggle[aria-expanded=false])>.deck-column{display:none}
+.workspace:has(#deck-column-toggle[aria-expanded=false])>:is(.results,#deck-detail){grid-column:1 / -1;grid-row:2}
+@media(max-width:850px){#deck-detail{grid-column:1;grid-row:3}}
 body.readonly .deck-column{grid-column:1 / -1}
 .deck-statistics>summary{padding:12px 15px;cursor:pointer;font-weight:700;color:#edf2fb}
 #deck-statistics-content{padding:0 14px 14px}
@@ -65,6 +72,8 @@ button.stat-stack:hover,button.stat-stack:focus-visible,button.stat-stack:active
 #deck-list .resources{gap:2px}
 .hero-visibility{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer}
 .hero-visibility input,.hero-visibility-description{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+.side-scheme-detail{position:relative;width:100%;aspect-ratio:1030 / 710}
+#modal-body .side-scheme-detail>img{position:absolute;left:50%;top:50%;width:68.932%;height:auto;max-height:none;transform:translate(-50%,-50%) rotate(90deg)}
 .hero-visibility:has(input:checked){background:#2d2939;border-color:#9c5a60;color:#ffb9b1}
 .hero-visibility:has(input:focus-visible){outline:2px solid #9bc7ff;outline-offset:2px}
 #filter-panel .filter-settings .traits-block{overflow:visible;max-height:none}
@@ -86,12 +95,6 @@ button.stat-stack:hover,button.stat-stack:focus-visible,button.stat-stack:active
 .gallery-options{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:8px 11px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:7px}
 .gallery-options .check{margin:0;font-size:12px}
 #card-hover.text-only{grid-template-columns:minmax(0,1fr);width:340px}
-#card-hover.landscape-hover{grid-template-columns:280px minmax(0,1fr);width:630px}
-.landscape-preview{position:relative;width:100%;aspect-ratio:1030 / 710;align-self:start;overflow:hidden;min-width:0;border-radius:6px}
-.landscape-preview>img{position:absolute;left:50%;top:50%;width:68.932%;height:auto;max-width:none;max-height:none;transform:translate(-50%,-50%) rotate(90deg);object-fit:contain}
-#modal-body .landscape-preview>img,#card-hover .landscape-preview>img{max-width:none;max-height:none;height:auto;align-self:auto;object-position:center}
-#card-hover .hover-image-frame{width:280px;max-width:100%}
-#modal-body .detail-image-frame{width:100%;max-width:100%}
 #modal .group-preferences{display:flex;flex-wrap:wrap;gap:4px 14px;border:1px solid var(--line);border-radius:7px;padding:8px 12px;margin-top:12px}
 #modal .group-preferences .check-row{display:inline-flex;justify-content:flex-start;align-items:center;gap:8px;white-space:normal;margin:3px 0;padding:3px 0;font-size:12px;font-weight:500}
 #modal .group-preferences .hint{flex-basis:100%}
@@ -133,10 +136,10 @@ button.deck-thumb>img{display:block;width:100%;height:100%;object-fit:cover}
 @media(max-width:550px){.config-bar{gap:8px}.config-bar>.panel>.panel-content{width:calc(200% + 10px)}#filter-panel>.panel-content{margin-left:calc(-100% - 10px)}.app-header{flex-wrap:wrap}.app-header nav{flex:1;justify-content:flex-end}.app-header button{white-space:nowrap}}
 /* Compact configuration tabs and content, independent from deck and card sizing. */
 .config-bar{display:block;min-width:0}
-.config-tabs{display:flex;gap:6px;align-items:stretch}
+.config-tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.config-tabs #filter-presets{flex-basis:180px}
 .config-tabs>button{flex:0 0 auto;min-height:34px;justify-content:flex-start;font-size:13px;font-weight:650;padding:7px 12px;border-radius:7px 7px 0 0;white-space:nowrap}
 .config-tabs>button:before{content:'';border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #a6b9d3;transform-origin:2.5px 4px}
-.config-tabs>button[aria-expanded=true]{flex:1 1 auto;background:var(--panel);border-bottom-color:var(--panel)}
 .config-tabs>button[aria-expanded=true]:before{transform:rotate(90deg)}
 .config-bar>.panel,.config-bar>.panel[open]{width:100%;min-width:0;overflow:hidden;border-radius:0 0 8px 8px;order:0}
 .config-bar>.panel>.panel-content,#filter-panel>.panel-content{width:100%;margin:0;padding:13px 14px;background:var(--panel);border:0;border-radius:0}
@@ -284,9 +287,15 @@ body.readonly .hide-group,body.readonly .drag-handle{display:none!important}
 .card-hover .hover-rules{font-size:12px;white-space:pre-line;overflow-wrap:anywhere;margin:9px 0;line-height:1.55}
 .card-hover .hover-pack{font-size:10px;line-height:1.5;color:#a4b5cc;margin-top:10px}
 .card-hover .hover-resources{display:flex;align-items:center;gap:5px;font-size:12px;color:#d1def1;margin:5px 0}
-.artwork-picker{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:12px 0;min-width:0}
-.artwork-picker label{margin:0;font-size:12px;line-height:1.4}
-.artwork-picker select,.artwork-picker input{min-height:34px;max-width:100%;width:100%;font-size:12px;padding:6px 8px}
+.artwork-picker{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:12px 0;min-width:0;padding:6px 0;border:0}
+.artwork-picker legend{font-size:12px;font-weight:650}
+#modal-body .artwork-option{position:relative;margin:0;padding:2px;border:1px solid var(--line);border-radius:5px;cursor:pointer}
+.artwork-option input{position:absolute;width:1px;height:1px;clip-path:inset(50%)}
+#modal-body .artwork-thumb{display:grid;place-items:center;width:29px;height:42px;object-fit:contain;border-radius:2px;font-size:9px}
+.artwork-option:has(input:checked){outline:2px solid var(--red)}
+.artwork-option:has(input:focus-visible){outline:2px solid #9bc7ff}
+.artwork-option:has(input:disabled){cursor:default}
+.artwork-picker .hint{flex-basis:100%}
 @media(hover:none){.card-hover{display:none!important}}
 /* Keep search at the right without creating an almost empty second row. */
 @media(min-width:1100px){

@@ -62,7 +62,7 @@ Pendiente de datos: identificar el plan y los aliados patrulleros del ejemplo si
 ## 9. Validaciones de datos y formato externo
 
 - Exportación MarvelCDB: **backlog**, aplazada explícitamente por el usuario. Cuando se reactive, verificar el formato de importación aceptado y su correspondencia con los códigos locales. El JSON propio actual sigue siendo un respaldo, no un archivo compatible con MarvelCDB.
-- Más ilustraciones: identificar fuentes y archivos de las variantes faltantes. Las reimpresiones que comparten imagen no se presentarán como dibujos diferentes.
+- Más ilustraciones: el [inventario de ilustraciones alternativas](ILUSTRACIONES_ALTERNATIVAS.md) conserva la referencia aportada y el cruce con los códigos e imágenes del catálogo local. Falta verificar visualmente las variantes y localizar las imágenes exactas de las impresiones que usan referencias prestadas.
 
 ## Lo que ya quedó implementado
 
@@ -76,7 +76,7 @@ El usuario aclaró que busca cartas que mencionen planes secundarios en sus regl
 - Icono ① ajustado al mismo tamaño visual que selección de todos.
 - Segunda fila plegable de Cartas disponibles con Solo cartas de este mazo trasladado desde Otros.
 - Lista de rasgos del mazo superpuesta, con selección, contadores, ordenación y cierre al elegir/afuera/Escape. Selección de rasgos en una franja con desplazamiento horizontal.
-- Planes secundarios girados 90° a la derecha en detalle y widgets, sin recortar ni cambiar imágenes originales o galería.
+- Planes secundarios en horizontal en el detalle individual. Galerías, miniaturas y widgets mantienen la orientación vertical.
 - Widget de la galería sin imagen para cartas normales; conserva imagen girada para planes secundarios. Widget del mazo conserva imagen para todas.
 
 Comprobaciones y archivos afectados: [registro de entrega](evidencia/gestor/PENDIENTES_CLAROS.md).

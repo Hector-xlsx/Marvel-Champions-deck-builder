@@ -17,7 +17,15 @@
   <div class="statusbar"><span class="status-dot" aria-hidden="true"></span><p id="status" role="status" aria-live="polite">Cargando biblioteca…</p><span class="status-caption">Borrador local · Sin análisis de compatibilidad</span></div>
   <main id="constructor-view" class="workspace">
     <section id="config-bar" class="config-bar" data-active="deck" aria-label="Configuración del constructor">
-      <div class="config-tabs"><button id="deck-tab" type="button" aria-expanded="true" aria-controls="deck-panel">Mi mazo</button><button id="filter-tab" type="button" aria-expanded="false" aria-controls="filter-panel">Filtros</button><div id="filter-presets" role="tablist" aria-label="Filtros guardados" hidden></div><button id="other-tab" type="button" aria-expanded="false" aria-controls="other-options" hidden>Otros</button><button id="available-tab" type="button" aria-expanded="false" aria-controls="available-cards" hidden>Cartas disponibles</button></div>
+      <div class="config-tabs">
+        <button id="deck-tab" type="button" aria-expanded="true" aria-controls="deck-panel">General</button>
+        <button id="deck-column-toggle" type="button" aria-expanded="true" aria-controls="deck-column">Mazo</button>
+        <button id="deck-detail-toggle" type="button" aria-expanded="false" aria-controls="deck-detail">Detalle mazo</button>
+        <button id="available-tab" type="button" aria-expanded="true" aria-controls="available-cards">Cartas disponibles</button>
+        <button id="filter-tab" type="button" aria-expanded="false" aria-controls="filter-panel">Filtros</button>
+        <div id="filter-presets" role="tablist" aria-label="Filtros guardados" hidden></div>
+        <button id="other-tab" type="button" aria-expanded="false" aria-controls="other-options" hidden>Otros</button>
+      </div>
       <div id="deck-panel" class="panel deck-panel">
         <div class="panel-content deck-settings">
           <div class="settings-block name-settings"><label for="deck-name">Nombre del mazo</label><input id="deck-name" placeholder="Una nueva estrategia" maxlength="160"><div class="toolbar"><button id="new-deck" type="button">＋ Nuevo</button><button id="duplicate-deck" type="button">Duplicar</button></div></div>
@@ -39,11 +47,11 @@
         <button id="reset-filters" type="button" class="reset-filter-icon" aria-label="Limpiar filtros" title="Limpiar filtros">⟲</button>
       </div>
           <section id="ally-options" class="panel ally-panel" aria-label="Filtro avanzado de aliados" hidden><div class="ally-filter-title"><strong>Aliados</strong><span class="hint">Solo afecta a cartas de tipo Aliado.</span></div><div id="ally-stat-controls" class="ally-stat-controls"></div></section>
-          <section id="other-options" class="panel other-panel" hidden><div class="other-controls"><label class="check"><input id="advanced-filters" type="checkbox"><span>Filtro avanzado</span></label><label class="check"><input id="advanced-allies" type="checkbox"><span>Filtro avanzado aliados</span></label><label class="check"><input id="owned-only" type="checkbox"><span>Solo mi colección</span></label><label class="hero-visibility" title="Ocultar cartas de héroe"><input id="hide-hero" type="checkbox" checked><span>H Card</span><span class="hero-visibility-description"> · Ocultar cartas de héroe</span></label><label class="check"><input id="same-aspect" type="checkbox" checked><span>Mismo aspecto del héroe</span></label><label class="check"><input id="show-variants" type="checkbox"><span>Mostrar variantes de cartas</span></label><div class="language-control"><label for="search-language">Idioma de búsqueda</label><select id="search-language"><option value="es" selected>Español</option><option value="en">Inglés</option><option value="both">Ambos idiomas</option></select></div></div></section>
+          <section id="other-options" class="panel other-panel" hidden><div class="other-controls"><label class="check"><input id="advanced-filters" type="checkbox"><span>Filtro avanzado</span></label><label class="check"><input id="advanced-allies" type="checkbox"><span>Filtro avanzado aliados</span></label><label class="check"><input id="owned-only" type="checkbox"><span>Solo mi colección</span></label><label class="hero-visibility" title="Ocultar cartas de héroe"><input id="hide-hero" type="checkbox" checked><span>Cartas Superhéroe</span><span class="hero-visibility-description"> · Ocultar cartas de héroe</span></label><label class="check"><input id="same-aspect" type="checkbox" checked><span>Mismo aspecto del héroe</span></label><label class="check"><input id="show-variants" type="checkbox"><span>Mostrar variantes de cartas</span></label><div class="language-control"><label for="search-language">Idioma de búsqueda</label><select id="search-language"><option value="es" selected>Español</option><option value="en">Inglés</option><option value="both">Ambos idiomas</option></select></div></div></section>
     </section>
-    <div class="deck-column">
+    <div id="deck-column" class="deck-column">
     <section id="deck-cards-panel" class="panel deck-cards-panel" aria-labelledby="deck-view-name">
-      <div class="deck-cards-heading"><div><h2 class="deck-section-label">Cartas del mazo</h2><h1 id="deck-view-name">Nuevo mazo</h1><p id="deck-view-meta" class="muted"></p></div><div class="toolbar"><span id="deck-count" class="badge">0 cartas</span><button id="deck-detail-toggle" type="button" aria-expanded="false" aria-controls="deck-detail">Detalle mazo</button><label class="hero-visibility" title="Ocultar cartas de héroe"><input id="deck-hide-hero" type="checkbox"><span>H Card</span><span class="hero-visibility-description"> · Ocultar cartas de héroe</span></label><label class="inline-label" for="grouping-mode">Agrupar por</label><select id="grouping-mode"><option value="type" selected>Tipo</option><option value="faction">Aspecto</option><option value="cost">Coste</option></select><button id="deck-columns" type="button">2 columnas</button></div></div>
+      <div class="deck-cards-heading"><div><h2 class="deck-section-label">Cartas del mazo</h2><h1 id="deck-view-name">Nuevo mazo</h1><p id="deck-view-meta" class="muted"></p></div><div class="toolbar"><span id="deck-count" class="badge">0 cartas</span><label class="hero-visibility" title="Ocultar cartas de héroe"><input id="deck-hide-hero" type="checkbox"><span>Cartas Superhéroe</span><span class="hero-visibility-description"> · Ocultar cartas de héroe</span></label><label class="inline-label" for="grouping-mode">Agrupar por</label><select id="grouping-mode"><option value="type" selected>Tipo</option><option value="faction">Aspecto</option><option value="cost">Coste</option></select><button id="deck-columns" type="button">2 columnas</button></div></div>
       <div id="readonly-actions" class="toolbar" hidden><button id="edit-current" type="button" class="primary">Editar mazo</button></div>
       <div class="toolbar cleanup-actions"><button id="clean-deck" type="button" hidden>Limpiar Mazo</button><button id="undo-clean-deck" type="button" hidden>Deshacer limpieza</button></div>
       <div id="deck-summary" class="deck-summary"></div>
@@ -55,11 +63,22 @@
     </div>
     <section id="available-cards" class="results" aria-labelledby="gallery-title">
       <div class="results-heading"><div class="results-title"><h1 id="gallery-title">Cartas disponibles</h1><div id="gallery-pagination" class="pagination" aria-label="Páginas de cartas"><button id="page-prev" type="button" aria-label="Página anterior">◀</button><output id="page-indicator" aria-live="polite">1 / 1</output><button id="page-next" type="button" aria-label="Página siguiente">▶</button></div><span id="result-count" class="muted" aria-live="polite">Preparando cartas…</span></div><div class="gallery-controls"><button id="group-selection" type="button" aria-pressed="false">Agrupar selección</button><div class="toolbar zoom-controls" aria-label="Tamaño de las cartas"><button id="zoom-out" type="button" aria-label="Reducir tamaño de las cartas">−</button><button id="zoom-in" type="button" aria-label="Ampliar tamaño de las cartas">＋</button></div><label for="sort">Ordenar</label><select id="sort" aria-label="Orden principal"><option value="faction" selected>Aspecto</option><option value="type">Tipo de carta</option><option value="cost">Coste</option><option value="name">Nombre</option></select><select id="sort-secondary" aria-label="Segundo criterio"><option value="">Sin segundo criterio</option><option value="faction">Aspecto</option><option value="type" selected>Tipo de carta</option><option value="cost">Coste</option><option value="name">Nombre</option></select><select id="sort-tertiary" aria-label="Tercer criterio"><option value="">Sin tercer criterio</option><option value="faction">Aspecto</option><option value="type">Tipo de carta</option><option value="cost" selected>Coste</option><option value="name">Nombre</option></select><button id="quick-reset-filters" type="button" aria-label="Reiniciar filtros y orden" title="Reiniciar filtros y orden">⟲</button><button id="gallery-options-toggle" type="button" aria-label="Opciones de cartas disponibles" aria-expanded="false" aria-controls="gallery-options">▾</button></div></div>
-      <div id="gallery-options" class="gallery-options" hidden><div class="row-limit-control"><label for="row-limit">Filas</label><button id="row-less" type="button" aria-label="Reducir límite de filas">−</button><input id="row-limit" type="text" inputmode="numeric" role="spinbutton" aria-valuemin="0" aria-valuenow="3" value="3" aria-label="Filas de cartas por página"><button id="row-more" type="button" aria-label="Aumentar límite de filas">＋</button><output id="row-limit-label" hidden>filas</output></div><label class="check"><input id="selected-only" type="checkbox"><span>Solo cartas de este mazo</span></label></div>
+      <div id="gallery-options" class="gallery-options" hidden><div class="row-limit-control"><label for="row-limit">Filas</label><button id="row-less" type="button" aria-label="Reducir límite de filas">−</button><input id="row-limit" type="text" inputmode="numeric" role="spinbutton" aria-valuemin="0" aria-valuenow="3" value="3" aria-label="Filas de cartas por página"><button id="row-more" type="button" aria-label="Aumentar límite de filas">＋</button><output id="row-limit-label" hidden>filas</output></div></div>
       <div id="gallery" class="gallery" aria-label="Cartas del catálogo"></div>
     </section>
     <section id="deck-detail" aria-labelledby="deck-detail-title" hidden>
-      <div class="results-heading"><h2 id="deck-detail-title">Detalle mazo</h2></div>
+      <div class="results-heading deck-detail-heading">
+        <h2 id="deck-detail-title">Detalle mazo</h2>
+        <div class="toolbar">
+          <label class="inline-label" for="detail-grouping-mode">Agrupar por</label>
+          <select id="detail-grouping-mode">
+            <option value="type">Tipo</option>
+            <option value="faction">Aspecto</option>
+            <option value="cost">Coste</option>
+          </select>
+          <button id="detail-group-rows" type="button" class="filter-choice" aria-pressed="false">Fila por grupo</button>
+        </div>
+      </div>
       <div id="deck-detail-gallery" class="gallery"></div>
     </section>
   </main>
