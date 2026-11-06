@@ -8,6 +8,8 @@ export function presetCriteria(filter){
   const result={search:String(filter.search||'').slice(0,1000),language:['es','en','both'].includes(filter.language)?filter.language:'es',searchFields:{name:filter.searchFields?.name!==false,text:filter.searchFields?.text!==false}};
   if(!result.searchFields.name&&!result.searchFields.text)result.searchFields.name=true;
   result.traitSources=traitSourceOptions(filter.traitSources);
+  result.advancedTraits=filter.advancedTraits??Boolean(filter.traits?.length);
+  result.heroTraitInteraction=!result.advancedTraits&&Boolean(filter.heroTraitInteraction);
   result.allyStats=normalizeAllyFilter(filter.allyStats);
   for(const key of ['factions','types','traits','costs','resources'])if(Array.isArray(filter[key]))result[key]=list(filter[key]);
   for(const key of ['hideHero','sameAspect','owned'])result[key]=Boolean(filter[key]);
@@ -15,15 +17,15 @@ export function presetCriteria(filter){
 }
 export function createPreset(filter,name='Filtro 1',source){return {id:uid(),name,created:new Date().toISOString(),enabled:true,onlyPinned:source?.onlyPinned??false,criteria:presetCriteria(filter),pins:[...(source?.pins||[])],ui:clone(source?.ui||{})};}
 export function singleVisiblePreset(presets,advanced,activeId){const visible=advanced?presets.filter(p=>p.enabled):presets.filter(p=>p.id===activeId);return visible.length===1?visible[0]:null;}
-export function presetMatches(card,preset,deck,collection,specialRule,owned=preset.criteria.owned){return filterCards([card],{...preset.criteria,specialRule,owned},deck,collection).length>0;}
-export function presetResults(choices,presets,deck,collection,{specialRule,sorts,selected=false,owned}={}){
+export function presetMatches(card,preset,deck,collection,specialRule,owned=preset.criteria.owned,heroTraits){return filterCards([card],{...preset.criteria,specialRule,owned,heroTraits},deck,collection).length>0;}
+export function presetResults(choices,presets,deck,collection,{specialRule,sorts,selected=false,owned,heroTraits}={}){
   const included=new Set();
   for(const preset of presets.filter(p=>p.enabled)){
     const collectionOnly=owned??preset.criteria.owned;
     if(preset.onlyPinned){
       const pins=new Set(preset.pins);
       for(const card of filterCards(choices.filter(c=>pins.has(c.code)),{hideHero:preset.criteria.hideHero,owned:collectionOnly},deck,collection))included.add(card.code);
-    }else for(const card of filterCards(choices,{...preset.criteria,specialRule,owned:collectionOnly},deck,collection))included.add(card.code);
+    }else for(const card of filterCards(choices,{...preset.criteria,specialRule,owned:collectionOnly,heroTraits},deck,collection))included.add(card.code);
   }
   return choices.filter(c=>included.has(c.code)&&(!selected||deck.cards[c.code]>0)).sort((a,b)=>compareCards(a,b,sorts));
 }

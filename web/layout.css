@@ -165,10 +165,40 @@
 #deck-panel .aspect-settings { grid-column: 1 / -1; }
 #deck-panel #confirm-aspects { margin-top: 6px; }
 #new-deck-dialog { width: min(460px,calc(100% - 24px)); background: var(--panel); }
+#new-deck-dialog.hero-display-mode { width: min(1100px,calc(100% - 24px)); }
 .new-deck-content { display: grid; gap: 16px; padding: 16px; }
 .new-deck-content fieldset { min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: 7px; }
-#new-deck-aspects { display: flex; flex-wrap: wrap; gap: 0 14px; }
+#new-deck-aspects { width: 100%; }
 .new-deck-content .toolbar { justify-content: flex-end; }
+#hero-display { display: grid; gap: 8px; justify-items: center; }
+#hero-display .hero-carousel-tools { justify-content: space-between; width: 100%; }
+.hero-acceleration-control { display: flex; align-items: center; gap: 4px; margin: 0; }
+#hero-acceleration { width: 66px; min-width: 0; min-height: 26px; padding: 0; }
+.hero-carousel-tools output { min-width: 0; text-align: center; font-weight: 700; }
+#hero-faces {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  touch-action: pan-y;
+}
+.hero-carousel-group { min-width: 0; text-align: center; }
+#hero-faces .hero-carousel-card { width: 100%; min-width: 0; padding: 0; overflow: hidden; border: 2px solid transparent; }
+.hero-carousel-card img { display: block; width: 100%; aspect-ratio: 300/419; max-height: 48dvh; object-fit: contain; }
+#hero-faces .hero-carousel-card[aria-pressed="true"] { border-color: var(--red); }
+.hero-carousel-name { display: block; padding-top: 4px; font-size: 12px; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  #hero-faces { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .hero-carousel-group:is([data-offset="-2"],[data-offset="2"]) { display: none; }
+  .hero-acceleration-control > span:last-child { display: none; }
+}
+#hero-face-toggle { min-height: 44px; }
+#hero-trait-interaction { justify-self: start; align-self: center; white-space: normal; }
+@media (min-width: 851px) {
+  .deck-column > #deck-panel { width: 100%; }
+  body.readonly .deck-column > #deck-panel { display: none; }
+}
 @media (max-width: 850px) {
   #config-bar > #deck-panel { width: 100%; }
   .app-header nav:has(#save-changes:not([hidden])) {

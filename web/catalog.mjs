@@ -5,6 +5,23 @@ export const normalize = value => String(value ?? '').normalize('NFD').replace(/
 export const plain = value => String(value ?? '').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&');
 export const title = card => card.es.name || card.en.name;
 export const aspectCodes = ['aggression','justice','leadership','protection','pool'];
+export const baseAspectCodes = aspectCodes.filter(code=>code!=='pool');
+export function requiredAspectCount(hero){
+  return hero?.links?.set==='warlock'||hero?.code==='21031a'?4:
+    hero?.links?.set==='spider_woman'||hero?.code==='04031a'?2:1;
+}
+export function heroSetTraits(hero,cards){
+  const set=hero?.links?.set;
+  if(!set)return [];
+  const own=Object.values(cards).filter(card=>card.links?.set===set&&['identity','deck_card'].includes(card.role));
+  const values=own.flatMap(card=>[
+    ...scopedTraits(card,{attribute:true,text:false},true),
+    ...(card.traitReferences?.es||[]),...(card.traitReferences?.en||[]),
+  ]);
+  const generic=new Set(['intervencion','ataque','defensa','thwart','attack','defense','defence']);
+  return [...new Map(values.map(name=>[traitKey(name),name])).entries()]
+    .filter(([key])=>!generic.has(key)).map(([,name])=>name);
+}
 // Dots inside abbreviations such as S.H.I.E.L.D. are not trait separators.
 export const traits = value => plain(value).split(/\.(?:\s+|$)/).map(t=>t.trim()).filter(Boolean);
 export function cardTraits(card) {return traits(card.es.traits || card.en.traits);}
@@ -160,7 +177,11 @@ export function filterCards(cards, filter, deck, collection) {
     if(filter.types && !filter.types.includes(e.type_code))return false;
     if(!matchesAllyFilter(c,filter.allyStats))return false;
     if(filter.costs && !filter.costs.includes(String(e.cost??'unknown')))return false;
-    if(filter.traits?.length){
+    if(filter.heroTraitInteraction){
+      const values=scopedTraits(c,{attribute:true,text:true},true).map(traitKey);
+      if(!filter.heroTraits?.some(t=>values.includes(traitKey(t))))return false;
+    }
+    if(filter.advancedTraits!==false&&filter.traits?.length){
       const values=scopedTraits(c,filter.traitSources,true).map(traitKey);
       if(!filter.traits.some(t=>values.includes(traitKey(t))))return false;
     }

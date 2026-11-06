@@ -1,4 +1,4 @@
-import {canonical,aspectCodes,specialRuleFor,specialRuleAllows,requiredHeroCards,limit} from './catalog.mjs';
+import {canonical,aspectCodes,baseAspectCodes,specialRuleFor,specialRuleAllows,requiredHeroCards,limit} from './catalog.mjs';
 export function constructionReport(deck,cards){
   const byCard={},issues=[],hero=cards[deck.hero],minimum=requiredHeroCards(deck,cards);
   if(!hero)return {byCard,issues,removable:[]};
@@ -7,7 +7,7 @@ export function constructionReport(deck,cards){
   const aspects=deck.aspects.filter(a=>aspectCodes.includes(a)),adam=hero.code==='21031a',spider=hero.code==='04031a',rule=specialRuleFor(hero),off=[];
   for(const [code,n]of Object.entries(grouped)){
     const c=cards[code],f=c.en.faction_code,own=f==='hero'&&c.links.set===hero.links.set;
-    const allowed=own||f==='basic'||(adam?['aggression','justice','leadership','protection'].includes(f):aspects.includes(f))||specialRuleAllows(c,rule);
+    const allowed=own||f==='basic'||(adam?baseAspectCodes:aspects).includes(f)||specialRuleAllows(c,rule);
     if(!allowed)add(code,'No corresponde al héroe y a los aspectos elegidos.',true);
     if(!own&&f!=='basic'&&!aspects.includes(f)&&specialRuleAllows(c,rule))off.push(code);
     const max=adam&&!own?1:Math.max(minimum[code]||0,limit(c));if(n>max)add(code,`Máximo ${max} copias para este mazo.`,true);
@@ -17,7 +17,10 @@ export function constructionReport(deck,cards){
   if(rule?.id==='maria_hill'&&off.length>3)aggregate('Maria Hill permite hasta 3 apoyos distintos de otros aspectos; elige cuáles retirar.',off);
   const counts=Object.fromEntries(aspectCodes.map(a=>[a,Object.entries(grouped).filter(([c])=>cards[c].en.faction_code===a).reduce((n,[,q])=>n+q,0)]));
   if(spider){if(aspects.length!==2)issues.push('Spiderwoman requiere exactamente dos aspectos.');else if(counts[aspects[0]]!==counts[aspects[1]])issues.push('Spiderwoman requiere igual cantidad de cartas de sus dos aspectos.');}
-  if(adam){const four=['aggression','justice','leadership','protection'];if(new Set(four.map(a=>counts[a])).size>1)issues.push('Adam Warlock requiere igual cantidad de cartas de los cuatro aspectos generales.');if(aspects.length!==4||!four.every(a=>aspects.includes(a)))issues.push('Selecciona los cuatro aspectos generales para Adam Warlock.');}
+  if(adam){
+    if(aspects.length!==4||!baseAspectCodes.every(code=>aspects.includes(code)))issues.push('Selecciona los cuatro aspectos base para Adam Warlock.');
+    if(new Set(baseAspectCodes.map(a=>counts[a])).size>1)issues.push('Adam Warlock requiere igual cantidad de cartas de sus cuatro aspectos.');
+  }
   return {byCard,issues,removable:Object.keys(byCard).filter(c=>!minimum[c])};
 }
 export function removeConstructionCards(deck,codes,cards){

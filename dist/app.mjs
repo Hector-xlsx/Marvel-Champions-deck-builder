@@ -1,5 +1,5 @@
 import {createDeck,DeckStore,addVersion,nextVersionNumber,diffCards,validateImport} from './model.mjs';
-import {factions,types,resources,title,plain,normalize,cardTraits,scopedTraits,TEXT_TOPICS,traitCounts,specialRuleFor,allowedFactions,automaticName,canonical,limit,deckLimit,filterCards,shortage,requiredHeroCards,ensureHeroCards,canSetQuantity,selectionState,toggleSelection,filterDecks,CARD_SORT_DEFAULTS,paginateCards} from './catalog.mjs';
+import {factions,types,resources,title,plain,normalize,cardTraits,scopedTraits,TEXT_TOPICS,traitCounts,specialRuleFor,allowedFactions,automaticName,baseAspectCodes,requiredAspectCount,heroSetTraits,canonical,limit,deckLimit,filterCards,shortage,requiredHeroCards,ensureHeroCards,canSetQuantity,selectionState,toggleSelection,filterDecks,CARD_SORT_DEFAULTS,paginateCards} from './catalog.mjs';
 import {initializeGroups,addCustomGroup,defaultGroup,listDeckGroups,moveToGroup,hideGroup,restoreGroup,deleteCustomGroup,clearCustomGroup} from './groups.mjs';
 import {artworkOptions,selectedArtwork,galleryArtworks} from './artwork.mjs';
 import {iconSvg} from './icons.mjs';
@@ -36,7 +36,9 @@ const option=(value,label)=>{const o=el('option',label);o.value=value;return o;}
 const clone=x=>JSON.parse(JSON.stringify(x));
 let catalog,cards,choices,store,deck,revision=null,dirty=false,page=1,saving=false;
 let pendingAspects=null, editingId=null;
-const heroOptions=new Map();
+const heroOptions=new Map(), heroTraitsByCode=new Map();
+let showHeroDisplay=true, showAlterEgo=false, centeredHeroForm=null;
+let wheelDistance=0,lastWheelTime=-Infinity,wheelDirection=0,heroWheelPaused=false;
 let heroLanguage=localStorage.getItem('marvel.ux.hero-language')==='en'?'en':'es';
 const pageId=crypto.randomUUID();
 let collection={};
@@ -112,25 +114,153 @@ function openDeck(record,preferDraft=true) {
   if(!readOnly){editingId=deck.id;saveDraft();}render();status(readOnly?'Consulta del mazo · Sin edición.':outdatedDraft?'Hay una revisión más reciente guardada. Se conservó tu borrador en esta pestaña.':restored?`Se restituyeron ${restored} copias obligatorias en el borrador. El original guardado se conserva.`:dirty?'Borrador recuperado en esta pestaña.':'Mazo abierto · '+(deck.versions.at(-1)?.label||'Sin versiones guardadas'));
 }
 function openNewDeck(existing=null){
-  $('hero-select').value='';
-  for(const input of $('new-deck-aspects').querySelectorAll('input'))input.checked=Boolean(existing?.aspects.includes(input.value));
+  setHeroView(true);
+  showAlterEgo=false;centeredHeroForm=null;stopHeroWheel();
+  $('hero-select').selectedIndex=1;
+  $('new-deck-aspects').multiple=true;
+  delete $('new-deck-aspects').dataset.fixed;
+  for(const option of $('new-deck-aspects').options)option.selected=Boolean(existing?.aspects.includes(option.value));
   updateNewDeckControls();
   $('build-deck').onclick=()=>{
     if($('build-deck').disabled)return;
     const next=existing?clone(existing):createDeck();
     next.hero=$('hero-select').value;next.aspects=newDeckAspects();
-    $('new-deck-dialog').close();
-    if(existing){deck=next;ensureHeroCards(deck,cards);}
-    else openSaved({deck:next,revision:null});
-    updateAutoName();changed();
+    const build=()=>{
+      $('new-deck-dialog').close();
+      if(existing){deck=next;ensureHeroCards(deck,cards);}
+      else{
+        openSaved({deck:next,revision:null});
+        startNewDeckFilter();
+      }
+      updateAutoName();changed();
+    };
+    const active=!readOnly&&deck.id===editingId
+      ? {deck,revision,dirty}
+      : drafts().find(entry=>entry.deck.id===editingId);
+    if(!existing&&active?.dirty)confirmNewDeck(active,build);
+    else build();
   };
   $('new-deck-dialog').showModal();
-  $('hero-select').focus();
+  $(showHeroDisplay?'hero-next':'hero-select').focus();
 }
-function newDeckAspects(){return [...$('new-deck-aspects').querySelectorAll('input:checked')].map(input=>input.value);}
+function confirmNewDeck(active,build){
+  const body=el('div'), modal=$('modal');
+  const error=el('p',undefined,'warning');
+  error.hidden=true;error.setAttribute('role','alert');
+  const fail=message=>{error.textContent=message;error.hidden=false;};
+  const finish=()=>{modal.close();build();};
+  const discard=button('Descartar cambios actuales y crear nuevo mazo',()=>{
+    if(saving){fail('Hay un guardado en curso. Espera un momento y vuelve a intentarlo.');return;}
+    const id=active.deck.id;
+    try{
+      localStorage.removeItem('marvel.recovery.'+id+'.'+pageId);
+      sessionStorage.removeItem('marvel.draft.'+id);
+      if(sessionStorage.getItem('marvel.last')===id)sessionStorage.removeItem('marvel.last');
+    }catch(e){fail('No se pudo descartar el borrador. '+e.message);return;}
+    finish();
+  });
+  const cancel=button('Cancelar',()=>modal.close());
+  const save=button('Guardar cambios actuales y crear nuevo mazo',async()=>{
+    error.hidden=true;
+    for(const control of controls)control.disabled=true;
+    try{
+      if(await commit(active,fail))finish();
+    }finally{
+      for(const control of controls)control.disabled=false;
+    }
+  },'primary');
+  const controls=[discard,save,cancel,$('close-modal')];
+  const preventCancel=event=>{if(cancel.disabled)event.preventDefault();};
+  body.append(el('p','Tienes cambios sin guardar en «'+active.deck.name+'».'),
+    discard,save,cancel,error);
+  popup('Cambios sin guardar',body);
+  modal.addEventListener('cancel',preventCancel);
+  modal.addEventListener('close',()=>modal.removeEventListener('cancel',preventCancel),{once:true});
+  cancel.focus();
+}
+function newDeckAspects(){return [...$('new-deck-aspects').selectedOptions].map(option=>option.value);}
 function updateNewDeckControls(){
-  $('hero-detail').disabled=!$('hero-select').value;
-  $('build-deck').disabled=$('hero-detail').disabled||!newDeckAspects().length;
+  const hero=cards[$('hero-select').value], aspects=$('new-deck-aspects'), count=requiredAspectCount(hero);
+  aspects.multiple=count>1;
+  if(count===4){
+    for(const option of aspects.options)option.selected=baseAspectCodes.includes(option.value);
+    aspects.dataset.fixed='';
+  }else if('fixed' in aspects.dataset){
+    aspects.selectedIndex=-1;
+    delete aspects.dataset.fixed;
+  }
+  aspects.disabled=!hero||count===4;
+  $('new-deck-aspect-rule').textContent=count===4?'Adam Warlock usa los cuatro aspectos base.':hero?'Selecciona '+count+(count===1?' aspecto.':' aspectos.'):'Elige primero un héroe.';
+  $('hero-detail').disabled=!hero;
+  $('build-deck').disabled=!hero||newDeckAspects().length!==count;
+  if(showHeroDisplay)renderHeroDisplay();
+}
+function setHeroView(display){
+  showHeroDisplay=display;
+  $('new-deck-dialog').classList.toggle('hero-display-mode',display);
+  $('hero-view-toggle').textContent=display?'Listado':'Display';
+  $('hero-list').hidden=display;$('hero-display').hidden=!display;
+  $('hero-acceleration-control').hidden=!display;
+}
+function heroBand(){
+  return [...$('hero-select').options].slice(1).flatMap(entry=>{
+    const forms=heroOptions.get(entry.value)||[];
+    const heroes=forms.filter(card=>card.en.type_code==='hero');
+    const alters=[...new Set(heroes.map(card=>cards[card.links.other_face]).filter(card=>card?.en.type_code==='alter_ego'))];
+    const visible=showAlterEgo&&alters.length?alters:heroes;
+    return visible.map(card=>({entry,card}));
+  });
+}
+function heroBandIndex(band){
+  const hero=$('hero-select').value;
+  const index=band.findIndex(({entry,card})=>entry.value===hero&&card.code===centeredHeroForm);
+  return index<0?band.findIndex(({entry})=>entry.value===hero):index;
+}
+function stopHeroWheel(){
+  wheelDistance=0;lastWheelTime=performance.now();heroWheelPaused=true;
+}
+function centerHero({entry,card}){
+  $('hero-select').value=entry.value;
+  centeredHeroForm=card.code;
+  updateNewDeckControls();
+}
+function stepHero(direction){
+  const band=heroBand();
+  if(!band.length)return;
+  const index=heroBandIndex(band);
+  centerHero(band[index<0?(direction>0?0:band.length-1):((index+direction)%band.length+band.length)%band.length]);
+}
+function renderHeroDisplay(){
+  const band=heroBand(),index=heroBandIndex(band),images=$('hero-faces');
+  images.replaceChildren();
+  $('hero-face-toggle').textContent=showAlterEgo?'Ver héroe':'Ver alter ego';
+  if(index<0)return;
+  $('hero-display-name').textContent=band[index].entry.textContent;
+  for(const offset of [-2,-1,0,1,2]){
+    const item=band[(index+offset+band.length)%band.length],card=item.card;
+    const group=el('div',undefined,'hero-carousel-group');
+    group.dataset.offset=String(offset);
+    const name=card[heroLanguage]?.name||title(card);
+    const face=button('',()=>{
+      stopHeroWheel();
+      if(offset){centerHero(item);images.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});}
+    },'hero-carousel-card');
+    face.setAttribute('aria-label','Seleccionar '+name+' · '+item.entry.textContent);
+    face.setAttribute('aria-pressed',String(!offset));
+    if(card.image)face.append(previewImage(card,card.image));
+    else face.textContent=name;
+    group.append(face,el('span',name,'hero-carousel-name'));images.append(group);
+  }
+}
+function updateTraitMode(){
+  const advanced=otherPressed('advanced-traits');
+  $('advanced-trait-panel').hidden=!advanced;
+  $('hero-trait-interaction').hidden=advanced;
+}
+function currentHeroTraits(){
+  if(!deck?.hero)return [];
+  if(!heroTraitsByCode.has(deck.hero))heroTraitsByCode.set(deck.hero,heroSetTraits(cards[deck.hero],cards));
+  return heroTraitsByCode.get(deck.hero);
 }
 function duplicate(source=deck) {const d=clone(source);d.id=crypto.randomUUID();d.name+=' · copia';d.autoName=false;d.armed=false;showView('constructor');openDeck({deck:d,revision:null},false);changed();}
 function updateAutoName(){
@@ -141,38 +271,53 @@ function updateAutoName(){
   for(const d of drafts())existing.set(d.deck.id,d.deck);
   deck.name=automaticName(deck,cards[deck.hero],[...existing.values()]);
 }
-async function commit() {
-  if(saving||readOnly)return;
-  if(!navigator.locks) {status('Este navegador no ofrece bloqueo entre pestañas. Exporta el borrador; usa un navegador actualizado para guardar con seguridad.');return;}
-  const name=$('deck-name').value.trim();
+async function commit(draft=null,showError=status) {
+  if(saving){showError('Hay un guardado en curso. Espera un momento y vuelve a intentarlo.');return;}
+  if(!draft&&readOnly)return;
+  if(!navigator.locks) {showError('Este navegador no ofrece bloqueo entre pestañas. Exporta el borrador; usa un navegador actualizado para guardar con seguridad.');return;}
+  const source=draft?.deck||deck;
+  const name=source.name.trim();
   if(!name){
+    if(draft){showError('Pon un nombre al mazo actual antes de guardarlo.');return;}
     if($('deck-panel').hidden)$('deck-tab').click();
     $('deck-name').value=name;
     $('deck-name').reportValidity();
     $('deck-name').focus();
     return;
   }
-  deck.name=name;
-  ensureHeroCards(deck,cards);
-  const label=nextVersionNumber(deck);
-  if(deck.versions.length>=100){status('Se alcanzaron 100 versiones: duplica el mazo o exporta un respaldo.');return;}
-  const captured=clone(deck),expected=revision;
+  if(source===deck)source.name=name;
+  const captured=clone(source),expected=draft?draft.revision:revision;
+  captured.name=name;ensureHeroCards(captured,cards);
+  const label=nextVersionNumber(captured);
+  if(captured.versions.length>=100){showError('Se alcanzaron 100 versiones: duplica el mazo o exporta un respaldo.');return;}
+  if(source===deck)ensureHeroCards(deck,cards);
   saving=true;renderSaveChanges();
   try {
     const saved=await navigator.locks.request('marvel.deck.'+captured.id,()=>store.save(addVersion(captured),expected));
-    if(deck.id===captured.id && JSON.stringify(deck)===JSON.stringify(captured)){
+    if(!readOnly&&deck.id===captured.id && JSON.stringify(deck)===JSON.stringify(captured)){
       deck=saved.deck;revision=saved.revision;dirty=false;saveDraft();render();
-    } else if(deck.id===captured.id){
+    } else if(!readOnly&&deck.id===captured.id){
       // Keep edits made while the save waited; advance their base revision and history.
       deck.versions=saved.deck.versions;revision=saved.revision;saveDraft();
     } else {
       const key='marvel.draft.'+captured.id;const pending=JSON.parse(sessionStorage.getItem(key)||'null');
-      if(pending){pending.revision=saved.revision;pending.deck.versions=saved.deck.versions;pending.dirty=JSON.stringify(pending.deck)!==JSON.stringify(saved.deck);sessionStorage.setItem(key,JSON.stringify(pending));}
+      if(pending){
+        pending.revision=saved.revision;
+        if(draft&&JSON.stringify(pending.deck)===JSON.stringify(source)){
+          pending.deck=saved.deck;pending.dirty=false;
+        }else{
+          pending.deck.versions=saved.deck.versions;pending.dirty=JSON.stringify(pending.deck)!==JSON.stringify(saved.deck);
+        }
+        const value=JSON.stringify(pending);
+        sessionStorage.setItem(key,value);
+        if(draft)localStorage.setItem('marvel.recovery.'+captured.id+'.'+pageId,value);
+      }
       renderDeck();
     }
     status('Guardado: '+label+' · '+new Date().toLocaleTimeString('es-CL'));
     return true;
   } catch(e) {
+    if(draft){showError('No se pudo completar el guardado. '+e.message);return;}
     const body=el('div');body.append(el('p','El guardado se detuvo. Tu borrador sigue en esta pestaña. '+e.message));
     body.append(button('Guardar como otro mazo',()=>{duplicate(captured);$('modal').close();status('Copia preparada: guarda una versión para conservarla.');}));
     body.append(button('Conservar una copia y abrir la última versión',()=>{const latest=store.load(captured.id);if(!latest)return;duplicate(captured);openDeck(latest,false);$('modal').close();status('Última versión abierta. El borrador anterior quedó como copia recuperable en Mazos.');}));
@@ -393,8 +538,39 @@ function attachHover(node,code,source='deck'){
 }
 function otherPressed(id){return $(id).getAttribute('aria-pressed')==='true';}
 function setOtherPressed(id,pressed){$(id).setAttribute('aria-pressed',String(Boolean(pressed)));}
-function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,costs:[...selection.cost],hideHero:!otherPressed('hide-hero'),sameAspect:otherPressed('same-aspect'),resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:otherPressed('owned-only'),sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
+function getFilter(){return {search:$('search').value,searchFields:{name:$('search-name').checked,text:$('search-text').checked},traitSources:{attribute:$('trait-in-attribute').checked,text:$('trait-in-text').checked},allyStats:allyFilter,language:$('search-language').value,factions:[...selection.faction],types:[...selection.type],traits:selectedTraits,advancedTraits:otherPressed('advanced-traits'),heroTraitInteraction:!otherPressed('advanced-traits')&&otherPressed('hero-trait-interaction'),heroTraits:currentHeroTraits(),costs:[...selection.cost],hideHero:!otherPressed('hide-hero'),sameAspect:otherPressed('same-aspect'),resources:[...selection.resource],specialRule:specialRuleFor(cards[deck.hero]),owned:otherPressed('owned-only'),sorts:[$('sort').value,$('sort-secondary').value,$('sort-tertiary').value]};}
 function currentPreset(){return presets.find(p=>p.id===activePresetId);}
+function startNewDeckFilter(){
+  if(!presetsReady)return;
+  const previous=getFilter();
+  const clean=presetCriteria({
+    ...previous,
+    search:'',
+    searchFields:{name:true,text:true},
+    traitSources:{attribute:true,text:true},
+    traits:[],
+    allyStats:{enabled:previous.allyStats.enabled,values:{}},
+    factions:[...Object.keys(factions),'special'],
+    types:Object.keys(types),
+    costs:costOptions.map(([code])=>code),
+    resources:Object.keys(resources),
+  });
+  let preset=presets.find(item=>!item.onlyPinned&&!item.pins.length
+    &&!Object.values(item.ui?.single||{}).some(Boolean)
+    &&JSON.stringify(item.criteria)===JSON.stringify(clean));
+  if(!preset){
+    let number=1;
+    while(presets.some(item=>item.name==='Filtro '+number))number++;
+    preset=createPreset(clean,'Filtro '+number);
+    try{filterStore.save(preset);}catch(e){report(e);return;}
+    presets.push(preset);
+  }
+  for(const item of presets){
+    const enabled=item.id===preset.id;
+    if(item.enabled!==enabled)savePresetPatch(item.id,record=>{record.enabled=enabled;});
+  }
+  applyPreset(preset);
+}
 function refreshSearchFields(){for(const [id,other]of [['search-name','search-text'],['search-text','search-name']])$(id).disabled=$(id).checked&&!$(other).checked;}
 function refreshTraitSources(){
   if(!$('trait-in-attribute').checked&&!$('trait-in-text').checked)$('trait-in-attribute').checked=true;
@@ -421,6 +597,7 @@ function applyPreset(preset){
   $('trait-in-attribute').checked=f.traitSources?.attribute!==false;$('trait-in-text').checked=f.traitSources?.text===true;refreshTraitSources();
   setOtherPressed('hide-hero',!f.hideHero);setOtherPressed('same-aspect',f.sameAspect);
   for(const [key,field]of [['faction','factions'],['type','types'],['cost','costs'],['resource','resources']]){selection[key]=new Set(f[field]||[]);single[key]=preset.ui?.single?.[key]===true;lastChoice[key]=preset.ui?.lastChoice?.[key];}
+  setOtherPressed('advanced-traits',f.advancedTraits);setOtherPressed('hero-trait-interaction',f.heroTraitInteraction);updateTraitMode();
   selectedTraits=[...(f.traits||[])];$('trait-filter').value='';toggleTraitSuggestions(false);toggleTraitList(false);closePinPopover();
   checklist('type',Object.entries(types));checklist('cost',costOptions);checklist('resource',Object.entries(resources));renderFactionFilter();
   try{sessionStorage.setItem('marvel.active-filter',preset.id);}catch{}applyingPreset=false;page=1;renderFilterTabs();renderGallery();
@@ -471,12 +648,12 @@ function pinControls(card){
     savePresetPatch(direct.id,p=>{p.pins=p.pins.filter(code=>code!==root);if(!pinned)p.pins.push(root);});
     closePinPopover();renderFilterTabs();renderGallery();
   },'pin-button');pin.append(iconSvg('pin'));pin.setAttribute('aria-label','Fijar '+title(card)+(direct?' en '+direct.name:' en filtros'));pin.setAttribute('aria-pressed',String(pinned));
-  if(direct){pin.disabled=!pinned&&!presetMatches(cards[root],direct,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'));pin.title=pin.disabled?'La carta no cumple los criterios de '+direct.name:(pinned?'Desfijar de ':'Fijar en ')+direct.name;}
+  if(direct){pin.disabled=!pinned&&!presetMatches(cards[root],direct,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'),currentHeroTraits());pin.title=pin.disabled?'La carta no cumple los criterios de '+direct.name:(pinned?'Desfijar de ':'Fijar en ')+direct.name;}
   const clear=button('×',()=>confirmPinClear('card:'+root,clear,()=>{for(const p of presets.filter(p=>p.pins.includes(root)))savePresetPatch(p.id,record=>{record.pins=record.pins.filter(code=>code!==root);});closePinPopover();renderFilterTabs();renderGallery();}),'clear-card-pins');clear.setAttribute('aria-label','Desfijar '+title(card)+' de todos los filtros');clear.title='Desfijar de todos los filtros con dos pulsaciones';clear.disabled=!presets.some(p=>p.pins.includes(root));box.append(pin,clear);return box;
 }
 function openPinPopover(root,anchor){
   hideHover();const panel=$('pin-popover');($('modal').open?$('modal'):document.body).append(panel);panel.replaceChildren(el('strong',title(cards[root])));let count=0;
-  for(const p of presets){const pinned=p.pins.includes(root),compatible=presetMatches(cards[root],p,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'));if(!compatible&&!pinned)continue;count++;
+  for(const p of presets){const pinned=p.pins.includes(root),compatible=presetMatches(cards[root],p,deck,collection,specialRuleFor(cards[deck.hero]),otherPressed('owned-only'),currentHeroTraits());if(!compatible&&!pinned)continue;count++;
     const label=el('label',undefined,'check-row'),input=el('input');input.type='checkbox';input.checked=pinned;input.setAttribute('aria-label','Fijar en '+p.name);input.onchange=()=>{const checked=input.checked;savePresetPatch(p.id,record=>{record.pins=record.pins.filter(c=>c!==root);if(checked)record.pins.push(root);});renderFilterTabs();renderGallery();closePinPopover();};
     label.append(input,document.createTextNode(p.name+(!compatible?' · fijada fuera del criterio actual':'')));panel.append(label);
   }
@@ -640,7 +817,8 @@ function renderCatalogToolbar(filter){
       else checklist(key,key==='cost'?costOptions:Object.entries(key==='type'?types:resources));
     });
   }
-  for(const trait of selectedTraits)chip('trait-'+trait,trait,()=>{selectedTraits=selectedTraits.filter(value=>value!==trait);});
+  if(filter.heroTraitInteraction)chip('hero-traits','Interacción rasgos mazo héroe',()=>$('hero-trait-interaction').click());
+  for(const trait of filter.advancedTraits?selectedTraits:[])chip('trait-'+trait,trait,()=>{selectedTraits=selectedTraits.filter(value=>value!==trait);});
   if(filter.owned)chip('owned','Solo mi colección',()=>$('owned-only').click());
   if(!filter.hideHero)chip('hero','Cartas de héroes',()=>{$('hide-hero').click();});
   if(!filter.sameAspect)chip('aspect','Otros aspectos del héroe',()=>{$('same-aspect').click();});
@@ -1014,7 +1192,12 @@ function collectionDialog(){
 }
 function renderHeroOptions(){
   const name=card=>card[heroLanguage]?.name||title(card);
-  const options=[...heroOptions].filter(([code,faces])=>code===faces[0].code&&!cards[code].en.hidden)
+  const seen=new Set();
+  const options=[...heroOptions].filter(([code,faces])=>{
+    const key=cards[code].links.set||code;
+    if(code!==faces[0].code||cards[code].en.hidden||seen.has(key))return false;
+    seen.add(key);return true;
+  })
     .map(([code,[hero,alter]])=>[code,name(hero)+(alter?' · '+name(alter):'')])
     .sort((a,b)=>a[1].localeCompare(b[1],heroLanguage));
   const current=$('hero-select').value;
@@ -1061,11 +1244,6 @@ async function init(){
   for(const p of catalog.packs){const raw=localStorage.getItem('marvel.product.'+p.code);if(raw!==null)collection[p.code]=Number(raw)>0?1:0;}
   for(const hero of Object.values(cards).filter(c=>c.role==='identity'&&c.en.type_code==='hero')){
     heroOptions.set(hero.code,identityPreviewCards(hero,cards));
-  }
-  for(const choice of $('aspect-select').options){
-    const label=el('label',undefined,'check-row'),input=el('input');
-    input.type='checkbox';input.value=choice.value;input.onchange=updateNewDeckControls;
-    label.append(input,document.createTextNode(choice.textContent));$('new-deck-aspects').append(label);
   }
   renderHeroOptions();
   checklist('type',Object.entries(types));
@@ -1130,7 +1308,7 @@ async function init(){
   $('page-prev').onclick=()=>{page--;renderGallery();};$('page-next').onclick=()=>{page++;renderGallery();};
   $('group-selection').onclick=()=>{selectedFirst=!selectedFirst;page=1;try{localStorage.setItem('marvel.group-selection',String(selectedFirst));}catch{}renderGallery();};
   $('reset-filters').replaceChildren(iconSvg('reset'));
-  $('reset-filters').onclick=()=>{for(const id of ['search','trait-filter'])$(id).value='';setOtherPressed('hide-hero',false);setOtherPressed('same-aspect',true);allyFilter.enabled=false;
+  $('reset-filters').onclick=()=>{for(const id of ['search','trait-filter'])$(id).value='';setOtherPressed('hide-hero',false);setOtherPressed('same-aspect',true);setOtherPressed('advanced-traits',false);setOtherPressed('hero-trait-interaction',false);updateTraitMode();allyFilter.enabled=false;
     $('search-language').value='es';
     $('search-name').checked=true;$('search-text').checked=true;refreshSearchFields();
     $('trait-in-attribute').checked=true;$('trait-in-text').checked=true;refreshTraitSources();
@@ -1147,8 +1325,51 @@ async function init(){
   $('deck-hide-hero').checked=localStorage.getItem('marvel.ui.deck-hide-hero')==='true';
   $('deck-hide-hero').onchange=()=>{try{localStorage.setItem('marvel.ui.deck-hide-hero',String($('deck-hide-hero').checked));}catch{}renderDeck();};
   $('deck-name').oninput=()=>{deck.name=$('deck-name').value;deck.autoName=false;$('deck-view-name').textContent=deck.name;changed(false);};$('notes').oninput=()=>{deck.notes=$('notes').value;changed(false);};
-  $('hero-select').onchange=updateNewDeckControls;
-  $('hero-detail').onclick=()=>cardDetail($('hero-select').value);
+  $('hero-select').onchange=()=>{centeredHeroForm=null;updateNewDeckControls();};
+  $('new-deck-aspects').onchange=updateNewDeckControls;
+  $('hero-view-toggle').onclick=()=>{
+    setHeroView(!showHeroDisplay);
+    if(showHeroDisplay&&!$('hero-select').value)stepHero(1);
+    else updateNewDeckControls();
+  };
+  $('hero-prev').onclick=()=>stepHero(-1);$('hero-next').onclick=()=>stepHero(1);
+  $('hero-face-toggle').onclick=()=>{showAlterEgo=!showAlterEgo;renderHeroDisplay();};
+  $('hero-display').onkeydown=event=>{
+    if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+    event.preventDefault();stepHero(event.key==='ArrowLeft'?-1:1);
+  };
+  let swipeStart;
+  $('hero-faces').ontouchstart=event=>{swipeStart=event.touches[0]?.clientX;};
+  $('hero-faces').ontouchend=event=>{
+    if(swipeStart===undefined)return;
+    const distance=event.changedTouches[0].clientX-swipeStart;swipeStart=undefined;
+    if(Math.abs(distance)>45)stepHero(distance>0?-1:1);
+  };
+  $('hero-faces').addEventListener('wheel',event=>{
+    const delta=event.deltaX||(event.shiftKey?event.deltaY:0);
+    if(!delta||event.ctrlKey||Math.abs(delta)<Math.abs(event.deltaY)&&!event.shiftKey)return;
+    event.preventDefault();
+    const now=performance.now(), direction=Math.sign(delta), elapsed=now-lastWheelTime;
+    lastWheelTime=now;
+    if(heroWheelPaused&&elapsed<180)return;
+    heroWheelPaused=false;
+    if(elapsed>180||direction!==wheelDirection)wheelDistance=0;
+    const pixels=event.deltaMode===1?delta*18:event.deltaMode===2?delta*120:delta;
+    const level=Number($('hero-acceleration').value);
+    wheelDistance+=pixels*[0.7,0.9,1][level]*(elapsed<45&&direction===wheelDirection?[1,1.2,1.45][level]:1);
+    wheelDirection=direction;
+    const steps=Math.max(-3,Math.min(3,Math.trunc(wheelDistance/60)));
+    if(steps){wheelDistance%=60;stepHero(steps);}
+  },{passive:false});
+  for(const id of ['advanced-traits','hero-trait-interaction'])$(id).onclick=()=>{
+    setOtherPressed(id,!otherPressed(id));updateTraitMode();
+    toggleTraitSuggestions(false);toggleTraitList(false);page=1;renderEditedFilter();
+  };
+  $('hero-detail').onclick=()=>{
+    stopHeroWheel();
+    const band=showHeroDisplay?heroBand():[];
+    cardDetail(band[heroBandIndex(band)]?.card.code||$('hero-select').value);
+  };
   $('hero-language').onclick=()=>{
     heroLanguage=heroLanguage==='es'?'en':'es';
     try{localStorage.setItem('marvel.ux.hero-language',heroLanguage);}catch{}
@@ -1160,7 +1381,7 @@ async function init(){
     $('confirm-aspects').hidden=pendingAspects===null;
   };
   $('confirm-aspects').onclick=()=>{if(readOnly||!pendingAspects)return;deck.aspects=pendingAspects;pendingAspects=null;updateAutoName();page=1;changed();};
-  $('save-changes').onclick=commit;$('export-text').onclick=exportText;
+  $('save-changes').onclick=()=>commit();$('export-text').onclick=exportText;
   $('library-import-file').onchange=e=>{importFile(e.target.files[0],true);e.target.value='';};
   $('add-group').onclick=()=>{if(readOnly)return;try{addCustomGroup(deck,$('group-name').value);$('group-name').value='';changed();}catch(e){report(e);}};
   $('group-name').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('add-group').click();}};
@@ -1266,7 +1487,11 @@ async function init(){
     node.before(anchor);
     return {node,destination,anchor};
   });
+  const generalAnchor=document.createComment('');
+  $('deck-panel').before(generalAnchor);
   function arrangeConstructor(){
+    if(mobile.matches)generalAnchor.after($('deck-panel'));
+    else $('deck-column').prepend($('deck-panel'));
     for(const {node,destination,anchor} of mobilePlacements){
       if(mobile.matches)destination.append(node);
       else anchor.after(node);
@@ -1325,7 +1550,12 @@ async function init(){
     else setAvailableCards($('available-cards').hidden);
     hideHover();
   };
-  $('deck-tab').onclick=()=>{restoreFilters=false;setActivePanel($('deck-panel').hidden?'deck-panel':'none');};
+  $('deck-tab').onclick=()=>{
+    restoreFilters=false;
+    const open=$('deck-panel').hidden;
+    if(open&&!mobile.matches)$('deck-column-toggle').setAttribute('aria-expanded','true');
+    setActivePanel(open?'deck-panel':'none');
+  };
   $('filter-tab').onclick=()=>{
     if(!$('deck-detail').hidden){restoreFilters=false;setDeckDetail(false);setActivePanel('filter-panel');}
     else setActivePanel($('filter-panel').hidden?'filter-panel':'none');
