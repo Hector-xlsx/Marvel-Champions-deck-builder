@@ -1,4 +1,4 @@
-# Include only the project files intended for the private repository.
+# Include only project files intended for publication.
 /*
 !/.gitignore
 !/README.md
@@ -9,11 +9,18 @@
 !/tests/
 !/docs/
 !/dist/
+!/.github/
+/.github/*
+!/.github/workflows/
+/.github/workflows/*
+!/.github/workflows/pages.yml
 
 /web/*
 !/web/*.mjs
 !/web/*.css
 !/web/*.html
+!/web/manifest.webmanifest
+!/web/icon-*.png
 /scripts/*
 !/scripts/*.mjs
 !/scripts/lib/
@@ -31,6 +38,8 @@
 !/dist/theme-light.css
 !/dist/index.html
 !/dist/catalog.json
+!/dist/manifest.webmanifest
+!/dist/icon-*.png
 !/dist/assets/
 /dist/assets/*
 !/dist/assets/*.webp

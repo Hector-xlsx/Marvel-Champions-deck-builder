@@ -1298,3 +1298,8 @@ async function init(){
   });
 }
 init().catch(e=>{report(e);$('gallery').append(el('p','No se pudo iniciar el gestor. Usa el servidor local indicado en README.','empty'));});
+if(location.protocol==='https:'&&'serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.mjs',{type:'module'}).catch(error=>console.warn('No se pudo activar el modo sin conexión.',error));
+  });
+}

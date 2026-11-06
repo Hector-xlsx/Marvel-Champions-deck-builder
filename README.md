@@ -1,6 +1,8 @@
 # Marvel 2.0 — biblioteca de jugador
 
-La copia preparada en `dist/` se puede abrir con **Lanzar servidor local.cmd** en Windows o con `npm run gestor:servir` usando Node.js 22 o posterior. Para subir el proyecto, seguir el [protocolo de publicación privada en GitHub](docs/PUBLICACION_GITHUB.md).
+Abre o instala la aplicación desde [GitHub Pages](https://hector-xlsx.github.io/Marvel-Champions-deck-builder/).
+
+La copia preparada en `dist/` se puede abrir con **Lanzar servidor local.cmd** en Windows o con `npm run gestor:servir` usando Node.js 22 o posterior. Para subir el proyecto, seguir el [protocolo de publicación en GitHub Pages](docs/PUBLICACION_GITHUB.md).
 
 El código del **gestor visual de mazos** está en `web/`. Preparar con `npm run gestor:preparar` y abrir con `npm run gestor:servir`. Incluye filtros, grupos manuales, versiones, importación/exportación y mazos armados. Instrucciones y límites: [Gestor de mazos](docs/GESTOR_MAZOS.md).
 

@@ -71,4 +71,7 @@ for(const c of Object.values(cards)) {
 }
 await fs.writeFile(path.join(dist,'catalog.json'),JSON.stringify({revision:current.revision,cards,packs:Object.values(packs).sort((a,b)=>a.name.localeCompare(b.name,'es'))}));
 for(const file of ['index.html','styles.css','layout.css','theme-light.css','app.mjs','model.mjs','catalog.mjs','groups.mjs','artwork.mjs','icons.mjs','auxiliaries.mjs','construction.mjs','statistics.mjs','filter-presets.mjs','simulator.mjs','ally-filters.mjs','detail-navigation.mjs','card-presentation.mjs','collection-cycles.mjs']) await fs.copyFile(path.join(root,'web',file),path.join(dist,file));
+for(const file of ['manifest.webmanifest','sw.mjs','icon-192.png','icon-512.png']){
+  await fs.copyFile(path.join(root,'web',file),path.join(dist,file));
+}
 console.log(`Gestor preparado en dist/: ${Object.keys(cards).length} registros, ${files.size} imágenes. Sin consultas de red.`);
