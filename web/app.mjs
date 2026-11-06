@@ -263,7 +263,7 @@ function openSettings(){
     }catch(e){feedback.textContent='No se pudo actualizar. '+e.message;}
     finally{check.disabled=false;}
   },'primary');
-  body.append(check,feedback);
+  body.append(check,button('Mi colección',collectionDialog),feedback);
   popup('Configuración',body);
 }
 function centerHero({entry,card}){
@@ -302,10 +302,12 @@ function renderHeroDisplay(){
 }
 function enableHeroSwipe(){
   const viewport=$('hero-faces'),track=$('hero-track');
-  let gesture,frame=0,offset=0;
+  const duration=2300;
+  let gesture,frame=0,offset=0,velocity=0,holdTimer;
   const paint=()=>{track.style.transform=offset?'translateX('+offset+'px)':'';};
   function stop(){
-    cancelAnimationFrame(frame);frame=0;offset=0;paint();
+    clearTimeout(holdTimer);cancelAnimationFrame(frame);
+    frame=0;offset=0;velocity=0;paint();
   }
   function move(delta,spacing){
     offset+=delta;
@@ -317,20 +319,51 @@ function enableHeroSwipe(){
     }
     paint();
   }
-  $('hero-display').addEventListener('pointerdown',stop,{capture:true});
-  $('new-deck-dialog').addEventListener('close',stop);
+  function glide(speed,spacing){
+    cancelAnimationFrame(frame);
+    const start=performance.now();
+    const momentum=Math.max(-8*spacing,Math.min(8*spacing,speed*duration/3));
+    const correction=Math.round((offset+momentum)/spacing)*spacing-offset-momentum;
+    let previous=0;
+    velocity=3*momentum/duration;
+    function tick(now){
+      const progress=Math.min(1,(now-start)/duration);
+      const position=momentum*(1-(1-progress)**3)+correction*progress**3*(4-3*progress);
+      velocity=(3*momentum*(1-progress)**2+12*correction*progress**2*(1-progress))/duration;
+      move(position-previous,spacing);previous=position;
+      if(progress<1)frame=requestAnimationFrame(tick);
+      else stop();
+    }
+    frame=requestAnimationFrame(tick);
+  }
+  $('hero-display').addEventListener('pointerdown',event=>{
+    if(event.pointerType!=='touch'||!viewport.contains(event.target))stop();
+  },{capture:true});
+  $('new-deck-dialog').addEventListener('close',()=>{gesture=null;stop();});
   viewport.addEventListener('pointerdown',event=>{
     if(event.pointerType!=='touch'||!event.isPrimary)return;
     const card=track.querySelector('.hero-carousel-card');
     if(!card)return;
-    gesture={id:event.pointerId,start:event.clientX,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false};
+    gesture={id:event.pointerId,start:event.clientX,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false,handled:false};
+    if(frame){
+      viewport.setPointerCapture(event.pointerId);
+      holdTimer=setTimeout(stop,180);
+    }
   });
   viewport.addEventListener('pointermove',event=>{
-    if(gesture?.id!==event.pointerId)return;
+    if(gesture?.id!==event.pointerId||gesture.handled)return;
     if(!gesture.dragging){
       if(Math.abs(event.clientX-gesture.start)<9)return;
       gesture.dragging=true;
       viewport.setPointerCapture(event.pointerId);
+      clearTimeout(holdTimer);
+      if(frame&&velocity){
+        const direction=Math.sign(event.clientX-gesture.start);
+        gesture.handled=true;
+        if(direction===Math.sign(velocity))glide(velocity*1.3,gesture.spacing);
+        else stop();
+        return;
+      }
     }
     const now=performance.now(),delta=event.clientX-gesture.x;
     gesture.speed=delta/Math.max(12,now-gesture.time);
@@ -339,20 +372,9 @@ function enableHeroSwipe(){
   });
   viewport.addEventListener('pointerup',event=>{
     if(gesture?.id!==event.pointerId)return;
-    const {dragging,speed,time,spacing}=gesture;gesture=null;
-    if(!dragging)return;
-    const start=performance.now();
-    const momentum=start-time<100?Math.max(-2*spacing,Math.min(2*spacing,speed*180)):0;
-    const distance=Math.round((offset+momentum)/spacing)*spacing-offset;
-    let previous=0;
-    function glide(now){
-      const progress=Math.min(1,(now-start)/300);
-      const position=distance*(1-(1-progress)**3);
-      move(position-previous,spacing);previous=position;
-      if(progress<1)frame=requestAnimationFrame(glide);
-      else stop();
-    }
-    frame=requestAnimationFrame(glide);
+    const {dragging,speed,time,spacing,handled}=gesture;gesture=null;
+    clearTimeout(holdTimer);
+    if(dragging&&!handled)glide(performance.now()-time<100?speed:0,spacing);
   });
   viewport.addEventListener('pointercancel',()=>{gesture=null;stop();});
 }
@@ -1494,7 +1516,8 @@ async function init(){
     try{localStorage.setItem('marvel.ui.detail-group-rows',pressed);}catch{}
     renderDeckDetail();
   };
-  $('versions-button').onclick=versions;$('library-button').onclick=library;$('collection-button').onclick=collectionDialog;
+  $('versions-button').onclick=versions;$('library-button').onclick=library;
+  $('theme-picker').prepend(iconSvg('theme'));
   $('settings-button').append(iconSvg('settings'));
   $('settings-button').onclick=openSettings;
   $('constructor-button').onclick=editCurrent;$('edit-current').onclick=()=>openSaved(store.load(deck.id)||{deck,revision});

@@ -1,5 +1,6 @@
 // Small monochrome icons share dimensions and remain independent of emoji fonts.
 const paths={
+  theme:'M15.7 11.5A7 7 0 0 1 6.5 2.3a7 7 0 1 0 9.2 9.2z M13 2v4 M11 4h4',
   settings:'M7 1.8h4l.5 2.1 1.4.8 2.1-.6 2 3.5-1.6 1.5v1.6l1.6 1.5-2 3.5-2.1-.6-1.4.8-.5 2.1H7l-.5-2.1-1.4-.8-2.1.6-2-3.5 1.6-1.5V9.1L1 7.6l2-3.5 2.1.6 1.4-.8z M11.5 9.9a2.5 2.5 0 1 0-5 0 2.5 2.5 0 1 0 5 0',
   reset:'M3 7a6 6 0 1 1 .5 5 M3 2v5h5',
   pin:'M5 2h8l-1.5 5 3 3v1H3.5v-1l3-3z M9 11v5',
