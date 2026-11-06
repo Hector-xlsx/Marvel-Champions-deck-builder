@@ -14,6 +14,10 @@ const shellFiles=new Set(shell);
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(shellCache).then(cache=>cache.addAll(shell.map(url=>new Request(url,{cache:'reload'})))));
 });
+
+self.addEventListener('message',event=>{
+  if(event.data==='apply-update')event.waitUntil(self.skipWaiting());
+});
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
     for(const key of await caches.keys()){

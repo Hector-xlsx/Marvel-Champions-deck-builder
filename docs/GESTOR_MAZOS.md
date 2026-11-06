@@ -4,6 +4,22 @@ Aplicación estática HTML, CSS y JavaScript sin framework, cuentas ni servicios
 
 Última entrega 2026-11-03: reglas de los siete héroes revisados, avisos y limpieza reversible, Auxiliares reservados con exclusión de cantidades/estadísticas/faltantes, búsqueda por campos y estadísticas de recursos/coste/aspecto. El [registro de entrega](evidencia/gestor/REGLAS_AUXILIARES_ESTADISTICAS.md) sustituye las referencias históricas siguientes a esas funciones como pendientes o sin evaluar. La comprobación visual de esta entrega queda pendiente porque el navegador está deshabilitado en Work.
 
+## Uso actual del constructor
+
+Estas instrucciones describen el constructor actualizado el 2026-11-06 y prevalecen sobre las descripciones históricas de esta guía.
+
+- **Nuevo mazo** abre el selector de héroe en **Display**. Puedes cambiar a **Listado** o alternar entre héroe y alter ego. Display muestra cinco cartas en escritorio y tres en móvil. Al pulsar una carta, se centra, queda seleccionada y se abre su detalle. En móvil, la banda sigue el dedo y desacelera al soltarlo hasta centrar una carta. Las formas tienen el mismo tamaño y comparten la identidad del mazo. Los nombres largos ocupan más líneas debajo de la carta. El control de aceleración aparece solo en Display y **Ver héroe** está en Listado.
+- El engranaje junto a los menús abre **Configuración → Buscar actualización**. En la app instalada, comprueba si hay una versión nueva y la aplica tras conservar el borrador. En el servidor local, recarga la página para ver los cambios.
+- Elige un aspecto para la mayoría de los héroes y exactamente dos para Spider-Woman. Adam Warlock trae los cuatro aspectos base seleccionados. Si vuelves al constructor con un borrador activo, se recupera ese borrador.
+- Al pulsar **Construir mazo** con cambios pendientes en otro mazo, puedes guardarlos como una versión o descartarlos antes de crear el nuevo. **Cancelar** vuelve al selector con el héroe y los aspectos elegidos.
+- Cada mazo nuevo arranca con un solo filtro activo, sin búsquedas, rasgos manuales ni fijados. Se conservan el modo avanzado y los ajustes de **Otros**. Los filtros anteriores se pueden reactivar.
+- **General** permite editar el nombre, confirmar cambios de aspecto y escribir notas. También ofrece **Versiones y cambios** y **Lista de texto**, con el formato `Aspecto - Nombre`. En escritorio, abrir General desplaza solo la columna izquierda. En móvil, **Guardar cambios** ocupa dos filas a la derecha. La importación y exportación JSON están en **Mazos**.
+- En móvil, el catálogo cambia una carta por fila en cada paso de zoom, hasta cuatro en vertical y seis en horizontal. A partir de tres por fila, las copias y los fijados se gestionan desde el detalle de la carta.
+- **Otros → Filtro rasgos avanzado** abre la selección manual. El filtro rápido **Interacción rasgos mazo héroe** usa los rasgos impresos y las referencias marcadas del conjunto propio del héroe, excluyendo Ataque, Intervención y Defensa. Esos tres siguen disponibles en el filtro avanzado.
+- Los aliados tienen un límite de una copia. Las cartas con **Linked** entran inicialmente en **Auxiliares** y se pueden mover después desde el agrupador.
+
+La publicación de mazos por usuarios figura como requisito previo a una próxima carga a Sites de GPT. [Próximas mejoras](PROXIMAS_MEJORAS.md#publicación-de-mazos-antes-de-cargar-el-gestor-a-sites-de-gpt)
+
 ## Ejecutar
 
 ```powershell
@@ -83,7 +99,7 @@ Bajo Estadísticas está el Simulador de robo: robar 1/2/6, mano impresa del hé
 - «Ver» abre el contenido guardado en consulta, con 04 ampliada y sin configuración, galería ni controles de cantidades. «Editar» abre el constructor y recupera el borrador de esa pestaña si existe. «Duplicar» abre una copia independiente para editar, sin marcarla como armada. El enlace ↗ permite editar en otra pestaña.
 - Recuperación de borradores y exportación de biblioteca tienen espacios separados dentro de Mazos. El antiguo botón «Mis mazos» y su modal combinado se retiraron.
 - Versiones numeradas automáticamente: 1, 1.1, 1.2… 1.9, 1.10, etc., con fecha, contenido completo y delta de cartas/cantidades respecto de la versión anterior; primera versión contra mazo vacío. El formulario muestra la próxima versión sin permitir editarla. Las etiquetas de versiones anteriores permanecen intactas. Abrir una versión histórica crea una copia.
-- Exportación JSON individual o biblioteca, lista textual e importación con vista previa y nuevos identificadores, sin reemplazar originales. La importación valida también las versiones históricas. No admite JSON de MarvelCDB.
+- En **Mazos**, **Exportar** descarga el mazo guardado y su historial en JSON. **Importar mazo** muestra una vista previa, crea copias con identificadores nuevos y actualiza la lista. La importación también valida las versiones históricas. El JSON es propio de la aplicación. También están disponibles la exportación de la biblioteca y la lista textual. La [exportación a MarvelCDB](PROXIMAS_MEJORAS.md#exportación-compatible-con-marvelcdb) está evaluada y pendiente.
 - Productos poseídos mediante una casilla por producto, marcados por defecto. Se considera una copia de cada producto marcado. Los valores numéricos antiguos se leen como disponible/no disponible sin borrarlos del almacenamiento.
 - «Mazo armado» se puede cambiar en 01 y en la tabla. En un mazo guardado, el cambio se persiste inmediatamente bajo bloqueo/revisión sin crear una versión; conserva el contenido guardado y los borradores pendientes. En un mazo nuevo cuenta después de guardarlo.
 - «Ver mazos armados» activa el filtro y abre «Cartas sobre el límite de copias». Si se desmarca una fila, permanece visible durante esa activación del modo pero sus cartas dejan de contar inmediatamente. Al desactivar y reactivar el filtro se excluye. El informe usa el contenido guardado de todos los mazos armados, independientemente de los filtros visuales, y compara contra las copias físicas de los productos poseídos. Incluye miniatura, necesarias/disponibles/faltantes y mazos que usan cada carta. Las reimpresiones documentadas comparten disponibilidad.
@@ -107,7 +123,7 @@ Actualización 2026-11-03: «En mazo» se consulta ahora mediante el botón junt
 
 Pendientes acordados: [próximas mejoras](PROXIMAS_MEJORAS.md).
 
-Los mazos guardados usan una clave por identificador y revisiones; cada pestaña conserva su borrador por separado. Los cambios de contenido se conservan automáticamente como borrador, pero se incorporan a la biblioteca al pulsar «Guardar versión». «Mazos → Recuperar borradores» permite recuperar borradores conservados aunque se haya cerrado la pestaña. Consultar un mazo guardado y cambiar luego su estado de armado no sobrescribe el borrador de edición.
+Los mazos guardados usan una clave por identificador y revisiones. Cada pestaña conserva su borrador por separado. Los cambios de contenido se conservan automáticamente como borrador y se incorporan a la biblioteca al pulsar «Guardar cambios». «Mazos → Recuperar borradores» permite recuperar borradores conservados aunque se haya cerrado la pestaña. Consultar un mazo guardado y cambiar luego su estado de armado no sobrescribe el borrador de edición.
 
 Guardar usa Web Locks y comprueba la revisión dentro del bloqueo. Dos pestañas pueden editar mazos diferentes; si editan el mismo, el segundo guardado sobre una revisión antigua se detiene y permite crear una copia o exportar. En navegadores sin Web Locks se deshabilita el guardado compartido con un aviso y se mantiene la exportación. Se necesita un contexto seguro para estas APIs: localhost o HTTPS en el sitio publicado.
 
@@ -117,7 +133,7 @@ Los datos son locales a navegador, perfil y origen. Pasar del servidor local a G
 
 No se interpreta cada regla ni se certifica legalidad completa. Los límites estructurados no son condiciones de juego. Los aspectos elegidos son metadatos: no bloquean cartas ni resuelven excepciones de héroes. La compatibilidad, los puntajes y el análisis semántico permanecen pendientes por decisión del usuario.
 
-Las cantidades obligatorias del héroe provienen del conjunto/producto de la biblioteca, no de un motor completo de requisitos. Se permite editar borradores incompletos respecto de tamaño o selección de cartas adicionales. La disponibilidad física es una estimación por productos; no registra pérdidas, préstamos o cartas sustitutas. No existe sincronización entre dispositivos, instalación PWA ni descarga offline de todo el sitio.
+Las cantidades obligatorias del héroe provienen del conjunto/producto de la biblioteca, no de un motor completo de requisitos. Se permite editar borradores incompletos respecto de tamaño o selección de cartas adicionales. La disponibilidad física es una estimación por productos; no registra pérdidas, préstamos o cartas sustitutas. La [PWA publicada](PUBLICACION_GITHUB.md) guarda los mazos en el navegador. El modo sin conexión incluye el constructor, el catálogo y las ilustraciones que ya se cargaron. Para mover mazos entre sitios o dispositivos, se usa el archivo JSON.
 
 ## Verificación
 

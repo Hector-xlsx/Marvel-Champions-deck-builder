@@ -174,14 +174,17 @@
 #hero-display .hero-carousel-tools { justify-content: space-between; width: 100%; }
 .hero-acceleration-control { display: flex; align-items: center; gap: 4px; margin: 0; }
 #hero-acceleration { width: 66px; min-width: 0; min-height: 26px; padding: 0; }
-.hero-carousel-tools output { min-width: 0; text-align: center; font-weight: 700; }
+#hero-display-name { min-width: 0; max-width: 100%; text-align: center; font-weight: 700; overflow-wrap: anywhere; }
 #hero-faces {
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+#hero-track {
   display: grid;
   grid-template-columns: repeat(5,minmax(0,1fr));
-  align-items: center;
+  align-items: start;
   gap: 8px;
-  width: 100%;
-  touch-action: pan-y;
 }
 .hero-carousel-group { min-width: 0; text-align: center; }
 #hero-faces .hero-carousel-card { width: 100%; min-width: 0; padding: 0; overflow: hidden; border: 2px solid transparent; }
@@ -189,8 +192,9 @@
 #hero-faces .hero-carousel-card[aria-pressed="true"] { border-color: var(--red); }
 .hero-carousel-name { display: block; padding-top: 4px; font-size: 12px; overflow-wrap: anywhere; }
 @media (max-width: 600px) {
-  #hero-faces { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  .hero-carousel-group:is([data-offset="-2"],[data-offset="2"]) { display: none; }
+  #hero-track { width: calc((100% + 8px) * 5 / 3 - 8px); margin-left: calc((100% + 8px) / -3); }
+  .hero-carousel-group:is([data-offset="-2"],[data-offset="2"]) { visibility: hidden; }
+  #hero-track[style*="translateX"] .hero-carousel-group { visibility: visible; }
   .hero-acceleration-control > span:last-child { display: none; }
 }
 #hero-face-toggle { min-height: 44px; }
@@ -203,7 +207,7 @@
   #config-bar > #deck-panel { width: 100%; }
   .app-header nav:has(#save-changes:not([hidden])) {
     display: grid;
-    grid-template-columns: minmax(0,1fr) minmax(0,1fr) auto;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) auto auto;
     gap: 4px;
   }
   .app-header nav #save-changes {
@@ -212,6 +216,11 @@
     align-self: stretch;
     flex-direction: column;
     gap: 2px;
+  }
+  .app-header nav:has(#save-changes:not([hidden])) #settings-button {
+    grid-column: 4;
+    grid-row: 1 / span 2;
+    align-self: stretch;
   }
 }
 #available-cards #gallery.compact-cards .card-title {

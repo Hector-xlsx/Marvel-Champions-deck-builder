@@ -200,6 +200,7 @@ function setHeroView(display){
   $('new-deck-dialog').classList.toggle('hero-display-mode',display);
   $('hero-view-toggle').textContent=display?'Listado':'Display';
   $('hero-list').hidden=display;$('hero-display').hidden=!display;
+  $('hero-detail').hidden=display;
   $('hero-acceleration-control').hidden=!display;
 }
 function heroBand(){
@@ -219,6 +220,52 @@ function heroBandIndex(band){
 function stopHeroWheel(){
   wheelDistance=0;lastWheelTime=performance.now();heroWheelPaused=true;
 }
+function waitForWorker(worker,states){
+  return new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>finish(new Error('La actualización tardó demasiado. Inténtalo de nuevo.')),30000);
+    function finish(error){
+      clearTimeout(timer);worker.removeEventListener('statechange',check);
+      if(error)reject(error);else resolve();
+    }
+    function check(){
+      if(worker.state==='redundant')finish(new Error('El navegador descartó la actualización.'));
+      else if(states.includes(worker.state))finish();
+    }
+    worker.addEventListener('statechange',check);check();
+  });
+}
+function openSettings(){
+  const body=el('div'), feedback=el('p');
+  feedback.setAttribute('role','status');
+  const check=button('Buscar actualización',async()=>{
+    check.disabled=true;
+    feedback.textContent='Buscando actualización…';
+    try{
+      const registration=location.protocol==='https:'&&'serviceWorker' in navigator
+        ? await navigator.serviceWorker.getRegistration()
+        : null;
+      if(!registration){
+        feedback.textContent='Para cargar los cambios del servidor local, recarga la página.';
+        return;
+      }
+      if(!registration.waiting)await registration.update();
+      const worker=registration.waiting||registration.installing;
+      if(!worker){feedback.textContent='Ya tienes la última versión disponible.';return;}
+      await waitForWorker(worker,['installed','activating','activated']);
+      if(saving||pendingAspects||(!readOnly&&dirty&&!saveDraft())){
+        feedback.textContent='Termina los cambios pendientes del mazo y vuelve a buscar la actualización.';
+        return;
+      }
+      feedback.textContent='Aplicando actualización…';
+      worker.postMessage('apply-update');
+      await waitForWorker(worker,['activated']);
+      location.reload();
+    }catch(e){feedback.textContent='No se pudo actualizar. '+e.message;}
+    finally{check.disabled=false;}
+  },'primary');
+  body.append(check,feedback);
+  popup('Configuración',body);
+}
 function centerHero({entry,card}){
   $('hero-select').value=entry.value;
   centeredHeroForm=card.code;
@@ -231,7 +278,7 @@ function stepHero(direction){
   centerHero(band[index<0?(direction>0?0:band.length-1):((index+direction)%band.length+band.length)%band.length]);
 }
 function renderHeroDisplay(){
-  const band=heroBand(),index=heroBandIndex(band),images=$('hero-faces');
+  const band=heroBand(),index=heroBandIndex(band),images=$('hero-track');
   images.replaceChildren();
   $('hero-face-toggle').textContent=showAlterEgo?'Ver héroe':'Ver alter ego';
   if(index<0)return;
@@ -244,6 +291,7 @@ function renderHeroDisplay(){
     const face=button('',()=>{
       stopHeroWheel();
       if(offset){centerHero(item);images.querySelector('[aria-pressed="true"]')?.focus({preventScroll:true});}
+      cardDetail(card.code);
     },'hero-carousel-card');
     face.setAttribute('aria-label','Seleccionar '+name+' · '+item.entry.textContent);
     face.setAttribute('aria-pressed',String(!offset));
@@ -251,6 +299,62 @@ function renderHeroDisplay(){
     else face.textContent=name;
     group.append(face,el('span',name,'hero-carousel-name'));images.append(group);
   }
+}
+function enableHeroSwipe(){
+  const viewport=$('hero-faces'),track=$('hero-track');
+  let gesture,frame=0,offset=0;
+  const paint=()=>{track.style.transform=offset?'translateX('+offset+'px)':'';};
+  function stop(){
+    cancelAnimationFrame(frame);frame=0;offset=0;paint();
+  }
+  function move(delta,spacing){
+    offset+=delta;
+    while(Math.abs(offset)>=spacing/2){
+      const direction=Math.sign(offset);
+      stepHero(-direction);
+      offset-=direction*spacing;
+      if(Math.abs(offset)<=spacing/2)break;
+    }
+    paint();
+  }
+  $('hero-display').addEventListener('pointerdown',stop,{capture:true});
+  $('new-deck-dialog').addEventListener('close',stop);
+  viewport.addEventListener('pointerdown',event=>{
+    if(event.pointerType!=='touch'||!event.isPrimary)return;
+    const card=track.querySelector('.hero-carousel-card');
+    if(!card)return;
+    gesture={id:event.pointerId,start:event.clientX,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false};
+  });
+  viewport.addEventListener('pointermove',event=>{
+    if(gesture?.id!==event.pointerId)return;
+    if(!gesture.dragging){
+      if(Math.abs(event.clientX-gesture.start)<9)return;
+      gesture.dragging=true;
+      viewport.setPointerCapture(event.pointerId);
+    }
+    const now=performance.now(),delta=event.clientX-gesture.x;
+    gesture.speed=delta/Math.max(12,now-gesture.time);
+    gesture.x=event.clientX;gesture.time=now;
+    move(delta,gesture.spacing);
+  });
+  viewport.addEventListener('pointerup',event=>{
+    if(gesture?.id!==event.pointerId)return;
+    const {dragging,speed,time,spacing}=gesture;gesture=null;
+    if(!dragging)return;
+    const start=performance.now();
+    const momentum=start-time<100?Math.max(-2*spacing,Math.min(2*spacing,speed*180)):0;
+    const distance=Math.round((offset+momentum)/spacing)*spacing-offset;
+    let previous=0;
+    function glide(now){
+      const progress=Math.min(1,(now-start)/300);
+      const position=distance*(1-(1-progress)**3);
+      move(position-previous,spacing);previous=position;
+      if(progress<1)frame=requestAnimationFrame(glide);
+      else stop();
+    }
+    frame=requestAnimationFrame(glide);
+  });
+  viewport.addEventListener('pointercancel',()=>{gesture=null;stop();});
 }
 function updateTraitMode(){
   const advanced=otherPressed('advanced-traits');
@@ -1338,13 +1442,7 @@ async function init(){
     if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
     event.preventDefault();stepHero(event.key==='ArrowLeft'?-1:1);
   };
-  let swipeStart;
-  $('hero-faces').ontouchstart=event=>{swipeStart=event.touches[0]?.clientX;};
-  $('hero-faces').ontouchend=event=>{
-    if(swipeStart===undefined)return;
-    const distance=event.changedTouches[0].clientX-swipeStart;swipeStart=undefined;
-    if(Math.abs(distance)>45)stepHero(distance>0?-1:1);
-  };
+  enableHeroSwipe();
   $('hero-faces').addEventListener('wheel',event=>{
     const delta=event.deltaX||(event.shiftKey?event.deltaY:0);
     if(!delta||event.ctrlKey||Math.abs(delta)<Math.abs(event.deltaY)&&!event.shiftKey)return;
@@ -1397,6 +1495,8 @@ async function init(){
     renderDeckDetail();
   };
   $('versions-button').onclick=versions;$('library-button').onclick=library;$('collection-button').onclick=collectionDialog;
+  $('settings-button').append(iconSvg('settings'));
+  $('settings-button').onclick=openSettings;
   $('constructor-button').onclick=editCurrent;$('edit-current').onclick=()=>openSaved(store.load(deck.id)||{deck,revision});
   $('library-new').onclick=()=>openNewDeck();
   $('library-aspect').append(option('','Todos los aspectos'));for(const code of ['aggression','justice','leadership','protection','pool'])$('library-aspect').append(option(code,factions[code]));

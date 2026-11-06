@@ -4,9 +4,23 @@ Estado actualizado 2026-11-03: las mejoras de interfaz sin ambigüedades ya se i
 
 Nueva entrega: reglas de los siete héroes revisados, incompatibilidades y limpieza reversible, búsqueda Nombre/Contiene, grupo reservado Auxiliares y estadísticas según el código público de MarvelCDB ya implementados. Estado y pruebas en [registro de entrega](evidencia/gestor/REGLAS_AUXILIARES_ESTADISTICAS.md). En los apartados históricos siguientes, las menciones a decisiones de búsqueda/estadísticas/auxiliares por confirmar quedan sustituidas por ese registro y el listado consolidado.
 
+## Publicación de mazos antes de cargar el gestor a Sites de GPT
+
+**Pendiente.** Completar este flujo antes de la próxima carga del gestor a Sites de GPT.
+
+1. Renombrar la vista actual **Mazos** a **Mis mazos**. Desde ahí se seguirán gestionando los mazos propios.
+2. Crear la vista pública **Mazos publicados** y añadir **Publicar** como acción de cada mazo en **Mis mazos**. Al publicar, el mazo aparecerá en el listado público y seguirá disponible para su propietario en **Mis mazos**.
+3. Al abrir un mazo publicado, mostrar una vista de consulta basada en el detalle actual de **Mazos**. Debajo de la información del mazo, incorporar una vista con todas sus cartas que reutilice **Detalle mazo** del constructor y permita consultar cada carta.
+
+Antes de implementar, definir cómo se guardarán y compartirán los mazos publicados, qué versión y campos se harán públicos y cómo funcionará actualizar o retirar una publicación. Validar que otro navegador pueda abrir un mazo publicado y ver sus cartas, y que los mazos propios sin publicar queden fuera del listado público.
+
 ## Exportación compatible con MarvelCDB
 
-**Backlog por decisión expresa del usuario.** No implementar en la siguiente tanda. Cuando se reactive, verificar el formato que acepte MarvelCDB. El JSON actual es un respaldo propio; no se debe presentar como compatible. Conservar cantidades, identidad, aspectos e identificadores de cartas al definir la conversión.
+**Evaluado y pendiente de implementación.** La acción **Exportar a MarvelCDB** se ofrecerá exclusivamente en la vista **Mazos**, para una versión guardada del mazo. El JSON interno conserva su formato propio.
+
+- La opción propuesta descarga un archivo OCTGN (`.o8d`) para subirlo en **Import Deck**, que requiere iniciar sesión en MarvelCDB. Su importador admite texto y OCTGN. OCTGN identifica las cartas por su identificador y evita depender de coincidencias por nombre. [Importar en MarvelCDB](https://marvelcdb.com/deck/import) · [Código del importador](https://github.com/zzorba/marvelsdb/blob/master/src/AppBundle/Controller/BuilderController.php) · [Plantilla OCTGN](https://github.com/zzorba/marvelsdb/blob/master/src/AppBundle/Resources/views/Export/octgn.xml.twig).
+- En el catálogo local revisado, 1.495 de las 1.496 cartas de mazo canónicas tienen identificador OCTGN en los datos de origen. La excepción es Shang-Chi (`10098`). La exportación debe avisar cuando una carta carezca de identificador y evitar omisiones silenciosas. El catálogo ejecutable aún debe incorporar esos identificadores.
+- Antes de dar la función por terminada, probar la importación en una cuenta de MarvelCDB y verificar el héroe, los aspectos y las cantidades. Usar también un caso de nombres repetidos, como los Spider-Man de Peter Parker y Miles Morales, para comprobar cómo reconoce el sitio la identidad y si el aspecto debe elegirse allí.
 
 ## Filtros avanzados simultáneos
 
