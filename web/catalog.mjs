@@ -88,7 +88,7 @@ export function canonical(card, cards) {
   if(card.en.hidden && card.links.other_face && cards[card.links.other_face]) return family(cards[card.links.other_face],cards);
   return family(card,cards);
 }
-export const limit = card => Number.isInteger(card.en.deck_limit) ? card.en.deck_limit : 3;
+export const limit = card => card.en.type_code==='ally' ? 1 : Number.isInteger(card.en.deck_limit) ? card.en.deck_limit : 3;
 export function deckLimit(card,deck,cards){const root=canonical(card,cards),own=cards[root].en.faction_code==='hero'&&cards[root].links.set===cards[deck.hero]?.links.set;return deck.hero==='21031a'&&!own?1:limit(cards[root]);}
 export function requiredHeroCards(deck,cards) {
   const set=cards[deck.hero]?.links.set;if(!set)return {};

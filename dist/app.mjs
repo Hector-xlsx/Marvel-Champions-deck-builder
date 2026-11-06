@@ -3,7 +3,7 @@ import {factions,types,resources,title,plain,normalize,cardTraits,scopedTraits,T
 import {initializeGroups,addCustomGroup,defaultGroup,listDeckGroups,moveToGroup,hideGroup,restoreGroup,deleteCustomGroup,clearCustomGroup} from './groups.mjs';
 import {artworkOptions,selectedArtwork,galleryArtworks} from './artwork.mjs';
 import {iconSvg} from './icons.mjs';
-import {AUXILIARY_GROUP,auxiliaryCards,automaticAuxiliaries} from './auxiliaries.mjs';
+import {AUXILIARY_GROUP,auxiliaryCards,automaticAuxiliaries,startsInAuxiliaries} from './auxiliaries.mjs';
 import {constructionReport,removeConstructionCards} from './construction.mjs';
 import {deckStatistics} from './statistics.mjs';
 import {FilterPresetStore,createPreset,presetCriteria,presetMatches,presetResults,singleVisiblePreset,isPresetStorageKey} from './filter-presets.mjs';
@@ -35,7 +35,7 @@ const button=(text,action,cls)=>{const b=el('button',text,cls);b.type='button';b
 const option=(value,label)=>{const o=el('option',label);o.value=value;return o;};
 const clone=x=>JSON.parse(JSON.stringify(x));
 let catalog,cards,choices,store,deck,revision=null,dirty=false,page=1,saving=false;
-let pendingHero=null;
+let pendingAspects=null, editingId=null;
 const heroOptions=new Map();
 let heroLanguage=localStorage.getItem('marvel.ux.hero-language')==='en'?'en':'es';
 const pageId=crypto.randomUUID();
@@ -54,18 +54,7 @@ let searchTimer=null,traitSuggestionsOpen=false;
 let detailNavigation=null,detailCode='',detailBack=false,galleryDetailCodes=[];
 const single={faction:false,type:false,cost:false,resource:false},lastChoice={};
 const selection={faction:new Set(Object.keys(factions)),type:new Set(Object.keys(types)),cost:new Set(),resource:new Set(Object.keys(resources))};
-let statusTimer;
-function closeStatus(){
-  clearTimeout(statusTimer);
-  $('status-toast').hidden=true;
-}
-function status(message){
-  clearTimeout(statusTimer);
-  $('status-toast').hidden=false;
-  $('status').textContent=message;
-  statusTimer=setTimeout(closeStatus,3000);
-}
-$('close-status').onclick=closeStatus;
+function status(message){$('status').textContent=message;}
 const report=e=>{console.error(e);status(e.message||String(e));};
 function drafts(){
   const result=[];for(let i=0;i<sessionStorage.length;i++){const key=sessionStorage.key(i);if(key.startsWith('marvel.draft.'))try{const d=JSON.parse(sessionStorage.getItem(key));if(d?.deck?.id)result.push(d);}catch{}}
@@ -101,10 +90,16 @@ function showView(name,reading=false){
   $('constructor-button').setAttribute('aria-pressed',String(name==='constructor'&&!reading));$('library-button').setAttribute('aria-pressed',String(name==='library'||reading));
   if(name==='library'){renderLibrary();status('Biblioteca local · Mazos guardados en este navegador');}
 }
-function editCurrent(){const record=store.load(deck.id)||{deck,revision};showView('constructor');openDeck(record);}
+function editCurrent(){
+  if(!editingId){openNewDeck();return;}
+  if(!readOnly&&deck.id===editingId){showView('constructor');if(!deck.hero)openNewDeck(deck);return;}
+  const record=store.load(editingId)||drafts().find(entry=>entry.deck.id===editingId);
+  if(record){openSaved(record);if(!deck.hero)openNewDeck(deck);}
+  else openNewDeck();
+}
 function openSaved(record,reading=false){showView('constructor',reading);openDeck(record,!reading);window.scrollTo(0,0);}
 function openDeck(record,preferDraft=true) {
-  pendingGroupDelete=null;pendingHero=null;page=1;
+  pendingGroupDelete=null;pendingAspects=null;page=1;
   let draft;
   if(preferDraft)try{draft=JSON.parse(sessionStorage.getItem('marvel.draft.'+record.deck.id));}catch{}
   // A clean tab snapshot must never take precedence over the shared saved record.
@@ -114,9 +109,29 @@ function openDeck(record,preferDraft=true) {
   deck.artwork??={};deck.auxiliaries??={};cleanupUndo=null;
   const grouped=initializeGroups(deck);if(grouped&&!readOnly)dirty=true;
   const restored=readOnly?0:ensureHeroCards(deck,cards);if(restored)dirty=true;
-  if(!readOnly)saveDraft();render();status(readOnly?'Consulta del mazo · Sin edición.':outdatedDraft?'Hay una revisión más reciente guardada. Se conservó tu borrador en esta pestaña.':restored?`Se restituyeron ${restored} copias obligatorias en el borrador. El original guardado se conserva.`:dirty?'Borrador recuperado en esta pestaña.':'Mazo abierto · '+(deck.versions.at(-1)?.label||'Sin versiones guardadas'));
+  if(!readOnly){editingId=deck.id;saveDraft();}render();status(readOnly?'Consulta del mazo · Sin edición.':outdatedDraft?'Hay una revisión más reciente guardada. Se conservó tu borrador en esta pestaña.':restored?`Se restituyeron ${restored} copias obligatorias en el borrador. El original guardado se conserva.`:dirty?'Borrador recuperado en esta pestaña.':'Mazo abierto · '+(deck.versions.at(-1)?.label||'Sin versiones guardadas'));
 }
-function newDeck(){showView('constructor');openDeck({deck:createDeck(),revision:null},false);}
+function openNewDeck(existing=null){
+  $('hero-select').value='';
+  for(const input of $('new-deck-aspects').querySelectorAll('input'))input.checked=Boolean(existing?.aspects.includes(input.value));
+  updateNewDeckControls();
+  $('build-deck').onclick=()=>{
+    if($('build-deck').disabled)return;
+    const next=existing?clone(existing):createDeck();
+    next.hero=$('hero-select').value;next.aspects=newDeckAspects();
+    $('new-deck-dialog').close();
+    if(existing){deck=next;ensureHeroCards(deck,cards);}
+    else openSaved({deck:next,revision:null});
+    updateAutoName();changed();
+  };
+  $('new-deck-dialog').showModal();
+  $('hero-select').focus();
+}
+function newDeckAspects(){return [...$('new-deck-aspects').querySelectorAll('input:checked')].map(input=>input.value);}
+function updateNewDeckControls(){
+  $('hero-detail').disabled=!$('hero-select').value;
+  $('build-deck').disabled=$('hero-detail').disabled||!newDeckAspects().length;
+}
 function duplicate(source=deck) {const d=clone(source);d.id=crypto.randomUUID();d.name+=' · copia';d.autoName=false;d.armed=false;showView('constructor');openDeck({deck:d,revision:null},false);changed();}
 function updateAutoName(){
   const automatic=deck.autoName ?? normalize(deck.name).trim()==='nuevo mazo';
@@ -129,13 +144,20 @@ function updateAutoName(){
 async function commit() {
   if(saving||readOnly)return;
   if(!navigator.locks) {status('Este navegador no ofrece bloqueo entre pestañas. Exporta el borrador; usa un navegador actualizado para guardar con seguridad.');return;}
-  const name=$('deck-name').value.trim();if(!name){status('Pon un nombre al mazo antes de guardar.');$('deck-name').focus();return;}
+  const name=$('deck-name').value.trim();
+  if(!name){
+    if($('deck-panel').hidden)$('deck-tab').click();
+    $('deck-name').value=name;
+    $('deck-name').reportValidity();
+    $('deck-name').focus();
+    return;
+  }
   deck.name=name;
   ensureHeroCards(deck,cards);
   const label=nextVersionNumber(deck);
   if(deck.versions.length>=100){status('Se alcanzaron 100 versiones: duplica el mazo o exporta un respaldo.');return;}
   const captured=clone(deck),expected=revision;
-  saving=true;$('save-version').disabled=true;renderSaveChanges();
+  saving=true;renderSaveChanges();
   try {
     const saved=await navigator.locks.request('marvel.deck.'+captured.id,()=>store.save(addVersion(captured),expected));
     if(deck.id===captured.id && JSON.stringify(deck)===JSON.stringify(captured)){
@@ -155,27 +177,54 @@ async function commit() {
     body.append(button('Guardar como otro mazo',()=>{duplicate(captured);$('modal').close();status('Copia preparada: guarda una versión para conservarla.');}));
     body.append(button('Conservar una copia y abrir la última versión',()=>{const latest=store.load(captured.id);if(!latest)return;duplicate(captured);openDeck(latest,false);$('modal').close();status('Última versión abierta. El borrador anterior quedó como copia recuperable en Mazos.');}));
     body.append(button('Exportar este borrador',exportDeck));popup('No se sobrescribió el mazo',body);status(e.message);
-  }finally{saving=false;$('save-version').disabled=false;renderSaveChanges();}
+  }finally{saving=false;renderSaveChanges();}
 }
-function exportDeck(){download((deck.name||'mazo').replace(/[^\p{L}\p{N} _-]/gu,'')+'.json',JSON.stringify({format:'marvel-decks-v1',catalogRevision:catalog.revision,decks:[deck]},null,2));}
-function exportText(){const aux=Object.entries(auxiliaryCards(deck,cards));download('mazo.txt',[deck.name,cards[deck.hero]?title(cards[deck.hero]):'Sin héroe',...Object.entries(deck.cards).map(([code,n])=>`${n} × ${title(cards[code])}`),...(aux.length?['','Auxiliares (fuera del total del mazo)',...aux.map(([code,n])=>`${n} × ${title(cards[code])}`)]:[]),'',deck.notes].join('\n'),'text/plain;charset=utf-8');}
+function exportDeck(source=deck){
+  const name=source.name.replace(/[^\p{L}\p{N} _-]/gu,'').trim()||'mazo';
+  download(name+'.json',JSON.stringify({format:'marvel-decks-v1',catalogRevision:catalog.revision,decks:[source]},null,2));
+}
+function exportText(){
+  const line=(code,n)=>{const card=cards[code];const aspect=factions[card.en.faction_code]||card.en.faction_name;return aspect+' - '+title(card)+(n>1?' ×'+n:'');};
+  const lines=Object.entries(deck.cards).map(([code,n])=>line(code,n));
+  for(const [code,n] of Object.entries(auxiliaryCards(deck,cards)))lines.push(line(code,n));
+  download('mazo.txt',lines.join('\n'),'text/plain;charset=utf-8');
+}
 function familyQuantity(code){return Object.entries(deck.cards).filter(([k])=>canonical(cards[k],cards)===code).reduce((s,[,n])=>s+n,0);}
 function setQuantity(code,quantity){
   if(readOnly||!$('library-view').hidden)return;
   const root=canonical(cards[code],cards);
   if(deck.auxiliaries[root]){setAuxiliaryQuantity(root,quantity);return;}
   if(!canSetQuantity(deck,root,quantity,cards)){status('Las cartas obligatorias del héroe no se pueden retirar ni reducir.');return;}
+  if(quantity&&!familyQuantity(root)&&!deck.grouping.preferred[root]&&startsInAuxiliaries(cards[root])&&!requiredHeroCards(deck,cards)[root]){
+    if(code!==root)deck.artwork[root]=code;
+    setAuxiliaryQuantity(root,quantity);
+    return;
+  }
   // One visible option per physical family, even when importing older printings.
   for(const k of Object.keys(deck.cards))if(canonical(cards[k],cards)===root)delete deck.cards[k];
   if(quantity)deck.cards[root]=quantity;
   if(code!==root)deck.artwork[root]=code;
   changed();
 }
-function setAuxiliaryQuantity(code,n){if(readOnly||!$('library-view').hidden)return;if(!Number.isInteger(n)||n<0||n>99){status('La cantidad auxiliar debe estar entre 0 y 99.');return;}if(n)deck.auxiliaries[code]=n;else delete deck.auxiliaries[code];changed();}
+function auxiliaryLimit(code){return cards[code].en.type_code==='ally'?1:99;}
+function setAuxiliaryQuantity(code,n){
+  if(readOnly||!$('library-view').hidden||!Number.isInteger(n)||n<0||n>auxiliaryLimit(code))return;
+  if(n)deck.auxiliaries[code]=n;else delete deck.auxiliaries[code];
+  changed();
+}
 function auxiliaryQuantityControl(code){
   const box=el('div',undefined,'auxiliary-quantity'),automatic=automaticAuxiliaries(deck,cards)[code];
   if(automatic){box.append(el('p',`${automatic} copias auxiliares propias del héroe.`,'hint'));return box;}
-  const label=el('label','Copias auxiliares'),input=el('input');input.type='number';input.min='0';input.max='99';input.value=String(deck.auxiliaries[code]||0);input.disabled=readOnly;input.setAttribute('aria-label','Copias auxiliares de '+title(cards[code]));input.onchange=()=>setAuxiliaryQuantity(code,Number(input.value));label.append(input);box.append(label);return box;
+  const label=el('label','Copias auxiliares'),input=el('input');
+  input.type='number';input.min='0';input.max=String(auxiliaryLimit(code));input.value=String(deck.auxiliaries[code]||0);
+  input.disabled=readOnly||!$('library-view').hidden;
+  input.setAttribute('aria-label','Copias auxiliares de '+title(cards[code]));
+  input.onchange=()=>{
+    setAuxiliaryQuantity(code,input.valueAsNumber);
+    input.value=String(deck.auxiliaries[code]||0);
+    if(!deck.auxiliaries[code]&&$('modal').open&&detailCode===code&&cards[code].role==='deck_card')cardDetail(detailCode,detailBack,detailNavigation);
+  };
+  label.append(input);box.append(label);return box;
 }
 function quantityControl(c,onQuantityChange) {
   const box=el('div',undefined,'qty');if(readOnly||!$('library-view').hidden)return box;
@@ -237,6 +286,7 @@ function cardDetail(code,back=false,origin=null) {
     const required=requiredHeroCards(deck,cards)[root]||0;
     const fixed=required>0&&deckLimit(original,deck,cards)<=required&&!deck.auxiliaries?.[root];
     const quantities=fixed?el('span',String(familyQuantity(root)),'detail-fixed-copies'):quantityControl(original,()=>{
+      if(deck.auxiliaries[root]){cardDetail(detailCode,detailBack,detailNavigation);return;}
       const updated=groupPreferences(root);
       groups.replaceWith(updated);
       groups=updated;
@@ -533,14 +583,16 @@ function renderAllyFilters(){
   }
 }
 function galleryCard(c,origin,footer){
-  const root=canonical(c,cards),card=el('article',undefined,'card'+(familyQuantity(root)?' selected':''));
+  const root=canonical(c,cards),quantity=familyQuantity(root),card=el('article',undefined,'card'+(quantity?' selected':''));
   card.dataset.code=c.code;card.dataset.family=root;
   if(c.links.other_face||c.backImage){const flip=button('↻',()=>cardDetail(c.code,true,origin),'flip card-flip');flip.setAttribute('aria-label','Ver otra cara de '+title(c));card.append(flip);}
   const imageButton=button('',()=>cardDetail(c.code,false,origin),'card-image');imageButton.setAttribute('aria-label','Ver '+title(c));
   attachHover(imageButton,c.code,origin);
   if(c.image){const img=el('img');img.src=c.image;img.loading='lazy';img.decoding='async';img.alt=title(c);img.onerror=()=>{img.replaceWith(el('span','Imagen no disponible'));};imageButton.append(img);}else imageButton.append(el('span',title(c)));
   const name=el('h3',title(c),'card-title');attachHover(name,c.code,origin);
-  card.append(imageButton,name,footer);
+  card.append(imageButton,name);
+  if(origin==='gallery'&&quantity)card.append(el('span',quantity+' en el mazo','mobile-only card-deck-quantity'));
+  card.append(footer);
   return card;
 }
 function renderDeckDetail(){
@@ -616,6 +668,7 @@ function renderGallery(){
   const result=paginateCards(found,{rows:rowLimit,columns:galleryColumns,page,selectedFirst,selectedCodes});page=result.page;
   galleryDetailCodes=paginateCards(found,{rows:0,selectedFirst,selectedCodes}).items.map(c=>c.code);
   $('result-count').textContent=`${result.total} cartas · ${result.items.length} visibles`;
+  $('mobile-filter-results').textContent=`Ver ${result.total} ${result.total===1?'carta':'cartas'}`;
   $('gallery-pagination').hidden=rowLimit===0;
   $('page-indicator').textContent=`${result.page} / ${result.pages}`;$('page-prev').disabled=page===1;$('page-next').disabled=page===result.pages;
   $('group-selection').setAttribute('aria-pressed',String(selectedFirst));$('row-limit-label').textContent=rowLimit===0?'Sin límite':'';
@@ -696,9 +749,9 @@ function renderDeck(){
   renderSaveChanges();
   hideHover();
   renderDeckDetail();
-  $('version-label').textContent=nextVersionNumber(deck);
-  $('deck-name').value=deck.name;renderHeroSelection();$('notes').value=deck.notes;$('armed').checked=deck.armed;
-  for(const o of $('aspect-select').options)o.selected=deck.aspects.includes(o.value);
+  $('deck-name').value=deck.name;$('notes').value=deck.notes;
+  for(const o of $('aspect-select').options)o.selected=(pendingAspects||deck.aspects).includes(o.value);
+  $('confirm-aspects').hidden=pendingAspects===null;
   const aux=auxiliaryCards(deck,cards),auxCount=Object.values(aux).reduce((s,n)=>s+n,0),report=constructionReport(deck,cards);
   const count=Object.values(deck.cards).reduce((s,n)=>s+n,0);$('deck-count').textContent=String(count)+(auxCount?` + ${auxCount} auxiliares`:'');
   $('mobile-deck-count').textContent=String(count);
@@ -863,6 +916,9 @@ function renderLibrary(){
     const armCell=el('td'),arm=el('input');arm.type='checkbox';arm.checked=d.armed;arm.setAttribute('aria-label','Mazo armado: '+d.name);arm.onchange=()=>setArmed(d.id,arm.checked);armCell.append(arm);if(armedOnly&&!d.armed)armCell.append(el('small','Desmarcado en esta vista','muted'));row.append(armCell);
     const actions=el('td'),tools=el('div',undefined,'toolbar');
     tools.append(button('Ver',()=>openSaved(store.load(d.id),true)),button('Editar',()=>openSaved(store.load(d.id))),button('Duplicar',()=>duplicate(store.load(d.id).deck)));
+    const exportAction=button('Exportar',()=>exportDeck(d));
+    exportAction.setAttribute('aria-label','Exportar mazo '+d.name);
+    tools.append(exportAction);
     const link=el('a','↗');link.href='?deck='+encodeURIComponent(d.id);link.target='_blank';link.rel='noopener';link.title='Editar en otra pestaña';link.setAttribute('aria-label','Editar '+d.name+' en otra pestaña');tools.append(link);actions.append(tools);row.append(actions);$('library-list').append(row);
   }
   if(!visible.length){const row=el('tr'),cell=el('td','No hay mazos guardados con estos filtros. Guarda una versión o recupera un borrador.','empty');cell.colSpan=7;row.append(cell);$('library-list').append(row);}
@@ -896,7 +952,7 @@ async function setArmed(id,value){
     const {previous,saved}=await navigator.locks.request('marvel.deck.'+id,()=>{const previous=store.load(id);if(!previous)throw Error('El mazo ya no está disponible.');const saved=store.save({...previous.deck,armed:value},previous.revision);return {previous,saved};});
     const key='marvel.draft.'+id;let pending;try{pending=JSON.parse(sessionStorage.getItem(key));}catch{}
     if(pending){pending.deck.armed=value;if(pending.revision===previous.revision)pending.revision=saved.revision;sessionStorage.setItem(key,JSON.stringify(pending));}
-    if(deck.id===id){deck.armed=value;if(revision===previous.revision)revision=saved.revision;if(!readOnly)saveDraft();$('armed').checked=value;}
+    if(deck?.id===id){deck.armed=value;if(revision===previous.revision)revision=saved.revision;if(!readOnly)saveDraft();}
     renderLibrary();status(value?'Mazo marcado como armado.':'Mazo desmarcado: sus cartas dejaron de contar.');
   }catch(e){report(e);renderLibrary();}
 }
@@ -961,68 +1017,15 @@ function renderHeroOptions(){
   const options=[...heroOptions].filter(([code,faces])=>code===faces[0].code&&!cards[code].en.hidden)
     .map(([code,[hero,alter]])=>[code,name(hero)+(alter?' · '+name(alter):'')])
     .sort((a,b)=>a[1].localeCompare(b[1],heroLanguage));
+  const current=$('hero-select').value;
   $('hero-select').replaceChildren(option('','Elegir héroe…'),...options.map(([code,label])=>option(code,label)));
   const control=$('hero-language');
   control.textContent=heroLanguage.toUpperCase();
   control.setAttribute('aria-label','Idioma de los nombres: '+(heroLanguage==='es'?'Español. Cambiar a inglés':'Inglés. Cambiar a español'));
-  renderHeroSelection();
+  $('hero-select').value=current;
+  updateNewDeckControls();
 }
-function renderHeroSelection(){
-  const current=heroOptions.get(deck?.hero)?.[0].code||deck?.hero||'';
-  $('hero-select').value=pendingHero??current;
-  $('hero-detail').disabled=!$('hero-select').value;
-  $('confirm-hero').hidden=pendingHero===null;
-}
-function changeHero(){
-  const next=pendingHero;
-  if(next===null||readOnly||saving)return;
-  if(!deck.hero||!Object.keys(deck.cards).length){
-    pendingHero=null;deck.hero=next;ensureHeroCards(deck,cards);updateAutoName();changed();
-    return;
-  }
-  const originalId=deck.id;
-  const body=el('div');
-  body.append(el('p','Empezarás un mazo nuevo con el héroe elegido y sus cartas obligatorias. Las versiones guardadas del mazo actual quedan en Mazos.'));
-  function openWithHero(discard=false){
-    const nextDeck=createDeck();
-    nextDeck.hero=next;
-    showView('constructor');openDeck({deck:nextDeck,revision:null},false);
-    updateAutoName();changed();
-    if(discard&&saveDraft()){
-      try{
-        sessionStorage.removeItem('marvel.draft.'+originalId);
-        localStorage.removeItem('marvel.recovery.'+originalId+'.'+pageId);
-      }catch{status('Se abrió el mazo nuevo. Revisa Recuperar borradores para comprobar si el borrador anterior sigue disponible.');}
-    }
-    $('modal').close();
-  }
-  const discard=button('Descartar borrador y crear nuevo mazo',()=>{
-    const confirmation=el('div');
-    confirmation.append(
-      el('p','Se descartarán los cambios pendientes del mazo actual. Las versiones guardadas seguirán en Mazos.'),
-      button('Sí, descartar borrador',()=>openWithHero(true)),
-      button('Volver',()=>{popup('Cambiar de héroe',body);discard.focus();}),
-    );
-    popup('¿Estás seguro de que deseas descartar el borrador?',confirmation);
-    confirmation.querySelector('button:last-child').focus();
-  });
-  const save=button('Guardar cambios actuales y crear nuevo mazo',async()=>{
-    for(const control of body.querySelectorAll('button'))control.disabled=true;
-    try{
-      if(await commit()&&deck.id===originalId&&!dirty)openWithHero();
-    }finally{
-      for(const control of body.querySelectorAll('button'))control.disabled=false;
-    }
-  },'primary');
-  body.append(discard,save,button('Cancelar',()=>{
-    pendingHero=null;
-    renderHeroSelection();
-    $('modal').close();
-    $('hero-select').focus();
-  }));
-  popup('Cambiar de héroe',body);
-}
-async function importFile(file){
+async function importFile(file,fromLibrary=false){
   if(!file)return;if(file.size>10*1024*1024){status('El archivo supera 10 MB.');return;}
   try{
     const incoming=validateImport(JSON.parse(await file.text()),cards);
@@ -1038,7 +1041,13 @@ async function importFile(file){
     const body=el('div');body.append(el('p',`Se importarán ${incoming.length} mazos como copias nuevas. No se reemplazarán los existentes.`));
     for(const d of incoming)body.append(el('p',`${d.name} · ${Object.values(d.cards).reduce((s,n)=>s+n,0)} cartas · ${d.versions.length} versiones`+(d.restoredCopies?` · Se completarán ${d.restoredCopies} copias obligatorias del héroe.`:'')));
     body.append(button('Importar copias',()=>{
-      try{for(const d of incoming){delete d.restoredCopies;store.save(d,null);}openDeck(store.load(incoming[0].id),false);$('modal').close();status('Copias importadas. Los originales se conservaron.');}catch(e){report(e);}
+      try{
+        for(const d of incoming){delete d.restoredCopies;store.save(d,null);}
+        if(fromLibrary)renderLibrary();
+        else openDeck(store.load(incoming[0].id),false);
+        $('modal').close();
+        status('Copias importadas. Los originales se conservaron.');
+      }catch(e){report(e);}
     }));popup('Revisar importación',body);
   }catch(e){report(e);}
 }
@@ -1052,6 +1061,11 @@ async function init(){
   for(const p of catalog.packs){const raw=localStorage.getItem('marvel.product.'+p.code);if(raw!==null)collection[p.code]=Number(raw)>0?1:0;}
   for(const hero of Object.values(cards).filter(c=>c.role==='identity'&&c.en.type_code==='hero')){
     heroOptions.set(hero.code,identityPreviewCards(hero,cards));
+  }
+  for(const choice of $('aspect-select').options){
+    const label=el('label',undefined,'check-row'),input=el('input');
+    input.type='checkbox';input.value=choice.value;input.onchange=updateNewDeckControls;
+    label.append(input,document.createTextNode(choice.textContent));$('new-deck-aspects').append(label);
   }
   renderHeroOptions();
   checklist('type',Object.entries(types));
@@ -1133,24 +1147,21 @@ async function init(){
   $('deck-hide-hero').checked=localStorage.getItem('marvel.ui.deck-hide-hero')==='true';
   $('deck-hide-hero').onchange=()=>{try{localStorage.setItem('marvel.ui.deck-hide-hero',String($('deck-hide-hero').checked));}catch{}renderDeck();};
   $('deck-name').oninput=()=>{deck.name=$('deck-name').value;deck.autoName=false;$('deck-view-name').textContent=deck.name;changed(false);};$('notes').oninput=()=>{deck.notes=$('notes').value;changed(false);};
-  $('hero-select').onchange=()=>{
-    const next=$('hero-select').value;
-    const current=heroOptions.get(deck.hero)?.[0].code||deck.hero;
-    pendingHero=next===current?null:next;
-    renderHeroSelection();
-  };
+  $('hero-select').onchange=updateNewDeckControls;
   $('hero-detail').onclick=()=>cardDetail($('hero-select').value);
-  $('confirm-hero').onclick=changeHero;
   $('hero-language').onclick=()=>{
     heroLanguage=heroLanguage==='es'?'en':'es';
     try{localStorage.setItem('marvel.ux.hero-language',heroLanguage);}catch{}
     renderHeroOptions();
   };
-  $('aspect-select').onchange=()=>{deck.aspects=[...$('aspect-select').selectedOptions].map(o=>o.value);updateAutoName();page=1;changed();};
-  $('armed').onchange=()=>{if(readOnly)return;const value=$('armed').checked;if(store.load(deck.id))setArmed(deck.id,value);else{deck.armed=value;changed(false);}};
-  $('save-changes').onclick=commit;$('save-version').onclick=commit;$('new-deck').onclick=newDeck;$('duplicate-deck').onclick=()=>duplicate();
-  $('export-deck').onclick=exportDeck;$('export-text').onclick=exportText;
-  $('import-file').onchange=e=>{importFile(e.target.files[0]);e.target.value='';};
+  $('aspect-select').onchange=()=>{
+    const next=[...$('aspect-select').selectedOptions].map(o=>o.value);
+    pendingAspects=next.length===deck.aspects.length&&next.every(value=>deck.aspects.includes(value))?null:next;
+    $('confirm-aspects').hidden=pendingAspects===null;
+  };
+  $('confirm-aspects').onclick=()=>{if(readOnly||!pendingAspects)return;deck.aspects=pendingAspects;pendingAspects=null;updateAutoName();page=1;changed();};
+  $('save-changes').onclick=commit;$('export-text').onclick=exportText;
+  $('library-import-file').onchange=e=>{importFile(e.target.files[0],true);e.target.value='';};
   $('add-group').onclick=()=>{if(readOnly)return;try{addCustomGroup(deck,$('group-name').value);$('group-name').value='';changed();}catch(e){report(e);}};
   $('group-name').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('add-group').click();}};
   for(const id of ['grouping-mode','detail-grouping-mode']){
@@ -1165,8 +1176,8 @@ async function init(){
     renderDeckDetail();
   };
   $('versions-button').onclick=versions;$('library-button').onclick=library;$('collection-button').onclick=collectionDialog;
-  $('constructor-button').onclick=editCurrent;$('edit-current').onclick=editCurrent;
-  $('library-new').onclick=newDeck;
+  $('constructor-button').onclick=editCurrent;$('edit-current').onclick=()=>openSaved(store.load(deck.id)||{deck,revision});
+  $('library-new').onclick=()=>openNewDeck();
   $('library-aspect').append(option('','Todos los aspectos'));for(const code of ['aggression','justice','leadership','protection','pool'])$('library-aspect').append(option(code,factions[code]));
   $('library-hero').onchange=renderLibrary;$('library-aspect').onchange=renderLibrary;
   $('library-armed').onclick=()=>{armedOnly=!armedOnly;retainedArmed=armedOnly?new Set(store.list().filter(r=>r.deck.armed).map(r=>r.deck.id)):new Set();renderLibrary();};
@@ -1176,10 +1187,42 @@ async function init(){
     librarySort={sortKey,direction:Number(direction)||0};renderLibrary();
   };
   $('export-library').onclick=()=>download('biblioteca-mazos.json',JSON.stringify({format:'marvel-decks-v1',decks:store.list().map(r=>r.deck)},null,2));
-  function applyVisualSettings(){document.documentElement.style.setProperty('--card-width',galleryWidth+'px');document.documentElement.style.setProperty('--deck-columns',String(deckColumns));document.documentElement.style.setProperty('--deck-width',deckColumns===2?'560px':'320px');$('deck-columns').textContent=deckColumns===1?'1 columna':'2 columnas';$('deck-columns').setAttribute('aria-label',deckColumns===2?'Mostrar una columna de cartas del mazo':'Mostrar dos columnas de cartas del mazo');$('zoom-out').disabled=galleryWidth<=140;$('zoom-in').disabled=galleryWidth>=320;if(deck)renderGallery();}
+  const mobile=matchMedia('(max-width: 850px)');
+  const phoneLandscape=matchMedia('(max-width: 1100px) and (max-height: 500px) and (orientation: landscape)');
+  const savedMobileColumns=Number(localStorage.getItem('marvel.mobile-gallery-columns'));
+  let mobileColumns=Number.isInteger(savedMobileColumns)&&savedMobileColumns>=1&&savedMobileColumns<=6?savedMobileColumns:2;
+  const maxMobileColumns=()=>phoneLandscape.matches?6:4;
+  function applyVisualSettings(){
+    document.documentElement.style.setProperty('--card-width',galleryWidth+'px');
+    document.documentElement.style.setProperty('--deck-columns',String(deckColumns));
+    document.documentElement.style.setProperty('--deck-width',deckColumns===2?'560px':'320px');
+    $('deck-columns').textContent=deckColumns===1?'1 columna':'2 columnas';
+    $('deck-columns').setAttribute('aria-label',deckColumns===2?'Mostrar una columna de cartas del mazo':'Mostrar dos columnas de cartas del mazo');
+    const compactViewport=mobile.matches||phoneLandscape.matches;
+    const columns=Math.min(mobileColumns,maxMobileColumns());
+    const gallery=$('gallery');
+    gallery.classList.toggle('mobile-density',compactViewport);
+    gallery.classList.toggle('compact-cards',compactViewport&&columns>=3);
+    gallery.style.setProperty('--mobile-gallery-columns',String(columns));
+    $('mobile-gallery-density').hidden=!compactViewport;
+    $('mobile-gallery-density').textContent=`${columns} por fila`;
+    $('zoom-out').disabled=compactViewport?columns===maxMobileColumns():galleryWidth<=140;
+    $('zoom-in').disabled=compactViewport?columns===1:galleryWidth>=320;
+    if(deck)renderGallery();
+  }
   const width=Number(localStorage.getItem('marvel.gallery-width'));if(width>=140&&width<=320)galleryWidth=width;
   deckColumns=localStorage.getItem('marvel.deck-columns')==='1'?1:2;applyVisualSettings();
-  for(const [id,step]of [['zoom-out',-20],['zoom-in',20]])$(id).onclick=()=>{galleryWidth=Math.max(140,Math.min(320,galleryWidth+step));applyVisualSettings();try{localStorage.setItem('marvel.gallery-width',String(galleryWidth));}catch{}};
+  for(const [id,step]of [['zoom-out',-1],['zoom-in',1]])$(id).onclick=()=>{
+    if(mobile.matches||phoneLandscape.matches){
+      const max=maxMobileColumns();
+      mobileColumns=Math.max(1,Math.min(max,Math.min(mobileColumns,max)-step));
+      try{localStorage.setItem('marvel.mobile-gallery-columns',String(mobileColumns));}catch{}
+    }else{
+      galleryWidth=Math.max(140,Math.min(320,galleryWidth+20*step));
+      try{localStorage.setItem('marvel.gallery-width',String(galleryWidth));}catch{}
+    }
+    applyVisualSettings();
+  };
   $('deck-columns').onclick=()=>{deckColumns=deckColumns===2?1:2;applyVisualSettings();try{localStorage.setItem('marvel.deck-columns',String(deckColumns));}catch{}};
   $('close-modal').onclick=()=>$('modal').close();
   $('detail-prev').onclick=()=>navigateDetail(-1);$('detail-next').onclick=()=>navigateDetail(1);
@@ -1197,6 +1240,44 @@ async function init(){
   },true);
   addEventListener('keydown',e=>{if(e.key==='Escape'){hideHover();toggleTraitSuggestions(false);closePinPopover();if(!$('search-options').hidden){toggleSearchOptions(false);$('search-options-toggle').focus();}if(!$('deck-traits-options').hidden){toggleTraitList(false);$('deck-traits-button').focus();}}});
   const activePanel=localStorage.getItem('marvel.active-panel')||'none';
+  const catalogTools=$('mobile-catalog-tools');
+  const mobileFilters=$('mobile-filter-area');
+  const filterResults=$('mobile-filter-results');
+  filterResults.onclick=()=>{
+    setActivePanel('none',false);
+    $('gallery-title').focus();
+  };
+  const searchRow=$('search').closest('.catalog-search');
+  const galleryControls=$('gallery-options-toggle').parentElement;
+  const mobilePlacements=[
+    [searchRow,catalogTools],
+    [$('filter-presets'),mobileFilters],
+    [$('filter-panel'),mobileFilters],
+    [$('other-tab'),mobileFilters],
+    [$('ally-options'),mobileFilters],
+    [$('other-options'),mobileFilters],
+    [filterResults,mobileFilters],
+    [mobileFilters,catalogTools],
+    [$('active-filter-summary'),catalogTools],
+    [$('gallery-options-toggle'),$('mobile-gallery-options')],
+    [galleryControls,$('gallery-options')],
+  ].map(([node,destination])=>{
+    const anchor=document.createComment('');
+    node.before(anchor);
+    return {node,destination,anchor};
+  });
+  function arrangeConstructor(){
+    for(const {node,destination,anchor} of mobilePlacements){
+      if(mobile.matches)destination.append(node);
+      else anchor.after(node);
+    }
+  }
+  arrangeConstructor();
+  mobile.addEventListener('change',()=>{
+    arrangeConstructor();
+    applyVisualSettings();
+  });
+  phoneLandscape.addEventListener('change',applyVisualSettings);
   function setActivePanel(id,persist=true){
     const state=id==='deck-panel'?'deck':id==='filter-panel'?'filter':'none';$('config-bar').dataset.active=state;
     $('other-tab').hidden=state!=='filter';$('other-options').hidden=true;$('other-tab').setAttribute('aria-expanded','false');
@@ -1204,6 +1285,7 @@ async function init(){
       $(panel).hidden=panel!==id;$(tab).setAttribute('aria-expanded',String(panel===id));
     }
     $('catalog-filters').setAttribute('aria-expanded',String(state==='filter'));
+    mobileFilters.hidden=state!=='filter';
     if(persist)try{localStorage.setItem('marvel.active-panel',id);}catch{}
     renderFilterTabs();renderAllyFilters();closePinPopover();toggleSearchOptions(false);toggleTraitList(false);toggleTraitSuggestions(false);
   }
@@ -1233,7 +1315,7 @@ async function init(){
   $('deck-detail-toggle').onclick=()=>{
     const open=$('deck-detail').hidden;
     setDeckDetail(open);
-    if(open){
+    if(open&&!mobile.matches){
       $('mobile-cards').setAttribute('aria-pressed','false');
       $('mobile-deck').setAttribute('aria-pressed','false');
     }else setMobilePane($('constructor-view').dataset.mobilePane);
@@ -1249,7 +1331,6 @@ async function init(){
     else setActivePanel($('filter-panel').hidden?'filter-panel':'none');
   };
   $('other-tab').onclick=()=>{$('other-options').hidden=!$('other-options').hidden;$('other-tab').setAttribute('aria-expanded',String(!$('other-options').hidden));};
-  const mobile=matchMedia('(max-width: 850px)');
   function setMobilePane(pane){
     $('constructor-view').dataset.mobilePane=pane;
     $('mobile-cards').setAttribute('aria-pressed',String(pane==='cards'));
@@ -1266,24 +1347,21 @@ async function init(){
     $('deck-column-toggle').setAttribute('aria-expanded','true');
     setMobilePane('deck');
   };
-  $('choose-hero-ux').onclick=()=>{
-    setActivePanel('deck-panel');$('hero-select').focus();
-  };
   $('explore-cards-ux').onclick=()=>{
     $('mobile-cards').click();$('search').focus();
   };
   $('catalog-filters').onclick=()=>{
-    $('filter-tab').click();
-    if(!$('filter-panel').hidden&&mobile.matches){
-      $('config-bar').scrollIntoView({block:'start'});
-      $('filter-tab').focus({preventScroll:true});
-    }
+    if(mobile.matches)setActivePanel($('filter-panel').hidden?'filter-panel':'none',false);
+    else $('filter-tab').click();
   };
   $('back-to-library').onclick=()=>{library();window.scrollTo(0,0);};
   const wanted=new URLSearchParams(location.search).get('deck')||sessionStorage.getItem('marvel.last');
   let existing=wanted?store.load(wanted):null;
   if(!existing&&wanted){try {const draft=JSON.parse(sessionStorage.getItem('marvel.draft.'+wanted));if(draft)existing={deck:draft.deck,revision:draft.revision};}catch{}}
-  showView('constructor');if(existing)openDeck(existing);else newDeck();setupPresets();
+  if(existing)openSaved(existing);
+  else deck=createDeck();
+  if(!deck.hero)showView('library');
+  setupPresets();
   let observedWidth=0;
   new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(width>0&&Math.abs(width-observedWidth)>.5){observedWidth=width;renderGallery();}}).observe($('gallery'));
   addEventListener('storage',event=>{
@@ -1292,7 +1370,7 @@ async function init(){
     if(event.key==='marvel.filters.owned'||event.key==='marvel.show-variants'){
       setOtherPressed(event.key==='marvel.filters.owned'?'owned-only':'show-variants',event.newValue==='true');page=1;renderGallery();
     }
-    if(event.key==='marvel.deck.'+deck.id)status(dirty?'Este mazo cambió en otra pestaña. Tu borrador se conserva y al guardar se comprobará la revisión.':'Este mazo cambió en otra pestaña. Recarga para abrir la última revisión guardada.');
+    if(deck&&event.key==='marvel.deck.'+deck.id)status(dirty?'Este mazo cambió en otra pestaña. Tu borrador se conserva y al guardar se comprobará la revisión.':'Este mazo cambió en otra pestaña. Recarga para abrir la última revisión guardada.');
     if(event.key?.startsWith('marvel.product.')){const key=event.key.slice('marvel.product.'.length);collection[key]=event.newValue===null?1:Number(event.newValue)>0?1:0;renderGallery();}
     if(!$('library-view').hidden)renderLibrary();
   });

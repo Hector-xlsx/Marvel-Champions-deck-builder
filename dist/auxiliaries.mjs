@@ -1,5 +1,8 @@
 import {canonical,requiredHeroCards,canSetQuantity} from './catalog.mjs';
 export const AUXILIARY_GROUP='reserved:auxiliaries';
+export function startsInAuxiliaries(card){
+  return card.role==='deck_card'&&/^\s*Linked\s*\(/im.test(card.en.text||'');
+}
 export function automaticAuxiliaries(deck,cards){
   const set=cards[deck.hero]?.links?.set;if(!set)return {};
   return Object.fromEntries(Object.values(cards).filter(c=>c.role==='hero_auxiliary'&&!c.en.hidden&&(c.links.parent_hero_set===set||c.links.set===set)).map(c=>[c.code,c.en.quantity||1]));
@@ -13,6 +16,7 @@ export function moveAuxiliary(deck,code,toAuxiliary,cards){
     if(requiredHeroCards(deck,cards)[root])throw Error('Las cartas obligatorias del héroe no pueden retirarse del mazo.');
     const keys=Object.keys(deck.cards).filter(k=>canonical(cards[k],cards)===root),quantity=keys.reduce((n,k)=>n+deck.cards[k],0);
     if(!quantity)throw Error('La carta no está en el mazo.');
+    if(cards[root].en.type_code==='ally'&&quantity+(deck.auxiliaries[root]||0)>1)throw Error('Reduce el aliado a una copia antes de moverlo a Auxiliares.');
     deck.auxiliaries[root]=(deck.auxiliaries[root]||0)+quantity;for(const key of keys)delete deck.cards[key];
   }else{
     if(cards[root].role!=='deck_card')throw Error('Esta carta solo puede estar en Auxiliares.');
