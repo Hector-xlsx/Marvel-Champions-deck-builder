@@ -940,7 +940,9 @@ function galleryCard(c,origin,footer){
   const imageButton=button('',()=>cardDetail(c.code,false,origin),'card-image');imageButton.setAttribute('aria-label','Ver '+title(c));
   attachHover(imageButton,c.code,origin);
   if(c.image){const img=el('img');img.src=c.image;img.loading='lazy';img.decoding='async';img.alt=title(c);img.onerror=()=>{img.replaceWith(el('span','Imagen no disponible'));};imageButton.append(img);}else imageButton.append(el('span',title(c)));
-  const name=el('h3',title(c),'card-title');attachHover(name,c.code,origin);
+  const name=el('h3',undefined,'card-title');
+  name.append(el('span',title(c)));
+  name.title=title(c);attachHover(name,c.code,origin);
   card.append(imageButton,name);
   if(origin==='gallery'&&quantity)card.append(el('span',quantity+' en el mazo','mobile-only card-deck-quantity'));
   card.append(footer);
@@ -1513,7 +1515,26 @@ async function init(){
   $('clean-deck').onclick=cleanDeck;
   $('undo-clean-deck').onclick=()=>{if(cleanupUndo?.id===deck.id&&cleanupUndo.after===JSON.stringify(deck)){deck=clone(cleanupUndo.before);cleanupUndo=null;changed();}};
   $('deck-statistics').open=localStorage.getItem('marvel.ui.statistics')==='true';$('deck-statistics').ontoggle=()=>{try{localStorage.setItem('marvel.ui.statistics',String($('deck-statistics').open));}catch{}};
-  $('gallery-options-toggle').onclick=()=>{const control=$('gallery-options-toggle');$('gallery-options').hidden=!$('gallery-options').hidden;control.setAttribute('aria-expanded',String(!$('gallery-options').hidden));};
+  for(const [id,panel] of [['gallery-options-toggle','gallery-options'],['detail-options-toggle','detail-view-options']]){
+    const control=$(id);
+    control.onclick=()=>{
+      $(panel).hidden=!$(panel).hidden;
+      control.setAttribute('aria-expanded',String(!$(panel).hidden));
+    };
+  }
+  for(const [id,gallery] of [['gallery-names','gallery'],['detail-names','deck-detail-gallery']]){
+    const control=$(id),key='marvel.ui.'+id;
+    function showNames(visible){
+      control.setAttribute('aria-pressed',String(visible));
+      $(gallery).classList.toggle('hide-card-names',!visible);
+    }
+    showNames(localStorage.getItem(key)!=='false');
+    control.onclick=()=>{
+      const visible=control.getAttribute('aria-pressed')!=='true';
+      showNames(visible);
+      try{localStorage.setItem(key,String(visible));}catch{}
+    };
+  }
   $('deck-hide-hero').checked=localStorage.getItem('marvel.ui.deck-hide-hero')==='true';
   $('deck-hide-hero').onchange=()=>{try{localStorage.setItem('marvel.ui.deck-hide-hero',String($('deck-hide-hero').checked));}catch{}renderDeck();};
   $('deck-name').oninput=()=>{deck.name=$('deck-name').value;deck.autoName=false;$('deck-view-name').textContent=deck.name;changed(false);};$('notes').oninput=()=>{deck.notes=$('notes').value;changed(false);};
@@ -1571,6 +1592,7 @@ async function init(){
   $('mobile-cards').append(iconSvg('cards'));
   $('mobile-deck').prepend(iconSvg('deck'));
   $('gallery-options-toggle').append(iconSvg('view'));
+  $('detail-options-toggle').append(iconSvg('view'));
   $('save-changes').onclick=()=>commit();$('export-text').onclick=exportText;
   $('library-import-file').onchange=e=>{importFile(e.target.files[0],true);e.target.value='';};
   $('add-group').onclick=()=>{if(readOnly)return;try{addCustomGroup(deck,$('group-name').value);$('group-name').value='';changed();}catch(e){report(e);}};
@@ -1617,6 +1639,8 @@ async function init(){
   const savedMobileColumns=Number(localStorage.getItem('marvel.mobile-gallery-columns'));
   let mobileColumns=Number.isInteger(savedMobileColumns)&&savedMobileColumns>=1&&savedMobileColumns<=6?savedMobileColumns:2;
   const maxMobileColumns=5;
+  const savedDetailColumns=Number(localStorage.getItem('marvel.ui.detail-columns'));
+  let detailColumns=Number.isInteger(savedDetailColumns)&&savedDetailColumns>=1&&savedDetailColumns<=5?savedDetailColumns:0;
   function applyVisualSettings(){
     document.documentElement.style.setProperty('--card-width',galleryWidth+'px');
     document.documentElement.style.setProperty('--deck-columns',String(deckColumns));
@@ -1635,10 +1659,21 @@ async function init(){
     $('zoom-in').disabled=compactViewport?columns===maxMobileColumns:galleryWidth>=320;
     $('zoom-out').setAttribute('aria-label',compactViewport?'Reducir cartas por fila':'Reducir tamaño de las cartas');
     $('zoom-in').setAttribute('aria-label',compactViewport?'Aumentar cartas por fila':'Ampliar tamaño de las cartas');
+    const detailCount=detailColumns||(compactViewport?2:5);
+    $('deck-detail-gallery').style.setProperty('--detail-columns',String(detailCount));
+    $('detail-columns-count').textContent=detailCount+' por fila';
+    $('detail-columns-less').disabled=detailCount===1;
+    $('detail-columns-more').disabled=detailCount===5;
     if(deck)renderGallery();
   }
   const width=Number(localStorage.getItem('marvel.gallery-width'));if(width>=140&&width<=320)galleryWidth=width;
   deckColumns=localStorage.getItem('marvel.deck-columns')==='1'?1:2;applyVisualSettings();
+  for(const [id,step] of [['detail-columns-less',-1],['detail-columns-more',1]])$(id).onclick=()=>{
+    const current=detailColumns||(mobile.matches||phoneLandscape.matches?2:5);
+    detailColumns=Math.max(1,Math.min(5,current+step));
+    try{localStorage.setItem('marvel.ui.detail-columns',String(detailColumns));}catch{}
+    applyVisualSettings();
+  };
   for(const [id,step]of [['zoom-out',-1],['zoom-in',1]])$(id).onclick=()=>{
     if(mobile.matches||phoneLandscape.matches){
       mobileColumns=Math.max(1,Math.min(maxMobileColumns,Math.min(mobileColumns,maxMobileColumns)+step));
