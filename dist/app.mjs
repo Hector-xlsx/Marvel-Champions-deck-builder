@@ -1,5 +1,5 @@
 import {createDeck,DeckStore,addVersion,nextVersionNumber,diffCards,validateImport} from './model.mjs';
-import {factions,types,resources,title,plain,normalize,cardTraits,scopedTraits,TEXT_TOPICS,traitCounts,specialRuleFor,allowedFactions,automaticName,baseAspectCodes,requiredAspectCount,heroSetTraits,canonical,limit,deckLimit,filterCards,shortage,requiredHeroCards,ensureHeroCards,canSetQuantity,selectionState,toggleSelection,filterDecks,CARD_SORT_DEFAULTS,paginateCards} from './catalog.mjs';
+import {factions,types,resources,title,plain,normalize,cardTraits,scopedTraits,TEXT_TOPICS,traitIdentity,localizedTrait,traitCounts,specialRuleFor,allowedFactions,automaticName,baseAspectCodes,requiredAspectCount,heroSetTraits,canonical,limit,deckLimit,filterCards,shortage,requiredHeroCards,ensureHeroCards,canSetQuantity,selectionState,toggleSelection,filterDecks,CARD_SORT_DEFAULTS,paginateCards} from './catalog.mjs';
 import {initializeGroups,addCustomGroup,defaultGroup,listDeckGroups,moveToGroup,hideGroup,restoreGroup,deleteCustomGroup,clearCustomGroup} from './groups.mjs';
 import {artworkOptions,selectedArtwork,galleryArtworks} from './artwork.mjs';
 import {iconSvg} from './icons.mjs';
@@ -807,7 +807,7 @@ function applyPreset(preset){
   setOtherPressed('hide-hero',!f.hideHero);setOtherPressed('same-aspect',f.sameAspect);
   for(const [key,field]of [['faction','factions'],['type','types'],['cost','costs'],['resource','resources']]){selection[key]=new Set(f[field]||[]);single[key]=preset.ui?.single?.[key]===true;lastChoice[key]=preset.ui?.lastChoice?.[key];}
   setOtherPressed('advanced-traits',f.advancedTraits);setOtherPressed('hero-trait-interaction',f.heroTraitInteraction);updateTraitMode();
-  selectedTraits=[...(f.traits||[])];$('trait-filter').value='';toggleTraitSuggestions(false);toggleTraitList(false);closePinPopover();
+  selectedTraits=[...new Map((f.traits||[]).map(trait=>[traitIdentity(trait),trait])).values()];$('trait-filter').value='';toggleTraitSuggestions(false);toggleTraitList(false);closePinPopover();
   checklist('type',Object.entries(types));checklist('cost',costOptions);checklist('resource',Object.entries(resources));renderFactionFilter();
   try{sessionStorage.setItem('marvel.active-filter',preset.id);}catch{}applyingPreset=false;page=1;renderFilterTabs();renderGallery();
 }
@@ -919,9 +919,9 @@ function renderFactionFilter(){
 function uniqueTraits(values){return [...new Map(values.map(t=>[normalize(t),t])).values()].sort((a,b)=>a.localeCompare(b,'es'));}
 function addTrait(text=$('trait-filter').value){
   const value=text.trim().replace(/\.$/,'');if(!value||value.length>100)return;
-  const known=allTraits.find(t=>normalize(t)===normalize(value))||playerTraits.find(t=>normalize(t)===normalize(value))||($('trait-in-text').checked?Object.values(TEXT_TOPICS).flatMap(t=>[t.es,t.en]).find(t=>normalize(t)===normalize(value)):undefined);
+  const known=allTraits.find(t=>traitIdentity(t)===traitIdentity(value))||playerTraits.find(t=>traitIdentity(t)===traitIdentity(value))||($('trait-in-text').checked?Object.values(TEXT_TOPICS).flatMap(t=>[t.es,t.en]).find(t=>traitIdentity(t)===traitIdentity(value)):undefined);
   if(!known){status('Elige un rasgo de jugador o una mención disponible con En texto.');return;}
-  if(!selectedTraits.some(t=>normalize(t)===normalize(known)))selectedTraits.push(known);
+  if(!selectedTraits.some(t=>traitIdentity(t)===traitIdentity(known)))selectedTraits.push(known);
   $('trait-filter').value='';page=1;renderTraits();renderEditedFilter();
 }
 function toggleSearchOptions(open=$('search-options').hidden){
@@ -945,21 +945,22 @@ function toggleTraitList(open=$('deck-traits-options').hidden){
   const box=panel.getBoundingClientRect();panel.style.left=Math.max(12,Math.min(rect.right-box.width,innerWidth-box.width-12))+'px';
   panel.style.top=(rect.bottom+box.height+8<=innerHeight?rect.bottom+6:Math.max(12,rect.top-box.height-6))+'px';
 }
-function traitChoice(text,count){const label=el('label',undefined,'check');const input=el('input');input.type='checkbox';input.checked=selectedTraits.some(t=>normalize(t)===normalize(text));input.setAttribute('aria-label',text);label.title=Object.values(TEXT_TOPICS).some(t=>t.es===text||t.en===text)?'Mención a planes secundarios en las reglas; no es un rasgo propio.':`${count} cartas distintas con este rasgo`;
-  input.onchange=()=>{const fromDeck=$('deck-traits-options').contains(input),fromSuggestions=$('trait-search-options').contains(input);if(input.checked)addTrait(text);else{selectedTraits=selectedTraits.filter(t=>normalize(t)!==normalize(text));page=1;renderTraits();renderEditedFilter();}if(fromDeck){toggleTraitList(false);$('deck-traits-button').focus();}if(fromSuggestions){$('trait-filter').value='';toggleTraitSuggestions(false);$('trait-filter').focus();}};label.append(input,document.createTextNode(`${text} (${count})`));return label;
+function traitChoice(text,count){const label=el('label',undefined,'check');const input=el('input');input.type='checkbox';input.checked=selectedTraits.some(t=>traitIdentity(t)===traitIdentity(text));input.setAttribute('aria-label',text);label.title=Object.values(TEXT_TOPICS).some(t=>t.es===text||t.en===text)?'Mención a planes secundarios en las reglas; no es un rasgo propio.':`${count} cartas distintas con este rasgo`;
+  input.onchange=()=>{const fromDeck=$('deck-traits-options').contains(input),fromSuggestions=$('trait-search-options').contains(input);if(input.checked)addTrait(text);else{selectedTraits=selectedTraits.filter(t=>traitIdentity(t)!==traitIdentity(text));page=1;renderTraits();renderEditedFilter();}if(fromDeck){toggleTraitList(false);$('deck-traits-button').focus();}if(fromSuggestions){$('trait-filter').value='';toggleTraitSuggestions(false);$('trait-filter').focus();}};label.append(input,document.createTextNode(`${text} (${count})`));return label;
 }
 function renderTraits(){
   $('trait-hero-all').disabled=!currentHeroTraits().length;
-  const sources=getFilter().traitSources,tallies=traitCounts(filterCards(choices,{...getFilter(),traits:[]},deck,collection),undefined,sources);allTraits=tallies.map(t=>t.name);
-  const sortTraits=(entries,mode)=>entries.sort((a,b)=>(mode==='count'?b.count-a.count:0)||a.name.localeCompare(b.name,'es'));
-  const byName=new Map(tallies.map(t=>[normalize(t.name),t.count]));
-  $('selected-traits').replaceChildren();for(const t of selectedTraits){const chip=el('span',undefined,'trait-chip');const remove=button('×',()=>{selectedTraits=selectedTraits.filter(x=>x!==t);page=1;renderTraits();renderEditedFilter();});remove.setAttribute('aria-label','Quitar rasgo '+t);chip.append(document.createTextNode(`${t} (${byName.get(normalize(t))||0})`),remove);$('selected-traits').append(chip);}
+  const filter=getFilter(),{traitSources:sources,language}=filter;
+  const tallies=traitCounts(filterCards(choices,{...filter,traits:[]},deck,collection),undefined,sources,language);allTraits=tallies.map(t=>t.name);
+  const sortTraits=(entries,mode)=>entries.sort((a,b)=>(mode==='count'?b.count-a.count:0)||a.name.localeCompare(b.name,language==='en'?'en':'es'));
+  const byName=new Map(tallies.map(t=>[traitIdentity(t.name),t.count]));
+  $('selected-traits').replaceChildren();for(const trait of selectedTraits){const t=localizedTrait(trait,language);const chip=el('span',undefined,'trait-chip');const remove=button('×',()=>{selectedTraits=selectedTraits.filter(x=>traitIdentity(x)!==traitIdentity(t));page=1;renderTraits();renderEditedFilter();});remove.setAttribute('aria-label','Quitar rasgo '+t);chip.append(document.createTextNode(`${t} (${byName.get(traitIdentity(t))||0})`),remove);$('selected-traits').append(chip);}
   const query=normalize($('trait-filter').value.trim());$('trait-suggestions').replaceChildren();
-  if(query){const matches=sortTraits(tallies.filter(t=>normalize(t.name).includes(query)),traitSort);for(const t of matches)$('trait-suggestions').append(traitChoice(t.name,t.count));if(!matches.length)$('trait-suggestions').append(el('p','Sin coincidencias con estos filtros.','hint'));}
+  if(query){const matches=sortTraits(tallies.filter(t=>[localizedTrait(t.name,'es'),localizedTrait(t.name,'en')].some(name=>normalize(name).includes(query))),traitSort);for(const t of matches)$('trait-suggestions').append(traitChoice(t.name,t.count));if(!matches.length)$('trait-suggestions').append(el('p','Sin coincidencias con estos filtros.','hint'));}
   toggleTraitSuggestions(Boolean(query&&traitSuggestionsOpen));
   const inDeck=Object.keys(deck.cards).filter(code=>deck.cards[code]>0).map(code=>cards[code]);
   if(deck.hero){const set=cards[deck.hero].links.set;inDeck.push(...Object.values(cards).filter(c=>c.role==='identity'&&c.links.set===set));}
-  const deckTraits=traitCounts(inDeck.filter(Boolean),c=>canonical(c,cards),sources),availableTraits=traitCounts(availableRecords,c=>canonical(c,cards),sources),list=sortTraits(traitListView==='deck'?deckTraits:availableTraits,deckTraitSort);$('deck-traits').replaceChildren();
+  const deckTraits=traitCounts(inDeck.filter(Boolean),c=>canonical(c,cards),sources,language),availableTraits=traitCounts(availableRecords,c=>canonical(c,cards),sources),list=sortTraits(traitListView==='deck'?deckTraits:availableTraits,deckTraitSort);$('deck-traits').replaceChildren();
   $('trait-list-deck').setAttribute('aria-selected',String(traitListView==='deck'));$('trait-list-available').setAttribute('aria-selected',String(traitListView==='available'));$('deck-traits').setAttribute('aria-label',traitListView==='deck'?'Rasgos en el mazo':'Rasgos en cartas disponibles');
   for(const t of list)$('deck-traits').append(traitChoice(t.name,t.count));if(!list.length)$('deck-traits').append(el('p',traitListView==='deck'?'Elige un héroe o añade cartas al mazo.':'No hay rasgos en las cartas disponibles con estos filtros.','hint'));
   for(const [id,mode]of [['trait-sort',traitSort],['deck-traits-sort',deckTraitSort]]){$(id).textContent=mode==='name'?'A–Z':'# ↓';$(id).title=mode==='name'?'Ordenar por cantidad de cartas':'Ordenar de A a Z';}
@@ -1044,7 +1045,7 @@ function renderCatalogToolbar(filter){
     });
   }
   if(filter.heroTraitInteraction)chip('hero-traits','Interacción rasgos mazo héroe',()=>$('hero-trait-interaction').click());
-  for(const trait of filter.advancedTraits?selectedTraits:[])chip('trait-'+trait,trait,()=>{selectedTraits=selectedTraits.filter(value=>value!==trait);});
+  for(const trait of filter.advancedTraits?selectedTraits:[])chip('trait-'+trait,localizedTrait(trait,filter.language),()=>{selectedTraits=selectedTraits.filter(value=>traitIdentity(value)!==traitIdentity(trait));});
   if(filter.owned)chip('owned','Solo mi colección',()=>$('owned-only').click());
   if(!filter.hideHero)chip('hero','Cartas de héroes',()=>{$('hide-hero').click();});
   if(!filter.sameAspect)chip('aspect','Otros aspectos del héroe',()=>{$('same-aspect').click();});
@@ -1520,9 +1521,9 @@ async function init(){
   $('trait-filter').onfocus=()=>{if($('trait-filter').value.trim()){traitSuggestionsOpen=true;renderTraits();}};
   for(const id of ['trait-in-attribute','trait-in-text'])$(id).onchange=()=>{refreshTraitSources();page=1;renderEditedFilter();};refreshTraitSources();
   $('trait-hero-all').onclick=()=>{
-    const existing=new Set(selectedTraits.map(normalize));
+    const existing=new Set(selectedTraits.map(traitIdentity));
     for(const trait of currentHeroTraits()){
-      const key=normalize(trait);
+      const key=traitIdentity(trait);
       if(existing.has(key))continue;
       selectedTraits.push(trait);
       existing.add(key);

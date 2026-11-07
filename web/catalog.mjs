@@ -18,15 +18,123 @@ export function heroSetTraits(hero,cards){
     ...scopedTraits(card,{attribute:true,text:false},true),
     ...(card.traitReferences?.es||[]),...(card.traitReferences?.en||[]),
   ]);
-  const generic=new Set(['intervencion','ataque','defensa','thwart','attack','defense','defence']);
-  return [...new Map(values.map(name=>[traitKey(name),name])).entries()]
-    .filter(([key])=>!generic.has(key)).map(([,name])=>name);
+  const generic=new Set(['thwart','attack','defense']);
+  const directOnly=new Set(['persona','location','title','tactic']);
+  const printed=new Set([...traits(hero.es?.traits),...traits(hero.en?.traits)].map(traitIdentity));
+  return [...new Map(values.map(name=>[traitIdentity(name),localizedTrait(name,'es')])).entries()]
+    .filter(([key])=>!generic.has(key)&&(!directOnly.has(key)||printed.has(key))).map(([,name])=>name);
 }
 // Dots inside abbreviations such as S.H.I.E.L.D. are not trait separators.
 export const traits = value => plain(value).split(/\.(?:\s+|$)/).map(t=>t.trim()).filter(Boolean);
 export function cardTraits(card) {return traits(card.es.traits || card.en.traits);}
 const traitKey=value=>normalize(value).trim().replace(/\.$/,'').replace(/\s+/g,' ');
+// Preferred translations from the paired printed trait fields in the player catalog.
+const bilingualTraits={
+  "active": ["Activo", "Active"],
+  "aerial": ["Aéreo", "Aerial"],
+  "agent of atlas": ["Agente de Atlas", "Agent of Atlas"],
+  "android": ["Androide", "Android"],
+  "ants": ["Hormigas", "Ants"],
+  "armor": ["Armadura", "Armor"],
+  "arrow": ["Flecha", "Arrow"],
+  "artifact": ["Artefacto", "Artifact"],
+  "attack": ["Ataque", "Attack"],
+  "attorney": ["Abogado", "Attorney"],
+  "avenger": ["Vengador", "Avenger"],
+  "bird": ["Pájaro", "Bird"],
+  "black panther": ["Pantera Negra", "Black Panther"],
+  "captive": ["Cautivo", "Captive"],
+  "cartoon": ["Dibujo animado", "Cartoon"],
+  "champion": ["Campeón", "Champion"],
+  "civilian": ["Civil", "Civilian"],
+  "condition": ["Alteración", "Condition"],
+  "cosmic entity": ["Entidad cósmica", "Cosmic Entity"],
+  "creature": ["Criatura", "Creature"],
+  "cyborg": ["Cíborg", "Cyborg"],
+  "dance": ["Baile", "Dance"],
+  "deadpool corps": ["Masacre Corps", "Deadpool Corps"],
+  "defender": ["Defensor", "Defender"],
+  "defense": ["Defensa", "Defense"],
+  "defiant": ["Desafiante", "Defiant"],
+  "genius": ["Genio", "Genius"],
+  "giant": ["Gigante", "Giant"],
+  "gift": ["Don", "Gift"],
+  "guild": ["Gremio", "Guild"],
+  "hero for hire": ["Héroe de alquiler", "Hero for Hire"],
+  "ice": ["Hielo", "Ice"],
+  "inactive": ["Inactivo", "Inactive"],
+  "inhuman": ["Inhumano", "Inhuman"],
+  "interface": ["Interfaz", "Interface"],
+  "invocation": ["Invocación", "Invocation"],
+  "item": ["Objeto", "Item"],
+  "king": ["Rey", "King"],
+  "labor": ["Trabajo", "Labor"],
+  "location": ["Lugar", "Location"],
+  "magnetic": ["Magnético", "Magnetic"],
+  "martial artist": ["Artista marcial", "Martial Artist"],
+  "maxim": ["Máxima", "Maxim"],
+  "mercenary": ["Mercenario", "Mercenary"],
+  "metagame": ["Metajuego", "Metagame"],
+  "midnight sun": ["Sol de medianoche", "Midnight Sun"],
+  "mutant": ["Mutante", "Mutant"],
+  "mystic": ["Místico", "Mystic"],
+  "new": ["Nuevo", "New"],
+  "nova corps": ["Cuerpo Nova", "Nova Corps"],
+  "olympus": ["Olimpo", "Olympus"],
+  "outlaw": ["Proscrito", "Outlaw"],
+  "persona": ["Individuo", "Persona"],
+  "phoenix": ["Fénix", "Phoenix"],
+  "pilot": ["Piloto", "Pilot"],
+  "police": ["Policía", "Police"],
+  "posse": ["Cuadrilla", "Posse"],
+  "preparation": ["Planificación", "Preparation"],
+  "psi-energy": ["Energía psiónica", "Psi-Energy"],
+  "psionic": ["Psiónico", "Psionic"],
+  "restrained": ["Contenida", "Restrained"],
+  "scientist": ["Científico", "Scientist"],
+  "sense": ["Sentido", "Sense"],
+  "shapeshift": ["Cambio de forma", "Shapeshift"],
+  "skill": ["Habilidad", "Skill"],
+  "soldier": ["Soldado", "Soldier"],
+  "space knight": ["Caballero del espacio", "Space Knight"],
+  "specialization": ["Especialización", "Specialization"],
+  "spell": ["Hechizo", "Spell"],
+  "spider": ["Araña", "Spider"],
+  "spy": ["Espía", "Spy"],
+  "superpower": ["Superpoder", "Superpower"],
+  "symbiote": ["Simbionte", "Symbiote"],
+  "tactic": ["Táctica", "Tactic"],
+  "team": ["Grupo", "Team"],
+  "tech": ["Tecnología", "Tech"],
+  "technique": ["Técnica", "Technique"],
+  "therapist": ["Terapeuta", "Therapist"],
+  "thief": ["Ladrón", "Thief"],
+  "thwart": ["Intervención", "Thwart"],
+  "tiny": ["Diminuto", "Tiny"],
+  "title": ["Título", "Title"],
+  "training": ["Entrenamiento", "Training"],
+  "unleashed": ["Desatada", "Unleashed"],
+  "vampire": ["Vampiro", "Vampire"],
+  "vehicle": ["Vehículo", "Vehicle"],
+  "weapon": ["Arma", "Weapon"],
+  "weather": ["Clima", "Weather"],
+  "web-warrior": ["Guerrero Araña", "Web-Warrior"],
+  "x-factor": ["Factor-X", "X-Factor"],
+  "x-men": ["Patrulla-X", "X-Men"],
+  "zombie": ["Zombi", "Zombie"],
+};
 export const TEXT_TOPICS={side_scheme:{es:'Plan secundario',en:'Side scheme'}};
+const traitAliases=new Map([
+  ['defence','defense'],['objecto','item'],['forajida','outlaw'],
+  ...Object.entries(bilingualTraits).flatMap(([key,names])=>names.map(name=>[traitKey(name),key])),
+  [traitKey(TEXT_TOPICS.side_scheme.es),'side scheme'],
+]);
+export const traitIdentity=name=>traitAliases.get(traitKey(name))||traitKey(name);
+export function localizedTrait(name,language){
+  const key=traitIdentity(name);
+  if(key==='side scheme')return TEXT_TOPICS.side_scheme[language==='en'?'en':'es'];
+  return bilingualTraits[key]?.[language==='en'?1:0]||name;
+}
 export function traitSourceOptions(value){
   const sources={attribute:value?.attribute!==false,text:value?.text===true};
   if(!sources.attribute&&!sources.text)sources.attribute=true;
@@ -77,10 +185,12 @@ export function partialSearch(value,query){
   const parts=normalize(query).trim().split(/[\s%]+/).filter(Boolean),text=normalize(plain(value));let from=0;
   for(const part of parts){const index=text.indexOf(part,from);if(index<0)return false;from=index+part.length;}return true;
 }
-export function traitCounts(records,familyFor=c=>c.code,sources){
+export function traitCounts(records,familyFor=c=>c.code,sources,language){
   const found=new Map();
-  for(const card of records)for(const name of scopedTraits(card,sources)){
-    const key=traitKey(name);if(!found.has(key))found.set(key,{name,codes:new Set()});found.get(key).codes.add(familyFor(card));
+  for(const card of records)for(const name of scopedTraits(card,sources,Boolean(language))){
+    const key=language?traitIdentity(name):traitKey(name);
+    if(!found.has(key))found.set(key,{name:language?localizedTrait(name,language):name,codes:new Set()});
+    found.get(key).codes.add(familyFor(card));
   }
   return [...found.values()].map(({name,codes})=>({name,count:codes.size}));
 }
@@ -167,6 +277,8 @@ export function paginateCards(cards,{rows=3,columns=1,page=1,selectedFirst=false
 export function filterCards(cards, filter, deck, collection) {
   const q=normalize(filter.search);
   const allowed=allowedFactions(filter,deck);
+  const heroTraits=filter.heroTraitInteraction?new Set(filter.heroTraits?.map(traitIdentity)):null;
+  const selectedTraits=filter.advancedTraits!==false&&filter.traits?.length?new Set(filter.traits.map(traitIdentity)):null;
   return cards.filter(c=> {
     const e=c.en;
     const specialSelected=filter.factions?.includes('special')&&specialRuleAllows(c,filter.specialRule);
@@ -177,13 +289,13 @@ export function filterCards(cards, filter, deck, collection) {
     if(filter.types && !filter.types.includes(e.type_code))return false;
     if(!matchesAllyFilter(c,filter.allyStats))return false;
     if(filter.costs && !filter.costs.includes(String(e.cost??'unknown')))return false;
-    if(filter.heroTraitInteraction){
-      const values=scopedTraits(c,{attribute:true,text:true},true).map(traitKey);
-      if(!filter.heroTraits?.some(t=>values.includes(traitKey(t))))return false;
+    if(heroTraits){
+      const values=scopedTraits(c,{attribute:true,text:true},true);
+      if(!values.some(t=>heroTraits.has(traitIdentity(t))))return false;
     }
-    if(filter.advancedTraits!==false&&filter.traits?.length){
-      const values=scopedTraits(c,filter.traitSources,true).map(traitKey);
-      if(!filter.traits.some(t=>values.includes(traitKey(t))))return false;
+    if(selectedTraits){
+      const values=scopedTraits(c,filter.traitSources,true);
+      if(!values.some(t=>selectedTraits.has(traitIdentity(t))))return false;
     }
     if(filter.faction && e.faction_code!==filter.faction) return false;
     if(filter.type && e.type_code!==filter.type) return false;
