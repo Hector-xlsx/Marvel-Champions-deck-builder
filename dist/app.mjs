@@ -909,6 +909,7 @@ function traitChoice(text,count){const label=el('label',undefined,'check');const
   input.onchange=()=>{const fromDeck=$('deck-traits-options').contains(input),fromSuggestions=$('trait-search-options').contains(input);if(input.checked)addTrait(text);else{selectedTraits=selectedTraits.filter(t=>normalize(t)!==normalize(text));page=1;renderTraits();renderEditedFilter();}if(fromDeck){toggleTraitList(false);$('deck-traits-button').focus();}if(fromSuggestions){$('trait-filter').value='';toggleTraitSuggestions(false);$('trait-filter').focus();}};label.append(input,document.createTextNode(`${text} (${count})`));return label;
 }
 function renderTraits(){
+  $('trait-hero-all').disabled=!currentHeroTraits().length;
   const sources=getFilter().traitSources,tallies=traitCounts(filterCards(choices,{...getFilter(),traits:[]},deck,collection),undefined,sources);allTraits=tallies.map(t=>t.name);
   const sortTraits=(entries,mode)=>entries.sort((a,b)=>(mode==='count'?b.count-a.count:0)||a.name.localeCompare(b.name,'es'));
   const byName=new Map(tallies.map(t=>[normalize(t.name),t.count]));
@@ -1466,6 +1467,20 @@ async function init(){
   $('trait-filter').oninput=()=>{traitSuggestionsOpen=true;renderTraits();};
   $('trait-filter').onfocus=()=>{if($('trait-filter').value.trim()){traitSuggestionsOpen=true;renderTraits();}};
   for(const id of ['trait-in-attribute','trait-in-text'])$(id).onchange=()=>{refreshTraitSources();page=1;renderEditedFilter();};refreshTraitSources();
+  $('trait-hero-all').onclick=()=>{
+    const existing=new Set(selectedTraits.map(normalize));
+    for(const trait of currentHeroTraits()){
+      const key=normalize(trait);
+      if(existing.has(key))continue;
+      selectedTraits.push(trait);
+      existing.add(key);
+    }
+    $('trait-in-attribute').checked=true;
+    $('trait-in-text').checked=true;
+    refreshTraitSources();
+    page=1;
+    renderEditedFilter();
+  };
   $('search-options-toggle').onclick=()=>toggleSearchOptions();
   document.addEventListener('click',e=>{if(!$('search-options').contains(e.target)&&!$('search-options-toggle').contains(e.target))toggleSearchOptions(false);});
   for(const id of ['search-name','search-text'])$(id).onchange=()=>{if(!$('search-name').checked&&!$('search-text').checked)$(id).checked=true;refreshSearchFields();page=1;renderEditedFilter();};refreshSearchFields();

@@ -367,7 +367,7 @@
 .trait-search-area { min-width: 0; }
 .trait-search-area .traits-heading { flex-wrap: wrap; gap: 4px 6px; }
 .trait-search-area .trait-source-controls { margin: 0; gap: 4px; }
-.trait-search-area .trait-source-controls label, #trait-sort {
+.trait-search-area .trait-source-controls label, #trait-sort, #trait-hero-all {
   position: relative;
   min-height: 30px;
   padding: 4px 7px;
