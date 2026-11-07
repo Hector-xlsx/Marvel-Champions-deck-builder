@@ -51,6 +51,7 @@
 .qty button[aria-pressed=true] { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 #modal { --prototype-dialog-header: 66px; }
 #modal .dialog-heading { z-index: 4; }
+#modal-body .detail { touch-action: pan-y pinch-zoom; }
 .detail-copy-bar, .collection-toolbar {
   position: sticky;
   z-index: 3;

@@ -39,7 +39,7 @@
       <div id="deck-panel" class="panel deck-panel">
         <div class="panel-content deck-settings">
           <div class="settings-block name-settings"><label for="deck-name">Nombre del mazo</label><input id="deck-name" required placeholder="Una nueva estrategia" maxlength="160"></div>
-          <div class="settings-block aspect-settings"><label for="aspect-select">Aspectos</label><select id="aspect-select" multiple size="5"><option value="aggression">Agresividad</option><option value="justice">Justicia</option><option value="leadership">Liderazgo</option><option value="protection">Protección</option><option value="pool">Masacre</option></select><button id="confirm-aspects" class="primary" type="button" hidden>Confirmar cambio</button></div>
+          <div class="settings-block aspect-settings"><label for="aspect-select">Aspectos</label><select id="aspect-select" size="5" aria-describedby="general-aspect-rule"><option value="aggression">Agresividad</option><option value="justice">Justicia</option><option value="leadership">Liderazgo</option><option value="protection">Protección</option><option value="pool">Masacre</option></select><p id="general-aspect-rule" class="hint" aria-live="polite"></p><button id="confirm-aspects" class="primary" type="button" hidden>Confirmar cambio</button></div>
           <div class="settings-block notes-settings"><label for="notes">Notas</label><textarea id="notes" rows="2" placeholder="Qué quieres conseguir con este mazo…" maxlength="12000"></textarea></div>
           <div class="settings-block action-settings toolbar"><button id="versions-button" type="button">Versiones y cambios</button><button id="export-text" type="button">Lista de texto</button></div>
         </div>

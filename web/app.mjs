@@ -629,6 +629,46 @@ function renderDetailTools(){
   const slot=$('detail-pins');slot.replaceChildren();if(presetsReady&&cards[detailCode]?.role==='deck_card')slot.append(pinControls(cards[detailCode]));
 }
 function navigateDetail(direction){if(!detailNavigation?.canNavigate)return;const code=detailNavigation.step(direction);if(code)cardDetail(code,false,detailNavigation);}
+function enableDetailSwipe(){
+  const body=$('modal-body');
+  const canNavigate=target=>detailNavigation?.canNavigate&&target.closest('.detail')
+    &&!target.closest('button,input,select,textarea,a,label,[contenteditable]');
+  let start=null,suppressClick=false;
+  body.addEventListener('pointerdown',event=>{
+    suppressClick=false;
+    if(event.pointerType==='touch'&&event.isPrimary&&canNavigate(event.target)){
+      start={id:event.pointerId,x:event.clientX,y:event.clientY,detail:detailNavigation,code:detailCode};
+    }
+  });
+  body.addEventListener('pointercancel',()=>{start=null;});
+  body.addEventListener('pointerup',event=>{
+    if(!start||start.id!==event.pointerId)return;
+    const gesture=start;
+    start=null;
+    if(gesture.detail!==detailNavigation||gesture.code!==detailCode)return;
+    const x=event.clientX-gesture.x,y=event.clientY-gesture.y;
+    if(Math.abs(x)<45||Math.abs(x)<Math.abs(y)*1.4)return;
+    suppressClick=true;
+    navigateDetail(x<0?1:-1);
+  });
+  body.addEventListener('click',event=>{
+    if(suppressClick&&event.detail){event.preventDefault();event.stopPropagation();}
+    suppressClick=false;
+  },{capture:true});
+
+  let distance=0,lastTime=-Infinity,lastDirection=0,stepped=false;
+  body.addEventListener('wheel',event=>{
+    const delta=event.deltaX||(event.shiftKey?event.deltaY:0);
+    if(!delta||event.ctrlKey||(!event.shiftKey&&Math.abs(delta)<=Math.abs(event.deltaY))||!canNavigate(event.target))return;
+    event.preventDefault();
+    const now=performance.now(),direction=Math.sign(delta);
+    if(now-lastTime>180||direction!==lastDirection){distance=0;stepped=false;}
+    lastTime=now;lastDirection=direction;
+    if(stepped)return;
+    distance+=Math.abs(delta)*(event.deltaMode===1?18:event.deltaMode===2?120:1);
+    if(distance>=40){stepped=true;navigateDetail(direction);}
+  },{passive:false});
+}
 function detailShortcut(event){
   if(!detailCode||!$('modal').open||event.defaultPrevented||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||event.isComposing)return;
   const target=event.target,editing=target.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])');
@@ -1109,13 +1149,25 @@ function renderHiddenGroups(){
     }$('groups-list').append(chip);
   }
 }
+function renderGeneralAspects(){
+  const select=$('aspect-select'),count=requiredAspectCount(cards[deck.hero]);
+  select.multiple=count>1;
+  select.disabled=readOnly||count===4;
+  const values=count===4?baseAspectCodes:pendingAspects??(deck.aspects.length<=count?deck.aspects:[]);
+  for(const option of select.options)option.selected=values.includes(option.value);
+  const changed=values.length!==deck.aspects.length||values.some(value=>!deck.aspects.includes(value));
+  const confirm=$('confirm-aspects');
+  confirm.hidden=readOnly||!changed||(count!==4&&pendingAspects===null);
+  confirm.disabled=values.length!==count;
+  $('general-aspect-rule').textContent=count===4?'Adam Warlock usa los cuatro aspectos base.'
+    :count===2?`Elige 2 aspectos · ${values.length} de 2`:'Elige un aspecto.';
+}
 function renderDeck(){
   renderSaveChanges();
   hideHover();
   renderDeckDetail();
   $('deck-name').value=deck.name;$('notes').value=deck.notes;
-  for(const o of $('aspect-select').options)o.selected=(pendingAspects||deck.aspects).includes(o.value);
-  $('confirm-aspects').hidden=pendingAspects===null;
+  renderGeneralAspects();
   const aux=auxiliaryCards(deck,cards),auxCount=Object.values(aux).reduce((s,n)=>s+n,0),report=constructionReport(deck,cards);
   const count=Object.values(deck.cards).reduce((s,n)=>s+n,0);$('deck-count').textContent=String(count)+(auxCount?` + ${auxCount} auxiliares`:'');
   $('mobile-deck-count').textContent=String(count);
@@ -1599,10 +1651,17 @@ async function init(){
   };
   $('aspect-select').onchange=()=>{
     const next=[...$('aspect-select').selectedOptions].map(o=>o.value);
-    pendingAspects=next.length===deck.aspects.length&&next.every(value=>deck.aspects.includes(value))?null:next;
-    $('confirm-aspects').hidden=pendingAspects===null;
+    if(next.length<=requiredAspectCount(cards[deck.hero])){
+      pendingAspects=next.length===deck.aspects.length&&next.every(value=>deck.aspects.includes(value))?null:next;
+    }
+    renderGeneralAspects();
   };
-  $('confirm-aspects').onclick=()=>{if(readOnly||!pendingAspects)return;deck.aspects=pendingAspects;pendingAspects=null;updateAutoName();page=1;changed();};
+  $('confirm-aspects').onclick=()=>{
+    const count=requiredAspectCount(cards[deck.hero]);
+    const next=count===4?baseAspectCodes:pendingAspects;
+    if(readOnly||!next||next.length!==count)return;
+    deck.aspects=[...next];pendingAspects=null;updateAutoName();page=1;changed();
+  };
   $('save-changes').prepend(iconSvg('save'));
   $('mobile-cards').append(iconSvg('cards'));
   $('mobile-deck').prepend(iconSvg('deck'));
@@ -1702,6 +1761,7 @@ async function init(){
   $('deck-columns').onclick=()=>{deckColumns=deckColumns===2?1:2;applyVisualSettings();try{localStorage.setItem('marvel.deck-columns',String(deckColumns));}catch{}};
   $('close-modal').onclick=()=>$('modal').close();
   $('detail-prev').onclick=()=>navigateDetail(-1);$('detail-next').onclick=()=>navigateDetail(1);
+  enableDetailSwipe();
   $('modal').addEventListener('close',()=>{if($('modal').open)return;finishDrag();closePinPopover();document.body.append($('pin-popover'));detailNavigation=null;detailCode='';$('detail-tools').hidden=true;});
   addEventListener('keydown',detailShortcut);
   addEventListener('scroll',e=>{
