@@ -14,9 +14,9 @@ Estas instrucciones describen el constructor actualizado el 2026-11-06 y prevale
 - Al pulsar **Construir mazo** con cambios pendientes en otro mazo, puedes guardarlos como una versión o descartarlos antes de crear el nuevo. **Cancelar** vuelve al selector con el héroe y los aspectos elegidos.
 - Cada mazo nuevo arranca con un solo filtro activo, sin búsquedas, rasgos manuales ni fijados. Se conservan el modo avanzado y los ajustes de **Otros**. Los filtros anteriores se pueden reactivar.
 - **General** permite editar el nombre, confirmar cambios de aspecto y escribir notas. También ofrece **Versiones y cambios** y **Lista de texto**, con el formato `Aspecto - Nombre`. En escritorio, abrir General desplaza solo la columna izquierda. En móvil, **Guardar cambios** queda a la derecha del encabezado. La importación y exportación JSON están en **Mazos**.
-- En móvil, el catálogo cambia una carta por fila en cada paso de zoom, hasta cuatro en vertical y seis en horizontal. A partir de tres por fila, las copias y los fijados se gestionan desde el detalle de la carta.
+- En móvil, los iconos de Cartas y Mazo están entre el logo y Guardar cambios. Mazo ofrece General, Detalle cartas para la galería y Detalle mazo para el listado. El icono de Opciones de vista abre los controles del catálogo. En «N por fila», + añade una columna y − la quita, hasta cinco cartas por fila. A partir de tres por fila, las copias y los fijados se gestionan desde el detalle de la carta.
 - **Otros → Filtro rasgos avanzado** abre la selección manual. El filtro rápido **Interacción rasgos mazo héroe** usa los rasgos impresos y las referencias marcadas del conjunto propio del héroe, excluyendo Ataque, Intervención y Defensa. Esos tres siguen disponibles en el filtro avanzado.
-- Los aliados tienen un límite de una copia. Las cartas con **Linked** entran inicialmente en **Auxiliares** y se pueden mover después desde el agrupador.
+- Los aliados tienen un límite de una copia. Las cartas con **Linked** entran inicialmente en **Auxiliares** y se pueden mover después desde el agrupador. **Mazo auxiliar** muestra por separado las cartas auxiliares propias del héroe.
 
 La publicación de mazos por usuarios figura como requisito previo a una próxima carga a Sites de GPT. [Próximas mejoras](PROXIMAS_MEJORAS.md#publicación-de-mazos-antes-de-cargar-el-gestor-a-sites-de-gpt)
 

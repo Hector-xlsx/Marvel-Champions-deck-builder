@@ -90,6 +90,7 @@ function showView(name,reading=false){
   if(name==='constructor')readOnly=reading;
   document.body.classList.toggle('readonly',name==='constructor'&&readOnly);
   $('constructor-view').hidden=name!=='constructor';$('library-view').hidden=name!=='library';$('readonly-actions').hidden=!readOnly;
+  $('mobile-workspace-nav').hidden=name!=='constructor'||readOnly;
   renderSaveChanges();
   $('constructor-button').setAttribute('aria-pressed',String(name==='constructor'&&!reading));$('library-button').setAttribute('aria-pressed',String(name==='library'||reading));
   if(name==='library'){renderLibrary();status('Biblioteca local · Mazos guardados en este navegador');}
@@ -844,6 +845,11 @@ function checklist(key,entries){
     const control=button(text,()=>choose(value,!selection[key].has(value)),'filter-choice');
     control.dataset.filterValue=value;
     if(key==='type')control.dataset.typeValue=value;
+    if(key==='cost'&&(value==='unknown'||value==='-1')){
+      control.textContent=value==='unknown'?'SC':'V';
+      control.setAttribute('aria-label',text);
+      control.title=text;
+    }
     if(key==='resource'){
       control.setAttribute('aria-label',text);
       control.title=text;
@@ -956,6 +962,15 @@ function renderDeckDetail(){
       const footer=el('div',undefined,'card-footer');
       footer.append(el('span',familyQuantity(canonical(c,cards))+'×','badge'));
       gallery.append(galleryCard(c,'deck-detail',footer));
+    }
+  }
+  const heroAux=Object.entries(automaticAuxiliaries(deck,cards));
+  if(heroAux.length){
+    gallery.append(el('h3','Mazo auxiliar','deck-auxiliary-heading'));
+    for(const [code,quantity] of heroAux.sort(([a],[b])=>title(cards[a]).localeCompare(title(cards[b]),'es'))){
+      const footer=el('div',undefined,'card-footer');
+      footer.append(el('span',quantity+'×','badge'));
+      gallery.append(galleryCard(cards[code],'deck-detail',footer));
     }
   }
   if(!gallery.childElementCount)gallery.append(el('p','No hay cartas del mazo para mostrar.','empty'));
@@ -1080,7 +1095,7 @@ function dragHandle(code){
 function defaultLabel(id){const [,mode,value]=id.split(':');return defaultGroup({en:{type_code:value,faction_code:value,cost:mode==='cost'?(value==='x'?-1:value==='unknown'?undefined:Number(value)):undefined}},mode).label;}
 function renderHiddenGroups(){
   $('groups-list').replaceChildren();
-  if(!Object.keys(auxiliaryCards(deck,cards)).length){const slot=el('span',undefined,'restore-group auxiliary-slot');slot.dataset.groupId=AUXILIARY_GROUP;const control=button('Auxiliares (reservado)',()=>{status('Arrastra una carta a Auxiliares o usa su asa para elegir este destino.');});control.title='Destino reservado para cartas auxiliares';slot.append(control);$('groups-list').append(slot);}
+  if(!Object.keys(deck.auxiliaries||{}).length){const slot=el('span',undefined,'restore-group auxiliary-slot');slot.dataset.groupId=AUXILIARY_GROUP;const control=button('Auxiliares (reservado)',()=>{status('Arrastra una carta a Auxiliares o usa su asa para elegir este destino.');});control.title='Destino reservado para cartas auxiliares';slot.append(control);$('groups-list').append(slot);}
   const hidden=[...deck.grouping.hiddenDefaults.map(id=>({id,name:defaultLabel(id),kind:'default'})),...deck.groups.filter(g=>g.hidden).map(g=>({...g,kind:'custom'}))];
   if(hidden.length)$('groups-list').append(el('p','Grupos ocultos · Pulsa el nombre para restaurar.','hint'));
   for(const g of hidden){const chip=el('span',undefined,'restore-group');chip.append(button(g.name,()=>{pendingGroupDelete=null;restoreGroup(deck,g.id);changed();}));
@@ -1134,17 +1149,26 @@ function renderDeck(){
   const summary={};for(const [code,n]of Object.entries(deck.cards)){const t=types[cards[code]?.en.type_code]||'Otra';summary[t]=(summary[t]||0)+n;}
   $('deck-summary').textContent=Object.entries(summary).map(([k,n])=>`${n} ${k.toLowerCase()}`).join(' · ')||'Elige un héroe o añade tu primera carta.';
   $('deck-list').replaceChildren();
-  const minimum=requiredHeroCards(deck,cards);
   $('grouping-mode').value=$('detail-grouping-mode').value=deck.grouping.mode;
-  for(const descriptor of listDeckGroups(deck,cards)){
-    const isAux=descriptor.kind==='auxiliary';
+  const heroAux=automaticAuxiliaries(deck,cards);
+  const groups=listDeckGroups(deck,cards).flatMap(group=>{
+    if(group.kind!=='auxiliary')return [group];
+    const manual=group.codes.filter(code=>!heroAux[code]);
+    const automatic=group.codes.filter(code=>heroAux[code]);
+    return [
+      ...(manual.length?[{...group,codes:manual}]:[]),
+      ...(automatic.length?[{id:'hero-auxiliary',label:'Mazo auxiliar',kind:'hero-auxiliary',codes:automatic}]:[]),
+    ];
+  });
+  for(const descriptor of groups){
+    const isAux=descriptor.kind==='auxiliary'||descriptor.kind==='hero-auxiliary';
     const entries=descriptor.codes.filter(code=>isAux||!$('deck-hide-hero').checked||cards[code].en.faction_code!=='hero').map(code=>[code,isAux?aux[code]:deck.cards[code]]).sort(([a],[b])=>title(cards[a]).localeCompare(title(cards[b]),'es'));
     if(!entries.length&&$('deck-hide-hero').checked&&descriptor.codes.length)continue;
     const group=el('section',undefined,'deck-type');group.dataset.groupId=descriptor.id;
     const heading=el('div',undefined,'group-heading');heading.append(el('h3',`${descriptor.label} (${entries.reduce((sum,[,n])=>sum+n,0)})`));
     if(!readOnly&&descriptor.kind==='custom'){const clear=button('Limpiar',()=>{clearCustomGroup(deck,descriptor.id);changed();status('Grupo «'+descriptor.label+'» sin asociaciones. Las cartas permanecen en el mazo.');},'clear-group');clear.setAttribute('aria-label','Limpiar grupo '+descriptor.label);clear.title='Desasociar todas sus cartas sin quitarlas del mazo';clear.disabled=!deck.groups.find(g=>g.id===descriptor.id)?.codes.length;heading.append(clear);}
     if(!readOnly&&!isAux&&descriptor.kind!=='ungrouped'){const hide=button('×',()=>{hideGroup(deck,descriptor.id);pendingGroupDelete=null;changed();},'hide-group');hide.setAttribute('aria-label','Ocultar grupo '+descriptor.label);heading.append(hide);}group.append(heading);
-    if(!readOnly&&descriptor.kind!=='ungrouped'){
+    if(!readOnly&&!['ungrouped','hero-auxiliary'].includes(descriptor.kind)){
       group.ondragover=e=>{if(canDrop(draggingCard,descriptor.id)){e.preventDefault();e.dataTransfer.dropEffect='move';group.classList.add('drop-target');}};
       group.ondragleave=e=>{if(!group.contains(e.relatedTarget))group.classList.remove('drop-target');};
       group.ondrop=e=>{e.preventDefault();const code=draggingCard||e.dataTransfer.getData('text/x-marvel-card');if(canDrop(code,descriptor.id))moveCard(code,descriptor.id);finishDrag();};
@@ -1159,7 +1183,7 @@ function renderDeck(){
       for(const [key,name]of [['energy','Energía'],['physical','Físico'],['mental','Mental'],['wild','Universal']])for(let i=0;i<(c.en['resource_'+key]||0);i++){const icon=el('span',undefined,'resource');icon.dataset.resource=key;icon.title=name;icon.setAttribute('aria-label',name);icon.append(iconSvg(key));resources.append(icon);}
       row.append(resources);
       if(art.image){const thumb=button('',()=>cardDetail(art.code,false,'deck'),'deck-thumb');thumb.setAttribute('aria-label','Ver miniatura de '+title(c));const img=el('img');img.src=art.image;img.alt='';img.loading='lazy';thumb.append(img);row.append(thumb);}
-      if(!readOnly){const fixed=isAux?automaticAuxiliaries(deck,cards)[code]:minimum[root];if(!isAux||!fixed){const tools=el('span',undefined,'row-actions');tools.append(dragHandle(code));row.append(tools);}}
+      if(!readOnly&&!heroAux[code]){const tools=el('span',undefined,'row-actions');tools.append(dragHandle(code));row.append(tools);}
       group.append(row);
     }
     $('deck-list').append(group);
@@ -1543,6 +1567,10 @@ async function init(){
     $('confirm-aspects').hidden=pendingAspects===null;
   };
   $('confirm-aspects').onclick=()=>{if(readOnly||!pendingAspects)return;deck.aspects=pendingAspects;pendingAspects=null;updateAutoName();page=1;changed();};
+  $('save-changes').prepend(iconSvg('save'));
+  $('mobile-cards').append(iconSvg('cards'));
+  $('mobile-deck').prepend(iconSvg('deck'));
+  $('gallery-options-toggle').append(iconSvg('view'));
   $('save-changes').onclick=()=>commit();$('export-text').onclick=exportText;
   $('library-import-file').onchange=e=>{importFile(e.target.files[0],true);e.target.value='';};
   $('add-group').onclick=()=>{if(readOnly)return;try{addCustomGroup(deck,$('group-name').value);$('group-name').value='';changed();}catch(e){report(e);}};
@@ -1588,7 +1616,7 @@ async function init(){
   const phoneLandscape=matchMedia('(max-width: 1100px) and (max-height: 500px) and (orientation: landscape)');
   const savedMobileColumns=Number(localStorage.getItem('marvel.mobile-gallery-columns'));
   let mobileColumns=Number.isInteger(savedMobileColumns)&&savedMobileColumns>=1&&savedMobileColumns<=6?savedMobileColumns:2;
-  const maxMobileColumns=()=>phoneLandscape.matches?6:4;
+  const maxMobileColumns=5;
   function applyVisualSettings(){
     document.documentElement.style.setProperty('--card-width',galleryWidth+'px');
     document.documentElement.style.setProperty('--deck-columns',String(deckColumns));
@@ -1596,23 +1624,24 @@ async function init(){
     $('deck-columns').textContent=deckColumns===1?'1 columna':'2 columnas';
     $('deck-columns').setAttribute('aria-label',deckColumns===2?'Mostrar una columna de cartas del mazo':'Mostrar dos columnas de cartas del mazo');
     const compactViewport=mobile.matches||phoneLandscape.matches;
-    const columns=Math.min(mobileColumns,maxMobileColumns());
+    const columns=Math.min(mobileColumns,maxMobileColumns);
     const gallery=$('gallery');
     gallery.classList.toggle('mobile-density',compactViewport);
     gallery.classList.toggle('compact-cards',compactViewport&&columns>=3);
     gallery.style.setProperty('--mobile-gallery-columns',String(columns));
     $('mobile-gallery-density').hidden=!compactViewport;
     $('mobile-gallery-density').textContent=`${columns} por fila`;
-    $('zoom-out').disabled=compactViewport?columns===maxMobileColumns():galleryWidth<=140;
-    $('zoom-in').disabled=compactViewport?columns===1:galleryWidth>=320;
+    $('zoom-out').disabled=compactViewport?columns===1:galleryWidth<=140;
+    $('zoom-in').disabled=compactViewport?columns===maxMobileColumns:galleryWidth>=320;
+    $('zoom-out').setAttribute('aria-label',compactViewport?'Reducir cartas por fila':'Reducir tamaño de las cartas');
+    $('zoom-in').setAttribute('aria-label',compactViewport?'Aumentar cartas por fila':'Ampliar tamaño de las cartas');
     if(deck)renderGallery();
   }
   const width=Number(localStorage.getItem('marvel.gallery-width'));if(width>=140&&width<=320)galleryWidth=width;
   deckColumns=localStorage.getItem('marvel.deck-columns')==='1'?1:2;applyVisualSettings();
   for(const [id,step]of [['zoom-out',-1],['zoom-in',1]])$(id).onclick=()=>{
     if(mobile.matches||phoneLandscape.matches){
-      const max=maxMobileColumns();
-      mobileColumns=Math.max(1,Math.min(max,Math.min(mobileColumns,max)-step));
+      mobileColumns=Math.max(1,Math.min(maxMobileColumns,Math.min(mobileColumns,maxMobileColumns)+step));
       try{localStorage.setItem('marvel.mobile-gallery-columns',String(mobileColumns));}catch{}
     }else{
       galleryWidth=Math.max(140,Math.min(320,galleryWidth+20*step));
@@ -1656,7 +1685,7 @@ async function init(){
     [filterResults,mobileFilters],
     [mobileFilters,catalogTools],
     [$('active-filter-summary'),catalogTools],
-    [$('gallery-options-toggle'),$('mobile-gallery-options')],
+    [$('gallery-options-toggle'),$('gallery-title').parentElement],
     [galleryControls,$('gallery-options')],
   ].map(([node,destination])=>{
     const anchor=document.createComment('');
@@ -1711,10 +1740,12 @@ async function init(){
     }
     $('deck-detail').hidden=!open;setAvailableCards(!open);
     $('deck-detail-toggle').setAttribute('aria-expanded',String(open));
+    $('mobile-deck-list').setAttribute('aria-pressed',String(!open));
     hideHover();renderDeckDetail();
   }
   $('deck-detail-toggle').onclick=()=>{
     const open=$('deck-detail').hidden;
+    if(open&&mobile.matches&&!$('deck-panel').hidden)setActivePanel('none');
     setDeckDetail(open);
     if(open&&!mobile.matches){
       $('mobile-cards').setAttribute('aria-pressed','false');
@@ -1728,6 +1759,7 @@ async function init(){
   };
   $('deck-tab').onclick=()=>{
     restoreFilters=false;
+    if(mobile.matches&&!$('deck-detail').hidden)setDeckDetail(false);
     const open=$('deck-panel').hidden;
     if(open&&!mobile.matches)$('deck-column-toggle').setAttribute('aria-expanded','true');
     setActivePanel(open?'deck-panel':'none');
@@ -1752,6 +1784,10 @@ async function init(){
     if(!$('filter-panel').hidden)setActivePanel('none');
     $('deck-column-toggle').setAttribute('aria-expanded','true');
     setMobilePane('deck');
+  };
+  $('mobile-deck-list').onclick=()=>{
+    $('mobile-deck').click();
+    if(!$('deck-panel').hidden)setActivePanel('none');
   };
   $('explore-cards-ux').onclick=()=>{
     $('mobile-cards').click();$('search').focus();
