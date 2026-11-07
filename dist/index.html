@@ -15,9 +15,13 @@
 </head>
 <body>
   <header class="app-header">
+    <details id="main-menu"><summary id="main-menu-toggle" aria-label="Menú principal" title="Menú principal">☰</summary>
+      <nav aria-label="Secciones"><button id="constructor-button" type="button">Constructor de mazos</button><button id="library-button" type="button">Mazos</button><button id="settings-button" type="button" aria-label="Configuración" title="Configuración"></button></nav>
+    </details>
     <div class="brand"><span class="brand-mark">MARVEL <span>/ LAB</span></span></div>
-    <nav class="toolbar" aria-label="Secciones"><span id="theme-picker" class="theme-picker"><select id="theme-preference" aria-label="Tema de color"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></span><button id="save-changes" class="primary" type="button" hidden><span>Guardar</span> <span>cambios</span></button><button id="constructor-button" type="button">Constructor de mazos</button><button id="library-button" type="button">Mazos</button><button id="settings-button" type="button" aria-label="Configuración" title="Configuración"></button></nav>
+    <button id="save-changes" class="primary" type="button" hidden><span>Guardar</span> <span>cambios</span></button>
   </header>
+  <template id="theme-settings"><label for="theme-preference">Tema de color</label><select id="theme-preference" aria-label="Tema de color"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></template>
   <p id="status" hidden></p>
   <main id="constructor-view" class="workspace" data-mobile-pane="cards">
     <section id="config-bar" class="config-bar" data-active="deck" aria-label="Configuración del constructor">

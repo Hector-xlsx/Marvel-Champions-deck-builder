@@ -13,7 +13,9 @@ import {DetailNavigation} from './detail-navigation.mjs';
 import {ruleTextParts,identityPreviewCards} from './card-presentation.mjs';
 import {collectionCycles} from './collection-cycles.mjs';
 const $=id=>document.getElementById(id);
-const themePreference=$('theme-preference');
+const themeSettings=$('theme-settings').content;
+const themePreference=themeSettings.querySelector('#theme-preference');
+const themeLabel=themeSettings.querySelector('label');
 const systemTheme=matchMedia('(prefers-color-scheme: dark)');
 const desktopDetail=matchMedia('(min-width: 851px)');
 function applyTheme(){
@@ -266,7 +268,9 @@ function openSettings(){
     }catch(e){feedback.textContent='No se pudo actualizar. '+e.message;}
     finally{check.disabled=false;}
   },'primary');
-  body.append(check,button('Mi colección',collectionDialog),feedback);
+  const theme=el('div',undefined,'settings-theme');
+  theme.append(themeLabel,themePreference);
+  body.append(theme,check,button('Mi colección',collectionDialog),feedback);
   popup('Configuración',body);
 }
 function centerHero({entry,card}){
@@ -314,9 +318,15 @@ function renderHeroDisplay(){
 }
 function enableHeroSwipe(){
   const viewport=$('hero-faces'),track=$('hero-track');
-  const duration=2300;
   let gesture,frame=0,offset=0,velocity=0,holdTimer;
-  const paint=()=>{track.style.transform=offset?'translateX('+offset+'px)':'';};
+  const paint=spacing=>{
+    track.style.transform=offset?'translateX('+offset+'px)':'';
+    const position=spacing?offset/spacing:0;
+    for(const group of track.children){
+      const distance=Math.min(1,Math.abs(Number(group.dataset.offset)+position));
+      group.style.setProperty('--hero-card-scale',String(1-distance*.18));
+    }
+  };
   function stop(confirm=true){
     clearTimeout(holdTimer);cancelAnimationFrame(frame);
     frame=0;offset=0;velocity=0;paint();
@@ -333,11 +343,12 @@ function enableHeroSwipe(){
       offset-=direction*spacing;
       if(Math.abs(offset)<=spacing/2)break;
     }
-    paint();
+    paint(spacing);
   }
   function glide(speed,spacing){
     cancelAnimationFrame(frame);
     const start=performance.now();
+    const duration=Math.abs(speed)<.18?200:Math.min(2300,420+Math.abs(speed)*1250);
     const momentum=Math.max(-8*spacing,Math.min(8*spacing,speed*duration/3));
     const correction=Math.round((offset+momentum)/spacing)*spacing-offset-momentum;
     let previous=0;
@@ -361,7 +372,7 @@ function enableHeroSwipe(){
     if(event.pointerType!=='touch'||!event.isPrimary)return;
     const card=track.querySelector('.hero-carousel-card');
     if(!card)return;
-    gesture={id:event.pointerId,start:event.clientX,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false,handled:false};
+    gesture={id:event.pointerId,start:event.clientX,startY:event.clientY,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false,handled:false};
     if(frame){
       viewport.setPointerCapture(event.pointerId);
       gesture.paused=true;
@@ -373,7 +384,8 @@ function enableHeroSwipe(){
   viewport.addEventListener('pointermove',event=>{
     if(gesture?.id!==event.pointerId||gesture.handled)return;
     if(!gesture.dragging){
-      if(Math.abs(event.clientX-gesture.start)<9)return;
+      const horizontal=Math.abs(event.clientX-gesture.start);
+      if(horizontal<5||horizontal<Math.abs(event.clientY-gesture.startY))return;
       gesture.dragging=true;
       $('build-deck').disabled=true;
       if(!previewHero){
@@ -391,7 +403,11 @@ function enableHeroSwipe(){
       }
     }
     const now=performance.now(),delta=event.clientX-gesture.x;
-    gesture.speed=delta/Math.max(12,now-gesture.time);
+    const elapsed=now-gesture.time;
+    const sample=delta/Math.max(8,elapsed);
+    gesture.speed=!gesture.speed||elapsed>70||Math.sign(sample)!==Math.sign(gesture.speed)
+      ? sample
+      : gesture.speed*.4+sample*.6;
     gesture.x=event.clientX;gesture.time=now;
     move(delta,gesture.spacing);
   });
@@ -1542,11 +1558,22 @@ async function init(){
     try{localStorage.setItem('marvel.ui.detail-group-rows',pressed);}catch{}
     renderDeckDetail();
   };
-  $('versions-button').onclick=versions;$('library-button').onclick=library;
-  $('theme-picker').prepend(iconSvg('theme'));
-  $('settings-button').append(iconSvg('settings'));
-  $('settings-button').onclick=openSettings;
-  $('constructor-button').onclick=editCurrent;$('edit-current').onclick=()=>openSaved(store.load(deck.id)||{deck,revision});
+  $('versions-button').onclick=versions;
+  const menu=$('main-menu'),menuToggle=$('main-menu-toggle');
+  const fromMenu=action=>()=>{
+    menu.open=false;
+    menuToggle.focus();
+    action();
+  };
+  document.addEventListener('click',event=>{if(!menu.contains(event.target))menu.open=false;});
+  menu.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&menu.open){menu.open=false;menuToggle.focus();}
+  });
+  $('library-button').onclick=fromMenu(library);
+  $('settings-button').textContent='Configuración';
+  $('settings-button').prepend(iconSvg('settings'));
+  $('settings-button').onclick=fromMenu(openSettings);
+  $('constructor-button').onclick=fromMenu(editCurrent);$('edit-current').onclick=()=>openSaved(store.load(deck.id)||{deck,revision});
   $('library-new').onclick=()=>openNewDeck();
   $('library-aspect').append(option('','Todos los aspectos'));for(const code of ['aggression','justice','leadership','protection','pool'])$('library-aspect').append(option(code,factions[code]));
   $('library-hero').onchange=renderLibrary;$('library-aspect').onchange=renderLibrary;

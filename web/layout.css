@@ -120,9 +120,6 @@
   .library-table .library-thumb { width: 26px; height: 36px; }
 }
 @media (max-width: 550px) {
-  .app-header .brand { width: 100%; }
-  .app-header .toolbar { justify-content: flex-start; }
-  .app-header .toolbar button { font-size: 11px; }
   .collection-toolbar { grid-template-columns: minmax(0,1fr) minmax(0,1fr); padding: 8px; }
   #detail-tools { gap: 4px; }
   .detail-navigation button, #close-modal { min-width: 34px; }
@@ -173,25 +170,38 @@
 #hero-display { display: grid; gap: 8px; justify-items: center; }
 #hero-display .hero-carousel-tools { justify-content: space-between; width: 100%; }
 .hero-acceleration-control { display: flex; align-items: center; gap: 4px; margin: 0; }
-.theme-picker {
-  position: relative;
-  display: inline-grid;
+.app-header { justify-content: flex-start; align-items: center; flex-wrap: nowrap; }
+.app-header .brand { min-width: 0; }
+.app-header #save-changes { margin-left: auto; min-height: 44px; }
+#main-menu { position: relative; flex: 0 0 auto; }
+#main-menu-toggle {
+  display: grid;
   place-items: center;
   width: 44px;
-  min-height: 44px;
+  height: 44px;
+  list-style: none;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--panel);
-}
-.theme-picker:focus-within { outline: 2px solid var(--red); outline-offset: 2px; }
-.theme-picker #theme-preference {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
   cursor: pointer;
 }
+#main-menu-toggle::-webkit-details-marker { display: none; }
+.app-header #main-menu nav {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  gap: 4px;
+  width: max-content;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.app-header #main-menu nav button { justify-content: flex-start; min-height: 44px; font-size: 13px; }
+.app-header #main-menu:not([open]) nav { display: none; }
+.settings-theme { margin-bottom: 12px; }
 @media (max-width: 850px), (pointer: coarse) {
   #hero-acceleration-control { display: none; }
 }
@@ -216,7 +226,8 @@
 .hero-carousel-name { display: block; padding-top: 4px; font-size: 12px; overflow-wrap: anywhere; }
 @media (max-width: 600px) {
   #hero-track { width: 220%; margin-left: -60%; }
-  .hero-carousel-group[data-offset]:not([data-offset="0"]) .hero-carousel-card { transform: scale(.82); }
+  .hero-carousel-card { transform: scale(var(--hero-card-scale,1)); }
+  .hero-carousel-group[data-offset]:not([data-offset="0"]) { --hero-card-scale: .82; }
   .hero-carousel-group:is([data-offset="-2"],[data-offset="2"]) { visibility: hidden; }
   #hero-track[style*="translateX"] .hero-carousel-group { visibility: visible; }
   #hero-display-name { min-height: 2.6em; }
@@ -240,23 +251,7 @@
 }
 @media (max-width: 850px) {
   #config-bar > #deck-panel { width: 100%; }
-  .app-header nav:has(#save-changes:not([hidden])) {
-    display: grid;
-    grid-template-columns: minmax(0,1fr) minmax(0,1fr) auto auto;
-    gap: 4px;
-  }
-  .app-header nav #save-changes {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    align-self: stretch;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .app-header nav:has(#save-changes:not([hidden])) #settings-button {
-    grid-column: 4;
-    grid-row: 1 / span 2;
-    align-self: stretch;
-  }
+  .app-header #save-changes { flex-direction: column; gap: 2px; }
 }
 #available-cards #gallery.compact-cards .card-title {
   min-height: 0;
