@@ -197,6 +197,7 @@
 }
 #hero-acceleration { width: 66px; min-width: 0; min-height: 26px; padding: 0; }
 #hero-display-name { min-width: 0; max-width: 100%; text-align: center; font-weight: 700; overflow-wrap: anywhere; }
+#new-deck-aspect-rule { margin: 0 0 8px; }
 #hero-faces {
   width: 100%;
   overflow: hidden;
@@ -214,9 +215,22 @@
 #hero-faces .hero-carousel-card[aria-pressed="true"] { border-color: var(--red); }
 .hero-carousel-name { display: block; padding-top: 4px; font-size: 12px; overflow-wrap: anywhere; }
 @media (max-width: 600px) {
-  #hero-track { width: calc((100% + 8px) * 5 / 3 - 8px); margin-left: calc((100% + 8px) / -3); }
+  #hero-track { width: 220%; margin-left: -60%; }
+  .hero-carousel-group[data-offset]:not([data-offset="0"]) .hero-carousel-card { transform: scale(.82); }
   .hero-carousel-group:is([data-offset="-2"],[data-offset="2"]) { visibility: hidden; }
   #hero-track[style*="translateX"] .hero-carousel-group { visibility: visible; }
+  #hero-display-name { min-height: 2.6em; }
+  .hero-carousel-tools button { min-width: 44px; min-height: 44px; }
+  .new-deck-content .new-deck-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin: 0 -16px -16px;
+    padding: 8px 16px max(8px,env(safe-area-inset-bottom));
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+  }
+  .new-deck-actions button { min-height: 44px; }
 }
 #hero-face-toggle { min-height: 44px; }
 #hero-trait-interaction { justify-self: start; align-self: center; white-space: normal; }

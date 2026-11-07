@@ -179,6 +179,7 @@ function confirmNewDeck(active,build){
   cancel.focus();
 }
 function newDeckAspects(){return [...$('new-deck-aspects').selectedOptions].map(option=>option.value);}
+let previewHero=null;
 function updateNewDeckControls(){
   const hero=cards[$('hero-select').value], aspects=$('new-deck-aspects'), count=requiredAspectCount(hero);
   aspects.multiple=count>1;
@@ -190,9 +191,10 @@ function updateNewDeckControls(){
     delete aspects.dataset.fixed;
   }
   aspects.disabled=!hero||count===4;
-  $('new-deck-aspect-rule').textContent=count===4?'Adam Warlock usa los cuatro aspectos base.':hero?'Selecciona '+count+(count===1?' aspecto.':' aspectos.'):'Elige primero un héroe.';
+  const selected=newDeckAspects().length;
+  $('new-deck-aspect-rule').textContent=count===4?'Adam Warlock usa los cuatro aspectos base.':hero?`Elige ${count} ${count===1?'aspecto':'aspectos'} · ${selected} de ${count}`:'Elige primero un héroe.';
   $('hero-detail').disabled=!hero;
-  $('build-deck').disabled=!hero||newDeckAspects().length!==count;
+  $('build-deck').disabled=Boolean(previewHero)||!hero||selected!==count;
   if(showHeroDisplay)renderHeroDisplay();
 }
 function setHeroView(display){
@@ -213,6 +215,7 @@ function heroBand(){
   });
 }
 function heroBandIndex(band){
+  if(previewHero)return band.findIndex(({card})=>card.code===previewHero.card.code);
   const hero=$('hero-select').value;
   const index=band.findIndex(({entry,card})=>entry.value===hero&&card.code===centeredHeroForm);
   return index<0?band.findIndex(({entry})=>entry.value===hero):index;
@@ -271,11 +274,18 @@ function centerHero({entry,card}){
   centeredHeroForm=card.code;
   updateNewDeckControls();
 }
-function stepHero(direction){
+function stepHero(direction,preview=false){
   const band=heroBand();
   if(!band.length)return;
   const index=heroBandIndex(band);
-  centerHero(band[index<0?(direction>0?0:band.length-1):((index+direction)%band.length+band.length)%band.length]);
+  const item=band[index<0?(direction>0?0:band.length-1):((index+direction)%band.length+band.length)%band.length];
+  if(preview){
+    previewHero=item;
+    renderHeroDisplay();
+  }else{
+    previewHero=null;
+    centerHero(item);
+  }
 }
 function renderHeroDisplay(){
   const band=heroBand(),index=heroBandIndex(band),images=$('hero-track');
@@ -294,10 +304,12 @@ function renderHeroDisplay(){
       cardDetail(card.code);
     },'hero-carousel-card');
     face.setAttribute('aria-label','Seleccionar '+name+' · '+item.entry.textContent);
-    face.setAttribute('aria-pressed',String(!offset));
+    face.setAttribute('aria-pressed',String(!offset&&!previewHero));
     if(card.image)face.append(previewImage(card,card.image));
     else face.textContent=name;
-    group.append(face,el('span',name,'hero-carousel-name'));images.append(group);
+    group.append(face);
+    if(offset)group.append(el('span',name,'hero-carousel-name'));
+    images.append(group);
   }
 }
 function enableHeroSwipe(){
@@ -305,15 +317,19 @@ function enableHeroSwipe(){
   const duration=2300;
   let gesture,frame=0,offset=0,velocity=0,holdTimer;
   const paint=()=>{track.style.transform=offset?'translateX('+offset+'px)':'';};
-  function stop(){
+  function stop(confirm=true){
     clearTimeout(holdTimer);cancelAnimationFrame(frame);
     frame=0;offset=0;velocity=0;paint();
+    if(!previewHero)return;
+    const item=previewHero;
+    previewHero=null;
+    if(confirm)centerHero(item);
   }
   function move(delta,spacing){
     offset+=delta;
     while(Math.abs(offset)>=spacing/2){
       const direction=Math.sign(offset);
-      stepHero(-direction);
+      stepHero(-direction,true);
       offset-=direction*spacing;
       if(Math.abs(offset)<=spacing/2)break;
     }
@@ -339,7 +355,8 @@ function enableHeroSwipe(){
   $('hero-display').addEventListener('pointerdown',event=>{
     if(event.pointerType!=='touch'||!viewport.contains(event.target))stop();
   },{capture:true});
-  $('new-deck-dialog').addEventListener('close',()=>{gesture=null;stop();});
+  $('new-deck-dialog').addEventListener('keydown',()=>stop(),{capture:true});
+  $('new-deck-dialog').addEventListener('close',()=>{gesture=null;stop(false);});
   viewport.addEventListener('pointerdown',event=>{
     if(event.pointerType!=='touch'||!event.isPrimary)return;
     const card=track.querySelector('.hero-carousel-card');
@@ -347,7 +364,10 @@ function enableHeroSwipe(){
     gesture={id:event.pointerId,start:event.clientX,x:event.clientX,time:performance.now(),speed:0,spacing:card.offsetWidth+8,dragging:false,handled:false};
     if(frame){
       viewport.setPointerCapture(event.pointerId);
-      holdTimer=setTimeout(stop,180);
+      gesture.paused=true;
+      gesture.resumeSpeed=velocity;
+      cancelAnimationFrame(frame);frame=0;
+      holdTimer=setTimeout(()=>{gesture.resumeSpeed=0;stop();},180);
     }
   });
   viewport.addEventListener('pointermove',event=>{
@@ -355,12 +375,17 @@ function enableHeroSwipe(){
     if(!gesture.dragging){
       if(Math.abs(event.clientX-gesture.start)<9)return;
       gesture.dragging=true;
+      $('build-deck').disabled=true;
+      if(!previewHero){
+        const band=heroBand();
+        previewHero=band[heroBandIndex(band)];
+      }
       viewport.setPointerCapture(event.pointerId);
       clearTimeout(holdTimer);
-      if(frame&&velocity){
+      if(gesture.resumeSpeed){
         const direction=Math.sign(event.clientX-gesture.start);
         gesture.handled=true;
-        if(direction===Math.sign(velocity))glide(velocity*1.3,gesture.spacing);
+        if(direction===Math.sign(gesture.resumeSpeed))glide(gesture.resumeSpeed*1.3,gesture.spacing);
         else stop();
         return;
       }
@@ -372,9 +397,10 @@ function enableHeroSwipe(){
   });
   viewport.addEventListener('pointerup',event=>{
     if(gesture?.id!==event.pointerId)return;
-    const {dragging,speed,time,spacing,handled}=gesture;gesture=null;
+    const {dragging,speed,time,spacing,handled,paused}=gesture;gesture=null;
     clearTimeout(holdTimer);
     if(dragging&&!handled)glide(performance.now()-time<100?speed:0,spacing);
+    else if(!dragging&&paused)stop();
   });
   viewport.addEventListener('pointercancel',()=>{gesture=null;stop();});
 }
