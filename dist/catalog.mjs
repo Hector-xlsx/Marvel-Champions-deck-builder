@@ -20,7 +20,9 @@ export function heroSetTraits(hero,cards){
   ]);
   const generic=new Set(['thwart','attack','defense']);
   const directOnly=new Set(['persona','location','title','tactic']);
-  const printed=new Set([...traits(hero.es?.traits),...traits(hero.en?.traits)].map(traitIdentity));
+  const printed=new Set(own.filter(card=>card.role==='identity')
+    .flatMap(card=>[...traits(card.es?.traits),...traits(card.en?.traits)])
+    .map(traitIdentity));
   return [...new Map(values.map(name=>[traitIdentity(name),localizedTrait(name,'es')])).entries()]
     .filter(([key])=>!generic.has(key)&&(!directOnly.has(key)||printed.has(key))).map(([,name])=>name);
 }
